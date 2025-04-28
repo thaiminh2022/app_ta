@@ -11,7 +11,7 @@
    cd app_ta
    ```
 
-2. Check out the DEVELOPEMENT BRANCH
+2. Check out the DEVELOPMENT BRANCH
 
 ```bash
 git checkout -b dev
@@ -19,7 +19,7 @@ git checkout -b dev
 
 ### Syncing
 
-1.  Pull latest from main
+1.  Pull the latest from main
 
 ```bash
 git pull origin main
@@ -36,16 +36,16 @@ git add .
 git commit -m "Your commit message"
 ```
 
-2. Push to a different brach, eg: YOUR_FEATURE
+2. Push to a different branch, eg: YOUR_FEATURE
 
 ```bash
 git push origin YOUR_FEATURE
 ```
 
-3. Go to github, create a pull request
+3. Go to GitHub, create a pull request
 4. Submit for review
 
 ## Workflow
 
 - Feature\_[x] merge into Dev
-- Development merge into Main after finish required features
+- Development merges into Main after finishing the required features
