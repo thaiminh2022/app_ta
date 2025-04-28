@@ -1,16 +1,51 @@
 # app_ta
 
-A new Flutter project.
+## Collaboration Guidelines
 
-## Getting Started
+### Getting Started
 
-This project is a starting point for a Flutter application.
+1. Clone the repository:
 
-A few resources to get you started if this is your first Flutter project:
+   ```bash
+   git clone https://github.com/thaiminh2022/app_ta.git
+   cd app_ta
+   ```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+2. Check out the DEVELOPEMENT BRANCH
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+git checkout -b dev
+```
+
+### Syncing
+
+1.  Pull latest from main
+
+```bash
+git pull origin main
+```
+
+2.  Resolve conflict locally
+
+### Push
+
+1. Commit
+
+```bash
+git add .
+git commit -m "Your commit message"
+```
+
+2. Push to a different brach, eg: YOUR_FEATURE
+
+```bash
+git push origin YOUR_FEATURE
+```
+
+3. Go to github, create a pull request
+4. Submit for review
+
+## Workflow
+
+- Feature\_[x] merge into Dev
+- Development merge into Main after finish required features
