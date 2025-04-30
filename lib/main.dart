@@ -1,5 +1,6 @@
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
+import 'package:app_ta/features/games/hangman/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,10 +49,7 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
-  final List<Widget> _widgetOptions = <Widget>[
-    DictionarySearch(),
-    Text('Placeholder'),
-  ];
+  final List<Widget> _widgetOptions = <Widget>[DictionarySearch(), Hangman()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
