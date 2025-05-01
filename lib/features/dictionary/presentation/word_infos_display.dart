@@ -1,3 +1,4 @@
+import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +8,10 @@ import 'meaning_display.dart';
 import 'phonetic_display.dart';
 
 class WordInfosDisplay extends StatelessWidget {
-  const WordInfosDisplay({super.key, required this.wordInfos});
+  const WordInfosDisplay({super.key, required this.wordInfos, this.cerf});
 
   final List<WordInfo> wordInfos;
+  final WordCerf? cerf;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +31,12 @@ class WordInfoDisplay extends StatelessWidget {
     super.key,
     required this.wordInfo,
     required this.appState,
+    this.cerf,
   });
 
   final WordInfo wordInfo;
   final AppState appState;
+  final WordCerf? cerf;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +52,24 @@ class WordInfoDisplay extends StatelessWidget {
 
     var learnedWords = appState.learnedWords;
 
+    Widget buildCerf() {
+      if (cerf != null) {
+        return CerfDisplay(cerf: cerf!, cerfStyle: cerfStyle);
+      } else {
+        return FutureBuilder(
+          future: appState.getWordCerf(wordInfo.word),
+          builder: (ctx, snapshot) {
+            if (snapshot.hasData) {
+              var cerf = snapshot.requireData;
+              return CerfDisplay(cerf: cerf, cerfStyle: cerfStyle);
+            } else {
+              return SizedBox.shrink();
+            }
+          },
+        );
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -56,31 +78,7 @@ class WordInfoDisplay extends StatelessWidget {
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(wordInfo.word, style: textStyle),
-                  FutureBuilder(
-                    future: appState.getWordCerf(wordInfo.word),
-                    builder: (ctx, snapshot) {
-                      if (snapshot.hasData) {
-                        var cerf = snapshot.requireData;
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 5, right: 5),
-                            child: Text(
-                              cerf.name.toUpperCase(),
-                              style: cerfStyle,
-                            ),
-                          ),
-                        );
-                      } else {
-                        return SizedBox.shrink();
-                      }
-                    },
-                  ),
-                ],
+                children: [Text(wordInfo.word, style: textStyle), buildCerf()],
               ),
             ),
             IconButton(
@@ -104,6 +102,24 @@ class WordInfoDisplay extends StatelessWidget {
         Divider(),
         for (var m in wordInfo.meanings) MeaningDisplay(m: m),
       ],
+    );
+  }
+}
+
+class CerfDisplay extends StatelessWidget {
+  const CerfDisplay({super.key, required this.cerf, required this.cerfStyle});
+
+  final WordCerf cerf;
+  final TextStyle? cerfStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5, right: 5),
+        child: Text(cerf.name.toUpperCase(), style: cerfStyle),
+      ),
     );
   }
 }

@@ -16,13 +16,13 @@ class AppState extends ChangeNotifier {
 
   var learnedWords = <String>[];
 
-  Future<Result<WordCerfResult, String>> getRandomWordCerf() async {
+  Future<WordCerfResult> getRandomWordCerf() async {
     await _cerfReader.cacheWordCerf();
     var wordList = _cerfReader.cacheWordCerfModel;
     var randWord = wordList[Random().nextInt(wordList.length)].word;
     var cerfRes = await _cerfReader.getWordCerf(randWord);
 
-    return Result.ok(WordCerfResult(word: randWord, cerf: cerfRes));
+    return WordCerfResult(word: randWord, cerf: cerfRes);
   }
 
   Future<WordCerf> getWordCerf(String word) async {
