@@ -1,9 +1,7 @@
 // the home page
 
-import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/world_info_view.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class DictionarySearch extends StatelessWidget {
   DictionarySearch({super.key});
