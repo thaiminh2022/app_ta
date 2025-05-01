@@ -22,7 +22,7 @@ final class Result<T, E> {
     return value!;
   }
 
-  E unwrap_error() {
+  E unwrapError() {
     if (isSuccess) {
       throw Exception("Unwrap on non error");
     }
