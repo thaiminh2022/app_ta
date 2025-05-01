@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/world_info_view.dart';
 import 'package:app_ta/features/games/hangman/models/hangman.dart';
@@ -32,10 +33,15 @@ class Hangman extends StatelessWidget {
             child: Text("From learned words"),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              var wordRes = await context.read<AppState>().getRandomWordCerf();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HangmanGame(word: "")),
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          HangmanGame(word: wordRes.word, cerf: wordRes.cerf),
+                ),
               );
             },
             child: Text("From a random words"),
@@ -47,8 +53,9 @@ class Hangman extends StatelessWidget {
 }
 
 class HangmanGame extends StatefulWidget {
-  const HangmanGame({super.key, required this.word});
+  const HangmanGame({super.key, required this.word, this.cerf});
   final String word;
+  final WordCerf? cerf;
 
   @override
   State<HangmanGame> createState() => _HangmanGameState();
@@ -82,7 +89,11 @@ class _HangmanGameState extends State<HangmanGame> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WordInfoView(searchWord: game.word),
+                      builder:
+                          (context) => WordInfoView(
+                            searchWord: game.word,
+                            cerf: widget.cerf,
+                          ),
                     ),
                   );
                 },
@@ -107,7 +118,7 @@ class _HangmanGameState extends State<HangmanGame> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Something visual"),
+            Text("Guesses left: ${game.maxGuesses}"),
             Text(game.getDisplay()),
             TextField(
               controller: _control,
