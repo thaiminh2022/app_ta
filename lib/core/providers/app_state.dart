@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:app_ta/core/models/result.dart';
+import 'package:app_ta/core/models/word_cerf.dart';
+import 'package:app_ta/core/models/word_cerf_result.dart';
 import 'package:app_ta/core/models/word_info.dart';
+import 'package:app_ta/core/services/cerf.dart';
 import 'package:app_ta/core/services/database.dart';
 import 'package:app_ta/core/services/dictionary_api.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +12,22 @@ import 'package:flutter/material.dart';
 class AppState extends ChangeNotifier {
   final DictionaryApi _dictApi = DictionaryApi();
   final Database _db = Database();
+  final CerfReader _cerfReader = CerfReader();
 
   var learnedWords = <String>[];
+
+  Future<Result<WordCerfResult, String>> getRandomWordCerf() async {
+    await _cerfReader.cacheWordCerf();
+    var wordList = _cerfReader.cacheWordCerfModel;
+    var randWord = wordList[Random().nextInt(wordList.length)].word;
+    var cerfRes = await _cerfReader.getWordCerf(randWord);
+
+    return Result.ok(WordCerfResult(word: randWord, cerf: cerfRes));
+  }
+
+  Future<WordCerf> getWordCerf(String word) async {
+    return await _cerfReader.getWordCerf(word);
+  }
 
   Future<Result<List<WordInfo>, String>> searchWord(String word) async {
     word = word.trim();

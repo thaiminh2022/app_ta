@@ -41,6 +41,11 @@ class WordInfoDisplay extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic,
     );
+    var cerfStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      color: Colors.black,
+      fontStyle: FontStyle.italic,
+    );
+
     var learnedWords = appState.learnedWords;
 
     return Column(
@@ -49,9 +54,33 @@ class WordInfoDisplay extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                "${wordInfo.word} - ${wordInfo.license.name}",
-                style: textStyle,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(wordInfo.word, style: textStyle),
+                  FutureBuilder(
+                    future: appState.getWordCerf(wordInfo.word),
+                    builder: (ctx, snapshot) {
+                      if (snapshot.hasData) {
+                        var cerf = snapshot.requireData;
+                        return Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 5, right: 5),
+                            child: Text(
+                              cerf.name.toUpperCase(),
+                              style: cerfStyle,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
             IconButton(
