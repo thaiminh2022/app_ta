@@ -1,5 +1,6 @@
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
+import 'package:app_ta/features/pronunciation_checker/pronunciation_checker_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,6 +51,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
   final List<Widget> _widgetOptions = <Widget>[
     DictionarySearch(),
+    PronunciationCheckerScreen(),
     Text('Placeholder'),
   ];
   @override
@@ -59,6 +61,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
+          BottomNavigationBarItem(icon: Icon(Icons.mic), label: "Pronunciation"),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
         ],
         currentIndex: _idx,
