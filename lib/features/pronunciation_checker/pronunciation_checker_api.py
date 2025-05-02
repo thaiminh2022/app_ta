@@ -18,9 +18,28 @@ def check_pronunciation():
             'accuracy': accuracy,
             'feedback': 'Good pronunciation' if accuracy > 70 else 'Keep practicing'
         })
-    elif 'target_text' in data:
-        # Single text check
-        return jsonify({'success': True})
+    elif 'target_text' in data and 'audio_data' in data:
+        try:
+            recognizer = sr.Recognizer()
+            audio_data = sr.AudioData(data['audio_data'])
+            user_text = recognizer.recognize_google(audio_data)
+            accuracy = similarity(data['target_text'], user_text) * 100
+            return jsonify({
+                'success': True,
+                'accuracy': accuracy,
+                'recognized_text': user_text,
+                'feedback': 'Good pronunciation' if accuracy > 70 else 'Keep practicing'
+            })
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': str(e)
+            }), 400
+    
+    return jsonify({
+        'success': False,
+        'error': 'Invalid request data'
+    }), 400
 
 @app.route('/example_sentence', methods=['GET'])
 def get_example_sentence():
