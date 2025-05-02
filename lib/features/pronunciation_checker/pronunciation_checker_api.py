@@ -20,7 +20,6 @@ def check_pronunciation():
         })
     elif 'target_text' in data:
         # Single text check
-        # Add your pronunciation check logic here
         return jsonify({'success': True})
 
 @app.route('/example_sentence', methods=['GET'])
