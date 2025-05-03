@@ -1,6 +1,9 @@
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
+
 import 'package:app_ta/features/pronunciation_checker/presentation/index.dart';
+import 'package:app_ta/features/games/hangman/presentation/index.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +24,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application
   @override
   void initState() {
     super.initState();
@@ -49,11 +51,13 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
+
   final List<Widget> _widgetOptions = <Widget>[
     DictionarySearch(),
     PronunciationCheckerScreen(),
-    Text('Placeholder'),
+    Hangman(),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
