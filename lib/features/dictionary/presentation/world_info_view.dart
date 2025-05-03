@@ -32,16 +32,20 @@ class _WordInfoViewState extends State<WordInfoView> {
             if (snapshot.hasData && snapshot.data != null) {
               var res = snapshot.data!;
               if (res.isError) {
+                print("FutureBuilder error: ${res.error}"); // Debug log
                 return Text("cannot find word, error: ${res.error}");
               } else {
                 var wordInfo = res.unwrap();
+                print("FutureBuilder success: ${wordInfo.length} entries for ${widget.searchWord}"); // Debug log
                 return WordInfosDisplay(wordInfos: wordInfo);
               }
             } else if (snapshot.hasError) {
+              print("FutureBuilder uncaught error: ${snapshot.error}"); // Debug log
               return Text(
                 "Un caught error in logic, ${snapshot.error?.toString()}",
               );
             } else {
+              print("FutureBuilder loading..."); // Debug log
               return LoadingCircle();
             }
           },

@@ -9,27 +9,28 @@ class AppState extends ChangeNotifier {
   final Database _db = Database();
 
   var learnedWords = <String>[];
+  var searchHistory = <String>[];
 
   Future<Result<List<WordInfo>, String>> searchWord(String word) async {
     word = word.trim();
+    print("Searching for word: $word"); // Debug log
     var res = await _db.getCache(word);
     if (res.isError) {
-      // there's not cache word for it yet
+      print("Cache miss: ${res.error}"); // Debug log
       var wordDatas = await _dictApi.searchWord(word);
       if (wordDatas.isError) {
-        // Error fetching word
+        print("API error: ${wordDatas.error}"); // Debug log
         return Result.err(
           "Cannot fetch word nor get cache, error: ${wordDatas.error} and ${res.error}",
         );
       }
       var info = wordDatas.unwrap();
+      print("API success, fetched ${info.length} entries for $word"); // Debug log
       await _db.writeCache(info);
       return Result.ok(info);
     }
-    {
-      // already there
-      return res;
-    }
+    print("Cache hit: Found ${res.unwrap().length} entries for $word"); // Debug log
+    return res;
   }
 
   Future<void> loadLearnedWords() async {
@@ -39,6 +40,7 @@ class AppState extends ChangeNotifier {
     } else {
       learnedWords = res.unwrap();
     }
+    notifyListeners();
   }
 
   Future<void> addWordToLearned(String word) async {
@@ -61,5 +63,14 @@ class AppState extends ChangeNotifier {
 
   Future<void> saveLearnedWords() async {
     await _db.writeLearned(learnedWords);
+  }
+
+  Future<void> addToSearchHistory(String word) async {
+    word = word.trim();
+    if (!searchHistory.contains(word)) {
+      searchHistory.insert(0, word);
+      if (searchHistory.length > 15) searchHistory = searchHistory.sublist(0, 15);
+      notifyListeners();
+    }
   }
 }
