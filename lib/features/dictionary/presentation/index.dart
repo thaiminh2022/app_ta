@@ -45,8 +45,8 @@ class _DictionarySearchState extends State<DictionarySearch> {
             TextField(
               controller: _controller,
               decoration: InputDecoration(
-                hintText: "Seach term",
-                label: Text("search word"),
+                hintText: "Write your word",
+                label: Text("Search Word:"),
               ),
             ),
             Padding(
