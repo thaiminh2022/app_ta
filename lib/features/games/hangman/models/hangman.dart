@@ -38,7 +38,7 @@ class HangmanModel {
       for (int i = 0; i < word.length; i++) {
         if (s == word[i]) {
           found = true;
-          guessedIndexes.add(i);
+          if (!guessedIndexes.contains(i)) guessedIndexes.add(i);
         }
       }
       // Did not find that character
