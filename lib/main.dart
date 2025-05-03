@@ -65,7 +65,10 @@ class _BottomNavbarState extends State<BottomNavbar> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
-          BottomNavigationBarItem(icon: Icon(Icons.mic), label: "Pronunciation"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mic),
+            label: "Pronunciation",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
         ],
         currentIndex: _idx,

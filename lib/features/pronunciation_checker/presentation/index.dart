@@ -1,14 +1,16 @@
+import 'package:app_ta/features/pronunciation_checker/service/pronunciation_checker.dart';
 import 'package:flutter/material.dart';
-import 'pronunciation_checker.dart';
 
 class PronunciationCheckerScreen extends StatefulWidget {
   const PronunciationCheckerScreen({super.key});
 
   @override
-  PronunciationCheckerScreenState createState() => PronunciationCheckerScreenState();
+  PronunciationCheckerScreenState createState() =>
+      PronunciationCheckerScreenState();
 }
 
-class PronunciationCheckerScreenState extends State<PronunciationCheckerScreen> {
+class PronunciationCheckerScreenState
+    extends State<PronunciationCheckerScreen> {
   final _controller = TextEditingController();
   final _service = PronunciationService();
   String? _exampleSentence;
@@ -20,7 +22,9 @@ class PronunciationCheckerScreenState extends State<PronunciationCheckerScreen> 
 
     final sentence = await _service.fetchExampleSentence(word);
     setState(() {
-      _exampleSentence = sentence ?? "Không tìm thấy câu ví dụ. Vui lòng kiểm tra từ hoặc kết nối mạng.";
+      _exampleSentence =
+          sentence ??
+          "Không tìm thấy câu ví dụ. Vui lòng kiểm tra từ hoặc kết nối mạng.";
     });
   }
 
@@ -30,9 +34,8 @@ class PronunciationCheckerScreenState extends State<PronunciationCheckerScreen> 
 
     final success = await _service.checkPronunciation(text);
     setState(() {
-      _resultMessage = success
-          ? "Phát âm chính xác!"
-          : "Phát âm chưa đúng. Hãy thử lại.";
+      _resultMessage =
+          success ? "Phát âm chính xác!" : "Phát âm chưa đúng. Hãy thử lại.";
     });
   }
 
