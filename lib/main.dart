@@ -1,9 +1,6 @@
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
-
-import 'package:app_ta/features/pronunciation_checker/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/index.dart';  // Thêm màn hình Word of the Day
@@ -113,12 +110,10 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
-
   final List<Widget> _widgetOptions = <Widget>[
     DictionarySearch(),
-    PronunciationCheckerScreen(),
     Hangman(),
-    WordOfTheDayScreen(),
+    WordOfTheDayScreen(),  // Thêm màn hình Word of the Day vào đây
   ];
 
   @override
@@ -128,7 +123,6 @@ class _BottomNavbarState extends State<BottomNavbar> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
-          BottomNavigationBarItem(icon: Icon(Icons.mic), label: "Pronunciation"),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
           BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Word of the Day"), // Thêm item mới cho Word of the Day
         ],
