@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from colorama import init, Fore, Style
 
-# Khởi tạo colorama
 init()
 
 def fetch_example_sentences(word):
@@ -88,7 +87,6 @@ def main():
         print(Fore.RED + "Vui lòng nhập một từ!" + Style.RESET_ALL)
         return
     
-    # Lấy các câu ví dụ
     example_sentences = fetch_example_sentences(word)
     
     if not example_sentences:
