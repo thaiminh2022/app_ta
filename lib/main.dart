@@ -1,6 +1,6 @@
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
-import 'package:app_ta/features/pronunciation_checker/index.dart';
+import 'package:app_ta/features/pronunciation_checker/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
