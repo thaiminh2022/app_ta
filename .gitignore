@@ -39,7 +39,18 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Ignore Python virtual environments and cache
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Flask server logs or compiled files
+instance/
+*.db
+*.sqlite3
+
+# Local config or secret files
+config.py
+.env
