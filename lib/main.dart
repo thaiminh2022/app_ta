@@ -1,4 +1,5 @@
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/custom_splash_screen.dart'; // Import CustomSplashScreen
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application
   @override
   void initState() {
     super.initState();
@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue.shade600),
       ),
-      home: BottomNavbar(),
+      home: const CustomSplashScreen(), // Sử dụng CustomSplashScreen
     );
   }
 }
@@ -52,6 +52,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     DictionarySearch(),
     Text('Placeholder'),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
