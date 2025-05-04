@@ -1,6 +1,7 @@
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/dictionary/presentation/widget/learned_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -81,20 +82,7 @@ class WordInfoDisplay extends StatelessWidget {
                 children: [Text(wordInfo.word, style: textStyle), buildCerf()],
               ),
             ),
-            IconButton(
-              onPressed: () {
-                if (!learnedWords.contains(wordInfo.word)) {
-                  appState.addWordToLearned(wordInfo.word);
-                } else {
-                  appState.removeWordFromLearned(wordInfo.word);
-                }
-              },
-              icon: Icon(
-                learnedWords.contains(wordInfo.word)
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-              ),
-            ),
+            LearnedButton(word: wordInfo.word),
           ],
         ),
         // Phonetics
