@@ -87,6 +87,31 @@ class DictionarySearchBarView extends StatelessWidget {
           ),
 
           leading: Icon(Icons.search),
+          trailing: [
+            IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) {
+                    return SizedBox(
+                      height: 250,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ListView(
+                          children: [
+                            Text("cool whip"),
+                            Text("cool whip"),
+                            Text("cool whip"),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              icon: Icon(Icons.history),
+            ),
+          ],
         );
       },
     );
