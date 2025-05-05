@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:app_ta/core/models/result.dart';
-import 'package:app_ta/core/models/word_cerf.dart';
-import 'package:app_ta/core/models/word_info.dart';
-import 'package:app_ta/core/models/word_pos.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
+
   @override
   State<Dashboard> createState() => _DashboardState();
 }
@@ -36,12 +34,13 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
     return Scaffold(
+      backgroundColor: Colors.transparent, // Đảm bảo không có màu nền trắng
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.lightBlue.shade100, Colors.white],
+          image: DecorationImage(
+            image: AssetImage('assets/home_screen/dashboard.png'),
+            fit: BoxFit.cover,
+            onError: (_, __) {}, // Empty handler to avoid runtime errors
           ),
         ),
         child: SafeArea(
@@ -58,12 +57,13 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent,
+                        color: Colors.white,
                       ),
                     ),
                     CircleAvatar(
                       backgroundImage: AssetImage('assets/icon/icon.png'),
                       radius: 20,
+                      onBackgroundImageError: (_, __) {}, // Empty handler
                     ),
                   ],
                 ),
@@ -90,12 +90,16 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 'Words Learned: ${appState.learnedWords.length}',
-                                style: const TextStyle(fontSize: 16),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
                               ),
                             ],
                           ),
@@ -121,6 +125,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
                               ),
                               const SizedBox(height: 10),
@@ -164,7 +169,13 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
             child: Icon(icon, color: Colors.white, size: 30),
           ),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 14)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
     );
