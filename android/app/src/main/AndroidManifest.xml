@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
-        android:label="app_ta"
+        android:label="DailyE"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
