@@ -4,25 +4,17 @@ import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_cerf_result.dart';
 import 'package:app_ta/core/models/word_info.dart';
-import 'package:app_ta/core/models/word_of_the_day.dart';
 import 'package:app_ta/core/services/cerf.dart';
 import 'package:app_ta/core/services/database.dart';
 import 'package:app_ta/core/services/dictionary_api.dart';
 import 'package:flutter/material.dart';
-import 'package:app_ta/core/services/word_of_the_day_service.dart';
 
 class AppState extends ChangeNotifier {
   final DictionaryApi _dictApi = DictionaryApi();
   final Database _db = Database();
   final CerfReader _cerfReader = CerfReader();
 
-  final WordOfTheDayService _wotdService = WordOfTheDayService();
   var learnedWords = <String>[];
-
-  Future<WordOfTheDay?> getWordOfTheDay() async {
-    await _wotdService.loadWordsFromCsv();
-    return _wotdService.getWordOfTheDay(learnedWords);
-  }
 
   Future<WordCerfResult> getRandomWordCerf() async {
     await _cerfReader.cacheWordCerf();
