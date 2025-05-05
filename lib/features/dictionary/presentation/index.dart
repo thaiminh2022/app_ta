@@ -1,59 +1,190 @@
 // the home page
 
-import 'package:app_ta/features/dictionary/presentation/world_info_view.dart';
+import 'package:app_ta/features/dictionary/presentation/learned_words_view.dart';
+import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
+import 'package:app_ta/features/dictionary/services/search_history_service.dart';
 import 'package:flutter/material.dart';
 
 class DictionarySearch extends StatelessWidget {
   DictionarySearch({super.key});
 
-  final TextEditingController _controller = TextEditingController();
+  final SearchController _controller = SearchController();
+  final SearchHistoryService searchHistoryService = SearchHistoryService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: Text("Dictionary"),
-      ),
-      body: Container(
-        margin: EdgeInsets.all(20),
+      appBar: AppBar(title: Text("Dictionary")),
+      body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
+            Icon(Icons.library_books, size: 150),
+            SizedBox(height: 10),
+            DictionarySearchBarView(
               controller: _controller,
-              decoration: InputDecoration(
-                hintText: "Seach term",
-                label: Text("search word"),
-              ),
+              historyService: searchHistoryService,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (_controller.text.isEmpty) return;
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_controller.text.isEmpty) return;
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              WordInfoView(searchWord: _controller.text),
+                      await searchHistoryService.saveItem(_controller.text);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => WordInfoView(
+                                searchWord: _controller.text.toLowerCase(),
+                              ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.search),
+                        SizedBox(width: 10),
+                        Text("Search"),
+                      ],
                     ),
-                  );
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.search),
-                    SizedBox(width: 10),
-                    Text("Search"),
-                  ],
+                  ),
                 ),
-              ),
+                FilledButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (ctx) => LearnedWordsView()),
+                    );
+                  },
+                  child: Text("Learned words"),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class DictionarySearchBarView extends StatelessWidget {
+  const DictionarySearchBarView({
+    super.key,
+    required this.controller,
+    required this.historyService,
+  });
+
+  final SearchController controller;
+  final SearchHistoryService historyService;
+
+  @override
+  Widget build(BuildContext context) {
+    return SearchAnchor(
+      searchController: controller,
+      suggestionsBuilder: (context, controller) {
+        return [];
+      },
+      builder: (context, controller) {
+        return SearchBar(
+          controller: controller,
+          hintText: "hello",
+          padding: const WidgetStatePropertyAll<EdgeInsets>(
+            EdgeInsets.symmetric(horizontal: 16),
+          ),
+
+          leading: Icon(Icons.search),
+          trailing: [
+            IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) {
+                    return SizedBox(
+                      height: 250,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: FutureBuilder(
+                          future: historyService.searchHistory,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              var data = snapshot.requireData;
+                              return SearchHistoryItemView(
+                                data: data,
+                                historyService: historyService,
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return SizedBox.shrink();
+                            } else {
+                              return LoadingCircle();
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              icon: Icon(Icons.history),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class SearchHistoryItemView extends StatefulWidget {
+  const SearchHistoryItemView({
+    super.key,
+    required this.data,
+    required this.historyService,
+  });
+
+  final Set<String> data;
+  final SearchHistoryService historyService;
+
+  @override
+  State<SearchHistoryItemView> createState() => _SearchHistoryItemViewState();
+}
+
+class _SearchHistoryItemViewState extends State<SearchHistoryItemView> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children:
+          widget.data
+              .map(
+                (s) => ListTile(
+                  title: Row(
+                    children: [
+                      Expanded(child: Text(s)),
+                      IconButton(
+                        onPressed: () {
+                          widget.historyService.removeItem(s);
+                          setState(() {});
+                        },
+                        icon: Icon(Icons.delete_outline),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => WordInfoView(searchWord: s),
+                      ),
+                    );
+                  },
+                ),
+              )
+              .toList(),
     );
   }
 }

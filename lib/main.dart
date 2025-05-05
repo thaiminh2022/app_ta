@@ -1,4 +1,5 @@
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/custom_splash_screen.dart'; // Import CustomSplashScreen
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 
 import 'package:app_ta/features/pronunciation_checker/presentation/index.dart';
@@ -33,11 +34,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DailyE',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue.shade600),
       ),
-      home: BottomNavbar(),
+      home: const CustomSplashScreen(), // Sử dụng CustomSplashScreen
     );
   }
 }
@@ -52,11 +53,13 @@ class BottomNavbar extends StatefulWidget {
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
 
+
   final List<Widget> _widgetOptions = <Widget>[
     DictionarySearch(),
     PronunciationCheckerScreen(),
     Hangman(),
   ];
+
 
   @override
   Widget build(BuildContext context) {
