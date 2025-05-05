@@ -140,7 +140,7 @@ class DictionarySearchBarView extends StatelessWidget {
   }
 }
 
-class SearchHistoryItemView extends StatelessWidget {
+class SearchHistoryItemView extends StatefulWidget {
   const SearchHistoryItemView({
     super.key,
     required this.data,
@@ -151,10 +151,15 @@ class SearchHistoryItemView extends StatelessWidget {
   final SearchHistoryService historyService;
 
   @override
+  State<SearchHistoryItemView> createState() => _SearchHistoryItemViewState();
+}
+
+class _SearchHistoryItemViewState extends State<SearchHistoryItemView> {
+  @override
   Widget build(BuildContext context) {
     return ListView(
       children:
-          data
+          widget.data
               .map(
                 (s) => ListTile(
                   title: Row(
@@ -162,7 +167,8 @@ class SearchHistoryItemView extends StatelessWidget {
                       Expanded(child: Text(s)),
                       IconButton(
                         onPressed: () {
-                          historyService.removeItem(s);
+                          widget.historyService.removeItem(s);
+                          setState(() {});
                         },
                         icon: Icon(Icons.delete_outline),
                       ),
