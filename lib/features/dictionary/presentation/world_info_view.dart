@@ -1,4 +1,5 @@
 import 'package:app_ta/core/models/result.dart';
+import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:provider/provider.dart';
 import 'word_infos_display.dart';
 
 class WordInfoView extends StatefulWidget {
-  const WordInfoView({super.key, required this.searchWord});
+  const WordInfoView({super.key, required this.searchWord, this.cerf});
   final String searchWord;
+  final WordCerf? cerf;
 
   @override
   State<WordInfoView> createState() => _WordInfoViewState();

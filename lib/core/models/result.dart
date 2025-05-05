@@ -21,4 +21,11 @@ final class Result<T, E> {
     if (isError) return def;
     return value!;
   }
+
+  E unwrapError() {
+    if (isSuccess) {
+      throw Exception("Unwrap on non error");
+    }
+    return error!;
+  }
 }
