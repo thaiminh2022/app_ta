@@ -3,7 +3,7 @@ import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:app_ta/features/word_of_the_day/presentation/index.dart';  // Thêm màn hình Word of the Day
+import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Thêm màn hình Word of the Day
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -23,11 +23,13 @@ void main() async {
   );
   _initializeNotifications();
 }
-void _initializeNotifications() async {
+
+Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
       AndroidInitializationSettings('app_icon');
-  final InitializationSettings initializationSettings =
-      InitializationSettings(android: androidInitializationSettings);
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: androidInitializationSettings,
+  );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
@@ -39,7 +41,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     super.initState();
@@ -47,47 +48,53 @@ class _MyAppState extends State<MyApp> {
     _initNotifications();
   }
 
-  void _initNotifications() async {
-  tz.initializeTimeZones(); // Quan trọng
+  Future<void> _initNotifications() async {
+    tz.initializeTimeZones(); // Quan trọng
 
-  const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-  const initSettings = InitializationSettings(android: androidInit);
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidInit);
 
-  await flutterLocalNotificationsPlugin.initialize(initSettings);
+    await flutterLocalNotificationsPlugin.initialize(initSettings);
 
-  // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
-  _scheduleDailyWordNotification();
-}
-  void _scheduleDailyWordNotification() async {
-  await flutterLocalNotificationsPlugin.zonedSchedule(
-    0,
-    'Word of the Day',
-    'Tap to see today\'s word!',
-    _nextInstanceOfHour(8), // 8 giờ sáng, tuỳ chọn
-    const NotificationDetails(
-      android: AndroidNotificationDetails(
-        'word_daily_channel',
-        'Word Daily',
-        channelDescription: 'Shows a word every day',
-        importance: Importance.high,
-        priority: Priority.high,
+    // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
+    await _scheduleDailyWordNotification();
+  }
+
+  Future<void> _scheduleDailyWordNotification() async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Word of the Day',
+      'Tap to see today\'s word!',
+      _nextInstanceOfHour(8), // 8 giờ sáng, tuỳ chọn
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'word_daily_channel',
+          'Word Daily',
+          channelDescription: 'Shows a word every day',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
       ),
-    ),
-    androidAllowWhileIdle: true,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-    matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
-  );
-}
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
+    );
+  }
 
-tz.TZDateTime _nextInstanceOfHour(int hour) {
-  final now = tz.TZDateTime.now(tz.local);
-  final scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour);
-  return scheduled.isBefore(now)
-      ? scheduled.add(const Duration(days: 1))
-      : scheduled;
-}
-
+  tz.TZDateTime _nextInstanceOfHour(int hour) {
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+    );
+    return scheduled.isBefore(now)
+        ? scheduled.add(const Duration(days: 1))
+        : scheduled;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +120,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
   final List<Widget> _widgetOptions = <Widget>[
     DictionarySearch(),
     Hangman(),
-    WordOfTheDayScreen(),  // Thêm màn hình Word of the Day vào đây
+    WordOfTheDayScreen(), // Thêm màn hình Word of the Day vào đây
   ];
 
   @override
@@ -124,7 +131,10 @@ class _BottomNavbarState extends State<BottomNavbar> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
-          BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Word of the Day"), // Thêm item mới cho Word of the Day
+          BottomNavigationBarItem(
+            icon: Icon(Icons.lightbulb),
+            label: "Word of the Day",
+          ), // Thêm item mới cho Word of the Day
         ],
         currentIndex: _idx,
         onTap: (value) {

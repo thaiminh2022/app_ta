@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:app_ta/core/services/notification_service.dart';
+import 'package:app_ta/features/word_of_the_day/services/notification_service.dart';
 import 'package:app_ta/features/word_of_the_day/models/notification_config.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
-  const NotificationSettingsScreen({Key? key}) : super(key: key);
+  const NotificationSettingsScreen({super.key});
 
   @override
   State<NotificationSettingsScreen> createState() =>
