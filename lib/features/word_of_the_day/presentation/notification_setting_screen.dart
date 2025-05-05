@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:app_ta/core/services/notification_service.dart';
-import 'package:app_ta/core/models/notification_config.dart';
+import 'package:app_ta/features/word_of_the_day/models/notification_config.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({Key? key}) : super(key: key);
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   TimeOfDay _selectedTime = const TimeOfDay(hour: 8, minute: 0);
   final NotificationService _notificationService = NotificationService();
 
@@ -49,7 +51,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     await _notificationService.scheduleDailyNotification(config);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Notification scheduled at ${_selectedTime.format(context)}')),
+        SnackBar(
+          content: Text(
+            'Notification scheduled at ${_selectedTime.format(context)}',
+          ),
+        ),
       );
     }
   }
@@ -66,9 +72,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Notification Time:', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Notification Time:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
-            Text(timeText, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(
+              timeText,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _pickTime,
