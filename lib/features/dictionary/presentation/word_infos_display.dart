@@ -1,6 +1,7 @@
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/dictionary/presentation/widget/learned_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,29 +46,23 @@ class WordInfoDisplay extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic,
     );
-    var cerfStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
-      color: Colors.black,
-      fontStyle: FontStyle.italic,
-    );
-
-    var learnedWords = appState.learnedWords;
 
     Widget buildCerf() {
-      if (cerf != null) {
-        return CerfDisplay(cerf: cerf!, cerfStyle: cerfStyle);
-      } else {
+      if (cerf == null) {
         return FutureBuilder(
           future: appState.getWordCerf(wordInfo.word),
           builder: (ctx, snapshot) {
             if (snapshot.hasData) {
               var cerf = snapshot.requireData;
-              return CerfDisplay(cerf: cerf, cerfStyle: cerfStyle);
-            } else {
-              return SizedBox.shrink();
+
+              return Text(cerf.name.toUpperCase());
             }
+            return SizedBox.shrink();
           },
         );
       }
+
+      return Text(cerf!.name.toUpperCase());
     }
 
     return Column(
@@ -78,23 +73,18 @@ class WordInfoDisplay extends StatelessWidget {
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text(wordInfo.word, style: textStyle), buildCerf()],
+                children: [
+                  Badge(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 7),
+                    offset: Offset(10, -5),
+                    label: buildCerf(),
+                    child: Text(wordInfo.word, style: textStyle),
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              onPressed: () {
-                if (!learnedWords.contains(wordInfo.word)) {
-                  appState.addWordToLearned(wordInfo.word);
-                } else {
-                  appState.removeWordFromLearned(wordInfo.word);
-                }
-              },
-              icon: Icon(
-                learnedWords.contains(wordInfo.word)
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-              ),
-            ),
+            LearnedButton(word: wordInfo.word),
           ],
         ),
         // Phonetics
@@ -102,24 +92,6 @@ class WordInfoDisplay extends StatelessWidget {
         Divider(),
         for (var m in wordInfo.meanings) MeaningDisplay(m: m),
       ],
-    );
-  }
-}
-
-class CerfDisplay extends StatelessWidget {
-  const CerfDisplay({super.key, required this.cerf, required this.cerfStyle});
-
-  final WordCerf cerf;
-  final TextStyle? cerfStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 5, right: 5),
-        child: Text(cerf.name.toUpperCase(), style: cerfStyle),
-      ),
     );
   }
 }

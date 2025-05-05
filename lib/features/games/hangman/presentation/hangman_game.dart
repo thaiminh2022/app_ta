@@ -1,5 +1,5 @@
 import 'package:app_ta/core/models/word_cerf.dart';
-import 'package:app_ta/features/dictionary/presentation/world_info_view.dart';
+import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/games/hangman/models/hangman.dart';
 import 'package:app_ta/features/games/hangman/presentation/hangman_hint.dart';
 import 'package:app_ta/features/games/hangman/presentation/the_hangman_visual.dart';
