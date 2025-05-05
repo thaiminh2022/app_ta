@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:flutter/services.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -30,17 +31,176 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     super.dispose();
   }
 
+  // Show Settings Dialog
+  void _showSettingsDialog() {
+    final appState = Provider.of<AppState>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Theme.of(dialogContext).brightness == Brightness.dark
+            ? Colors.grey[800]
+            : Colors.white,
+        title: Text(
+          'Settings',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(dialogContext).colorScheme.onSurface,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(dialogContext).colorScheme.primary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              ),
+              onPressed: () {
+                appState.toggleTheme();
+                Navigator.pop(dialogContext);
+              },
+              child: Text(
+                appState.isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme',
+                style: TextStyle(color: Theme.of(dialogContext).colorScheme.onPrimary),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Close',
+              style: TextStyle(color: Theme.of(dialogContext).colorScheme.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Show About Dialog
+  void _showAboutDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Theme.of(dialogContext).brightness == Brightness.dark
+            ? Colors.grey[800]
+            : Colors.white,
+        title: Text(
+          'About',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(dialogContext).colorScheme.onSurface,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'App Name: DailyE',
+              style: TextStyle(color: Theme.of(dialogContext).colorScheme.onSurface),
+            ),
+            Text(
+              'Version: V1.0.0',
+              style: TextStyle(color: Theme.of(dialogContext).colorScheme.onSurface),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Close',
+              style: TextStyle(color: Theme.of(dialogContext).colorScheme.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Quit the app
+  void _quitApp() {
+    SystemNavigator.pop();
+  }
+
+  // Show profile menu on avatar tap
+  void _showProfileMenu() {
+    showMenu(
+      context: context,
+      position: const RelativeRect.fromLTRB(1000, 80, 0, 0),
+      items: [
+        PopupMenuItem(
+          value: 'settings',
+          child: Row(
+            children: [
+              Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Settings',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'about',
+          child: Row(
+            children: [
+              Icon(Icons.info, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                'About',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'quit',
+          child: Row(
+            children: [
+              const Icon(Icons.exit_to_app, color: Colors.redAccent),
+              const SizedBox(width: 8),
+              Text(
+                'Quit',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
+            ],
+          ),
+        ),
+      ],
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[800] : Colors.white,
+    ).then((value) {
+      if (value == 'settings') {
+        _showSettingsDialog();
+      } else if (value == 'about') {
+        _showAboutDialog();
+      } else if (value == 'quit') {
+        _quitApp();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
     return Scaffold(
-      backgroundColor: Colors.transparent, // Đảm bảo không có màu nền trắng
+      backgroundColor: Colors.transparent,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/home_screen/dashboard.png'),
             fit: BoxFit.cover,
-            onError: (_, __) {}, // Empty handler to avoid runtime errors
+            opacity: 0.8,
+            onError: (_, __) {},
           ),
         ),
         child: SafeArea(
@@ -52,18 +212,21 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'DailyE Dashboard',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    CircleAvatar(
-                      backgroundImage: AssetImage('assets/icon/icon.png'),
-                      radius: 20,
-                      onBackgroundImageError: (_, __) {}, // Empty handler
+                    GestureDetector(
+                      onTap: _showProfileMenu,
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundImage: AssetImage('assets/icon/icon.png'),
+                        child: const Icon(Icons.person, color: Colors.grey),
+                      ),
                     ),
                   ],
                 ),
@@ -80,25 +243,28 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[800]
+                            : Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Learning Progress',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 'Words Learned: ${appState.learnedWords.length}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.black54,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -115,17 +281,20 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[800]
+                            : Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Quick Actions',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 10),
@@ -151,10 +320,10 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     );
   }
 
+  // Build action button for Quick Actions
   Widget _buildActionButton(IconData icon, String label) {
     return InkWell(
       onTap: () {
-        // Navigate to respective screens
         if (label == 'Dictionary') {
           Navigator.pushNamed(context, '/dictionary');
         } else if (label == 'Hangman') {
@@ -165,15 +334,15 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: Colors.blueAccent,
-            child: Icon(icon, color: Colors.white, size: 30),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Icon(icon, color: Theme.of(context).colorScheme.onPrimary, size: 30),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],

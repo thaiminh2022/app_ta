@@ -1,7 +1,8 @@
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
-import 'package:app_ta/features/dashboard.dart'; // Import Dashboard
+import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,20 +26,35 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    context.read<AppState>().loadLearnedWords();
+    // Sử dụng Future.microtask để đảm bảo context an toàn
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AppState>(context, listen: false).loadLearnedWords();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return MaterialApp(
       title: 'DailyE',
+      themeMode: appState.themeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue.shade600),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(173, 216, 230, 1)),
+        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        cardColor: const Color.fromRGBO(255, 255, 255, 1),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromRGBO(173, 216, 230, 1),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color.fromRGBO(18, 18, 18, 1),
+        cardColor: const Color.fromRGBO(66, 66, 66, 1),
       ),
       home: const CustomSplashScreen(),
       routes: {
         '/dictionary': (context) => DictionarySearch(),
-        '/hangman': (context) => Text('Hangman Screen'), // Placeholder
+        '/hangman': (context) => Hangman(),
         '/dashboard': (context) => const Dashboard(),
       },
     );
@@ -54,14 +70,11 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
-  final List<Widget> _widgetOptions = <Widget>[
-    const Dashboard(),
-    DictionarySearch(),
-    Text('Hangman Screen'), // Placeholder
-  ];
+  final List<Widget> _widgetOptions = <Widget>[const Dashboard(), DictionarySearch(), Hangman()];
 
   @override
   Widget build(BuildContext context) {
+    final currentContext = context; // Lưu context cục bộ
     return Scaffold(
       body: _widgetOptions.elementAt(_idx),
       bottomNavigationBar: BottomNavigationBar(
@@ -79,6 +92,15 @@ class _BottomNavbarState extends State<BottomNavbar> {
             });
           }
         },
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(153), // Sử dụng withAlpha thay vì withOpacity
+        selectedLabelStyle: const TextStyle(fontSize: 18),
+        unselectedLabelStyle: const TextStyle(fontSize: 18),
+        selectedIconTheme: const IconThemeData(size: 30),
+        unselectedIconTheme: const IconThemeData(size: 30),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromRGBO(30, 30, 30, 1)
+            : const Color.fromRGBO(255, 255, 255, 1),
       ),
     );
   }
