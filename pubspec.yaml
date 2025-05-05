@@ -41,6 +41,7 @@ dependencies:
   provider: ^6.1.4
   csv: ^6.0.0
   shared_preferences: ^2.5.3
+  video_player: ^2.9.5
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
     - assets/home_screen/home_screen.png
     - assets/home_screen/dashboard.png
     - assets/icon/icon.png
+    - assets/home_screen/video_background.mp4
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
