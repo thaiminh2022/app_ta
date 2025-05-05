@@ -67,10 +67,10 @@ class BottomNavbar extends StatefulWidget {
 }
 
 class _BottomNavbarState extends State<BottomNavbar> {
-  var _idx = 0;
+  var _idx = 1;
   final List<Widget> _widgetOptions = <Widget>[
-    const Dashboard(),
     DictionarySearch(),
+    const Dashboard(),
     Hangman(),
   ];
 
@@ -80,11 +80,11 @@ class _BottomNavbarState extends State<BottomNavbar> {
       body: _widgetOptions.elementAt(_idx),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
             label: "Dashboard",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
         ],
         currentIndex: _idx,
