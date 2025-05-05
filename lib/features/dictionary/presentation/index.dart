@@ -2,12 +2,14 @@
 
 import 'package:app_ta/features/dictionary/presentation/learned_words_view.dart';
 import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
+import 'package:app_ta/features/dictionary/services/search_history_service.dart';
 import 'package:flutter/material.dart';
 
 class DictionarySearch extends StatelessWidget {
   DictionarySearch({super.key});
 
   final SearchController _controller = SearchController();
+  final SearchHistoryService searchHistoryService = SearchHistoryService();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,10 @@ class DictionarySearch extends StatelessWidget {
           children: [
             Icon(Icons.library_books, size: 150),
             SizedBox(height: 10),
-            DictionarySearchBarView(controller: _controller),
+            DictionarySearchBarView(
+              controller: _controller,
+              historyService: searchHistoryService,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -29,12 +34,14 @@ class DictionarySearch extends StatelessWidget {
                     onPressed: () async {
                       if (_controller.text.isEmpty) return;
 
+                      await searchHistoryService.saveItem(_controller.text);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) =>
-                                  WordInfoView(searchWord: _controller.text),
+                              (context) => WordInfoView(
+                                searchWord: _controller.text.toLowerCase(),
+                              ),
                         ),
                       );
                     },
@@ -67,9 +74,14 @@ class DictionarySearch extends StatelessWidget {
 }
 
 class DictionarySearchBarView extends StatelessWidget {
-  const DictionarySearchBarView({super.key, required this.controller});
+  const DictionarySearchBarView({
+    super.key,
+    required this.controller,
+    required this.historyService,
+  });
 
   final SearchController controller;
+  final SearchHistoryService historyService;
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +109,22 @@ class DictionarySearchBarView extends StatelessWidget {
                       height: 250,
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child: ListView(
-                          children: [
-                            Text("cool whip"),
-                            Text("cool whip"),
-                            Text("cool whip"),
-                          ],
+                        child: FutureBuilder(
+                          future: historyService.searchHistory,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              var data = snapshot.requireData;
+                              return SearchHistoryItemView(
+                                data: data,
+                                historyService: historyService,
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return SizedBox.shrink();
+                            } else {
+                              return LoadingCircle();
+                            }
+                          },
                         ),
                       ),
                     );
@@ -114,6 +136,49 @@ class DictionarySearchBarView extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class SearchHistoryItemView extends StatelessWidget {
+  const SearchHistoryItemView({
+    super.key,
+    required this.data,
+    required this.historyService,
+  });
+
+  final Set<String> data;
+  final SearchHistoryService historyService;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children:
+          data
+              .map(
+                (s) => ListTile(
+                  title: Row(
+                    children: [
+                      Expanded(child: Text(s)),
+                      IconButton(
+                        onPressed: () {
+                          historyService.removeItem(s);
+                        },
+                        icon: Icon(Icons.delete_outline),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => WordInfoView(searchWord: s),
+                      ),
+                    );
+                  },
+                ),
+              )
+              .toList(),
     );
   }
 }
