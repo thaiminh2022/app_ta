@@ -1,18 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:app_ta/features/word_of_the_day/models/word_of_the_day.dart';
 import 'package:app_ta/features/word_of_the_day/services/word_of_the_day_service.dart';
+import 'package:flutter/material.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/notification_setting_screen.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:provider/provider.dart';
 
 class WordOfTheDayScreen extends StatelessWidget {
   WordOfTheDayScreen({super.key});
+
   final _wordService = WordOfTheDayService();
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Word of the Day'),
@@ -30,8 +29,8 @@ class WordOfTheDayScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<WordOfTheDay?>(
-        future: _wordService.getWordOfTheDay(appState),
+      body: FutureBuilder<WordOfTheDay>(
+        future: _wordService.getWordOfTheDay(context.read<AppState>()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
