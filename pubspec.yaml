@@ -67,6 +67,8 @@ flutter:
     - assets/word_pos.csv
     - assets/hangman/
     - assets/home_screen/home_screen.png
+    - assets/home_screen/dashboard.png
+    - assets/icon/icon.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

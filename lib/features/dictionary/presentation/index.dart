@@ -15,58 +15,62 @@ class DictionarySearch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Dictionary")),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.library_books, size: 150),
-            SizedBox(height: 10),
-            DictionarySearchBarView(
-              controller: _controller,
-              historyService: searchHistoryService,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_controller.text.isEmpty) return;
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.library_books, size: 150),
+              SizedBox(height: 10),
+              DictionarySearchBarView(
+                controller: _controller,
+                historyService: searchHistoryService,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_controller.text.isEmpty) return;
 
-                      await searchHistoryService.saveItem(_controller.text);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => WordInfoView(
-                                searchWord: _controller.text.toLowerCase(),
-                              ),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.search),
-                        SizedBox(width: 10),
-                        Text("Search"),
-                      ],
+                        await searchHistoryService.saveItem(_controller.text);
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => WordInfoView(
+                                    searchWord: _controller.text.toLowerCase(),
+                                  ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.search),
+                          SizedBox(width: 10),
+                          Text("Search"),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => LearnedWordsView()),
-                    );
-                  },
-                  child: Text("Learned words"),
-                ),
-              ],
-            ),
-          ],
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => LearnedWordsView()),
+                      );
+                    },
+                    child: Text("Learned words"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -85,57 +89,60 @@ class DictionarySearchBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SearchAnchor(
-      searchController: controller,
-      suggestionsBuilder: (context, controller) {
-        return [];
-      },
-      builder: (context, controller) {
-        return SearchBar(
-          controller: controller,
-          hintText: "hello",
-          padding: const WidgetStatePropertyAll<EdgeInsets>(
-            EdgeInsets.symmetric(horizontal: 16),
-          ),
-
-          leading: Icon(Icons.search),
-          trailing: [
-            IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (ctx) {
-                    return SizedBox(
-                      height: 250,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: FutureBuilder(
-                          future: historyService.searchHistory,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData && snapshot.data != null) {
-                              var data = snapshot.requireData;
-                              return SearchHistoryItemView(
-                                data: data,
-                                historyService: historyService,
-                              );
-                            }
-                            if (snapshot.hasError) {
-                              return SizedBox.shrink();
-                            } else {
-                              return LoadingCircle();
-                            }
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-              icon: Icon(Icons.history),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: SearchAnchor(
+        searchController: controller,
+        suggestionsBuilder: (context, controller) {
+          return [];
+        },
+        builder: (context, controller) {
+          return SearchBar(
+            controller: controller,
+            hintText: "hello",
+            padding: const WidgetStatePropertyAll<EdgeInsets>(
+              EdgeInsets.symmetric(horizontal: 16),
             ),
-          ],
-        );
-      },
+
+            leading: Icon(Icons.search),
+            trailing: [
+              IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (ctx) {
+                      return SizedBox(
+                        height: 250,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: FutureBuilder(
+                            future: historyService.searchHistory,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                var data = snapshot.requireData;
+                                return SearchHistoryItemView(
+                                  data: data,
+                                  historyService: historyService,
+                                );
+                              }
+                              if (snapshot.hasError) {
+                                return SizedBox.shrink();
+                              } else {
+                                return LoadingCircle();
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                icon: Icon(Icons.history),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

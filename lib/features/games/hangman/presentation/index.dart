@@ -11,11 +11,6 @@ class Hangman extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).primaryTextTheme.displaySmall?.copyWith(
-      color: Colors.black,
-      fontWeight: FontWeight.bold,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -26,7 +21,15 @@ class Hangman extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("THE HANGMAN GAME", style: textStyle),
+            Text(
+              "THE HANGMAN GAME",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+                fontSize:
+                    Theme.of(context).primaryTextTheme.displaySmall?.fontSize,
+              ),
+            ),
             TheHangmanVisual(guessLeft: 0),
             FilledButton(
               onPressed: () {
