@@ -14,7 +14,7 @@ class TheHangmanVisual extends StatelessWidget {
   const TheHangmanVisual({super.key, required this.guessLeft});
   final int guessLeft;
 
-  List<Widget> buildVisual() {
+  List<Widget> buildVisual(BuildContext context) {
     List<Widget> widgets = [];
 
     for (int i = 0; i < bodyParts.length; i++) {
@@ -27,7 +27,10 @@ class TheHangmanVisual extends StatelessWidget {
             child: SizedBox(
               width: 250,
               height: 250,
-              child: Image.asset(bodyParts[i], color: Colors.black),
+              child: Image.asset(
+                bodyParts[i],
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
         ),
@@ -38,6 +41,6 @@ class TheHangmanVisual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [...buildVisual()]);
+    return Stack(children: [...buildVisual(context)]);
   }
 }
