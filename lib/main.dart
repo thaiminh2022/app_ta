@@ -5,34 +5,14 @@ import 'package:app_ta/features/games/hangman/presentation/index.dart';
 import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Thêm màn hình Word of the Day
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding
-  tz.initializeTimeZones(); // Cấu hình Timezone
-  final appState = AppState();
-  await appState.loadLearnedWords(); // Load trước khi runApp
+void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState(),
       child: const MyApp(),
     ),
   );
-  _initializeNotifications();
-}
-
-void _initializeNotifications() async {
-  const AndroidInitializationSettings androidInitializationSettings =
-      AndroidInitializationSettings('app_icon');
-  final InitializationSettings initializationSettings = InitializationSettings(
-    android: androidInitializationSettings,
-  );
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 class MyApp extends StatefulWidget {
@@ -50,56 +30,7 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppState>().loadLearnedWords();
       context.read<AppState>().loadTheme();
-      _initNotifications();
     });
-  }
-
-  Future<void> _initNotifications() async {
-    tz.initializeTimeZones(); // Quan trọng
-
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidInit);
-
-    await flutterLocalNotificationsPlugin.initialize(initSettings);
-
-    // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
-    await _scheduleDailyWordNotification();
-  }
-
-  Future<void> _scheduleDailyWordNotification() async {
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      'Word of the Day',
-      'Tap to see today\'s word!',
-      _nextInstanceOfHour(8), // 8 giờ sáng, tuỳ chọn
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'word_daily_channel',
-          'Word Daily',
-          channelDescription: 'Shows a word every day',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
-      ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
-    );
-  }
-
-  tz.TZDateTime _nextInstanceOfHour(int hour) {
-    final now = tz.TZDateTime.now(tz.local);
-    final scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-    );
-    return scheduled.isBefore(now)
-        ? scheduled.add(const Duration(days: 1))
-        : scheduled;
   }
 
   @override
@@ -136,9 +67,8 @@ class BottomNavbar extends StatefulWidget {
 }
 
 class _BottomNavbarState extends State<BottomNavbar> {
-  var _idx = 2;
+  var _idx = 1;
   final List<Widget> _widgetOptions = <Widget>[
-    WordOfTheDayScreen(),
     DictionarySearch(),
     const Dashboard(),
     Hangman(),
@@ -150,10 +80,6 @@ class _BottomNavbarState extends State<BottomNavbar> {
       body: _widgetOptions.elementAt(_idx),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb),
-            label: "Word of the Day",
-          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
