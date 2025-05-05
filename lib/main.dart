@@ -1,6 +1,7 @@
 import 'package:app_ta/core/providers/app_state.dart';
-import 'package:app_ta/features/custom_splash_screen.dart'; // Import CustomSplashScreen
+import 'package:app_ta/features/custom_splash_screen.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
+import 'package:app_ta/features/dashboard.dart'; // Import Dashboard
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +35,12 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue.shade600),
       ),
-      home: const CustomSplashScreen(), // Sử dụng CustomSplashScreen
+      home: const CustomSplashScreen(),
+      routes: {
+        '/dictionary': (context) => DictionarySearch(),
+        '/hangman': (context) => Text('Hangman Screen'), // Placeholder
+        '/dashboard': (context) => const Dashboard(),
+      },
     );
   }
 }
@@ -49,8 +55,9 @@ class BottomNavbar extends StatefulWidget {
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 0;
   final List<Widget> _widgetOptions = <Widget>[
+    const Dashboard(),
     DictionarySearch(),
-    Text('Placeholder'),
+    Text('Hangman Screen'), // Placeholder
   ];
 
   @override
@@ -58,7 +65,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
     return Scaffold(
       body: _widgetOptions.elementAt(_idx),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
         ],
