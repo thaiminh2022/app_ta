@@ -58,30 +58,25 @@ class _DashboardState extends State<Dashboard>
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(dialogContext).colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Row(
+                  children: [
+                    Expanded(child: Text("Theme: ")),
+                    Switch(
+                      thumbIcon: WidgetStatePropertyAll(
+                        Icon(
+                          appState.isDarkTheme
+                              ? Icons.dark_mode
+                              : Icons.light_mode,
+                        ),
+                      ),
+                      value: !appState.isDarkTheme,
+                      onChanged: (value) async {
+                        if (appState.isDarkTheme == value) {
+                          await appState.toggleTheme();
+                        }
+                      },
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                  ),
-                  onPressed: () async {
-                    await appState.toggleTheme();
-                    if (context.mounted) Navigator.pop(dialogContext);
-                  },
-                  child: Text(
-                    appState.isDarkTheme
-                        ? 'Switch to Light Theme'
-                        : 'Switch to Dark Theme',
-                    style: TextStyle(
-                      color: Theme.of(dialogContext).colorScheme.onPrimary,
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),
