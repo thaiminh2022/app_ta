@@ -28,7 +28,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     // Sử dụng Future.microtask để đảm bảo context an toàn
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AppState>(context, listen: false).loadLearnedWords();
+      context.read<AppState>().loadLearnedWords();
+      context.read<AppState>().loadTheme();
     });
   }
 
@@ -54,11 +55,6 @@ class _MyAppState extends State<MyApp> {
         cardColor: const Color.fromRGBO(66, 66, 66, 1),
       ),
       home: const CustomSplashScreen(),
-      routes: {
-        '/dictionary': (context) => DictionarySearch(),
-        '/hangman': (context) => Hangman(),
-        '/dashboard': (context) => const Dashboard(),
-      },
     );
   }
 }

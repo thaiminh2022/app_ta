@@ -70,9 +70,9 @@ class _DashboardState extends State<Dashboard>
                       horizontal: 24,
                     ),
                   ),
-                  onPressed: () {
-                    appState.toggleTheme();
-                    Navigator.pop(dialogContext);
+                  onPressed: () async {
+                    await appState.toggleTheme();
+                    if (context.mounted) Navigator.pop(dialogContext);
                   },
                   child: Text(
                     appState.isDarkTheme

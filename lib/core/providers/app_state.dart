@@ -7,6 +7,7 @@ import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/services/cerf.dart';
 import 'package:app_ta/core/services/database.dart';
 import 'package:app_ta/core/services/dictionary_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
   final DictionaryApi _dictApi = DictionaryApi();
@@ -14,13 +15,34 @@ class AppState extends ChangeNotifier {
   final CerfReader _cerfReader = CerfReader();
 
   var learnedWords = <String>[];
-  ThemeMode _themeMode = ThemeMode.light; // Default to light theme
-
+  ThemeMode _themeMode = ThemeMode.light; // Default to system theme
   ThemeMode get themeMode => _themeMode;
   bool get isDarkTheme => _themeMode == ThemeMode.dark;
 
-  void toggleTheme() {
-    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  Future<void> loadTheme() async {
+    var prefs = await SharedPreferences.getInstance();
+    var res = prefs.getString("theme_mode");
+
+    if (res != null) {
+      switch (res) {
+        case "dark":
+          _themeMode = ThemeMode.dark;
+          break;
+        case "light":
+          _themeMode = ThemeMode.light;
+          break;
+        default:
+          _themeMode = ThemeMode.light;
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<void> toggleTheme() async {
+    var prefs = await SharedPreferences.getInstance();
+    _themeMode = isDarkTheme ? ThemeMode.light : ThemeMode.dark;
+    prefs.setString("theme_mode", _themeMode.name);
+
     notifyListeners(); // Notify listeners to rebuild the UI
   }
 
