@@ -14,18 +14,20 @@
 2. Check out the DEVELOPMENT BRANCH
 
 ```bash
-git checkout -b dev
+git checkout dev
+```
+
+### Create your own FEATURE branch
+
+```bash
+git checkout -b your_feature
 ```
 
 ### Syncing
 
-1.  Pull the latest from main
-
 ```bash
-git pull origin main
+git pull
 ```
-
-2.  Resolve conflict locally
 
 ### Push
 
@@ -36,10 +38,8 @@ git add .
 git commit -m "Your commit message"
 ```
 
-2. Push to a different branch, eg: YOUR_FEATURE
-
 ```bash
-git push origin YOUR_FEATURE
+git push origin your_feature
 ```
 
 3. Go to GitHub, create a pull request
@@ -47,5 +47,6 @@ git push origin YOUR_FEATURE
 
 ## Workflow
 
+- You push features to Feature\_[x]
 - Feature\_[x] merge into Dev
 - Development merges into Main after finishing the required features
