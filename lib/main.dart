@@ -1,6 +1,8 @@
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/custom_splash_screen.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Thêm màn hình Word of the Day
@@ -44,8 +46,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    context.read<AppState>().loadLearnedWords();
-    _initNotifications();
+    // Sử dụng Future.microtask để đảm bảo context an toàn
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppState>().loadLearnedWords();
+      context.read<AppState>().loadTheme();
+      _initNotifications();
+    });
   }
 
   Future<void> _initNotifications() async {
@@ -98,12 +104,26 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DailyE',
+      themeMode: appState.themeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromRGBO(173, 216, 230, 1),
+        ),
+        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        cardColor: const Color.fromRGBO(255, 255, 255, 1),
       ),
-      home: BottomNavbar(),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromRGBO(173, 216, 230, 1),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color.fromRGBO(18, 18, 18, 1),
+        cardColor: const Color.fromRGBO(66, 66, 66, 1),
+      ),
+      home: const CustomSplashScreen(),
     );
   }
 }
@@ -116,11 +136,15 @@ class BottomNavbar extends StatefulWidget {
 }
 
 class _BottomNavbarState extends State<BottomNavbar> {
-  var _idx = 0;
+  var _idx = 2;
   final List<Widget> _widgetOptions = <Widget>[
+    WordOfTheDayScreen(),
     DictionarySearch(),
+    const Dashboard(),
+
     Hangman(),
-    WordOfTheDayScreen(), // Thêm màn hình Word of the Day vào đây
+
+    // Thêm màn hình Word of the Day vào đây
   ];
 
   @override
@@ -128,13 +152,17 @@ class _BottomNavbarState extends State<BottomNavbar> {
     return Scaffold(
       body: _widgetOptions.elementAt(_idx),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
-          BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.lightbulb),
             label: "Word of the Day",
           ), // Thêm item mới cho Word of the Day
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: "Dashboard",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
         ],
         currentIndex: _idx,
         onTap: (value) {
@@ -145,6 +173,18 @@ class _BottomNavbarState extends State<BottomNavbar> {
             });
           }
         },
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(
+          153,
+        ), // Sử dụng withAlpha thay vì withOpacity
+        selectedLabelStyle: const TextStyle(fontSize: 18),
+        unselectedLabelStyle: const TextStyle(fontSize: 18),
+        selectedIconTheme: const IconThemeData(size: 30),
+        unselectedIconTheme: const IconThemeData(size: 30),
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? const Color.fromRGBO(30, 30, 30, 1)
+                : const Color.fromRGBO(255, 255, 255, 1),
       ),
     );
   }
