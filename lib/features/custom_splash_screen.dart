@@ -18,17 +18,22 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   @override
   void initState() {
     super.initState();
+    // Tiền tải hình ảnh home_screen.png
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage('assets/home_screen/home_screen.png'), context);
+    });
+
     _controller = AnimationController(
-      duration: const Duration(seconds: 1), // Fade time
+      duration: const Duration(seconds: 1), // Thời gian fade
       vsync: this,
     );
 
-    // Animation fade
+    // Hiệu ứng fade
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint),
     );
 
-    // Animation gradient nền
+    // Hiệu ứng gradient nền
     _gradientStartColor = ColorTween(
       begin: Colors.transparent,
       end: Color.fromRGBO(173, 216, 230, 0.8), // LightBlue với opacity 0.8
