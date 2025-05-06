@@ -8,21 +8,23 @@ import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Thêm màn hình Word of the Day
+import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding
   tz.initializeTimeZones(); // Cấu hình Timezone
   final appState = AppState();
   await appState.loadLearnedWords(); // Load trước khi runApp
+  await appState.loadStreak(); // Load streak data
+  await appState.loadTheme(); // Load theme
   runApp(
     ChangeNotifierProvider(
-      create: (context) => AppState(),
+      create: (context) => appState, // Use the initialized appState
       child: const MyApp(),
     ),
   );
@@ -31,7 +33,7 @@ void main() async {
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
-      AndroidInitializationSettings('app_icon');
+  AndroidInitializationSettings('app_icon');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -53,6 +55,7 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppState>().loadLearnedWords();
       context.read<AppState>().loadTheme();
+      context.read<AppState>().loadStreak(); // Load streak after context is available
       _initNotifications();
     });
   }
@@ -87,7 +90,7 @@ class _MyAppState extends State<MyApp> {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
     );
   }
@@ -158,7 +161,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.lightbulb),
             label: "Word of the Day",
-          ), // Thêm item mới cho Word of the Day
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
@@ -179,15 +182,15 @@ class _BottomNavbarState extends State<BottomNavbar> {
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(
           153,
-        ), // Sử dụng withAlpha thay vì withOpacity
+        ),
         selectedLabelStyle: const TextStyle(fontSize: 18),
         unselectedLabelStyle: const TextStyle(fontSize: 18),
         selectedIconTheme: const IconThemeData(size: 30),
         unselectedIconTheme: const IconThemeData(size: 30),
         backgroundColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? const Color.fromRGBO(30, 30, 30, 1)
-                : const Color.fromRGBO(255, 255, 255, 1),
+        Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromRGBO(30, 30, 30, 1)
+            : const Color.fromRGBO(255, 255, 255, 1),
       ),
     );
   }

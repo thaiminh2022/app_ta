@@ -1,5 +1,6 @@
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
 import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
+import 'package:app_ta/features/dashboard/presentation/streak_card.dart'; // Import StreakCard
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
@@ -94,6 +95,12 @@ class _DashboardState extends State<Dashboard>
     }
   }
 
+  void _clearChatResponse() {
+    setState(() {
+      _aiResponse = '';
+    });
+  }
+
   void _showSettingsDialog() {
     final appState = Provider.of<AppState>(context, listen: false);
     showDialog(
@@ -102,10 +109,7 @@ class _DashboardState extends State<Dashboard>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        backgroundColor:
-        Theme.of(dialogContext).brightness == Brightness.dark
-            ? const Color.fromRGBO(66, 66, 66, 1)
-            : const Color.fromRGBO(255, 255, 255, 1),
+        backgroundColor: Theme.of(dialogContext).cardColor,
         title: Text(
           'Settings',
           style: TextStyle(
@@ -160,10 +164,7 @@ class _DashboardState extends State<Dashboard>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        backgroundColor:
-        Theme.of(dialogContext).brightness == Brightness.dark
-            ? const Color.fromRGBO(66, 66, 66, 1)
-            : const Color.fromRGBO(255, 255, 255, 1),
+        backgroundColor: Theme.of(dialogContext).cardColor,
         title: Text(
           'About',
           style: TextStyle(
@@ -264,10 +265,7 @@ class _DashboardState extends State<Dashboard>
       ],
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color:
-      Theme.of(context).brightness == Brightness.dark
-          ? const Color.fromRGBO(66, 66, 66, 1)
-          : const Color.fromRGBO(255, 255, 255, 1),
+      color: Theme.of(context).cardColor,
     ).then((value) {
       if (value == 'settings') {
         _showSettingsDialog();
@@ -375,9 +373,9 @@ class _DashboardState extends State<Dashboard>
                         Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          color: Colors.white, // Nền trắng cho box "Type your question"
+                          color: Theme.of(context).cardColor,
                           child: Container(
-                            padding: const EdgeInsets.all(4), // Tạo viền gradient giống Quick Action
+                            padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
@@ -392,18 +390,18 @@ class _DashboardState extends State<Dashboard>
                             child: Container(
                               padding: const EdgeInsets.all(12.0),
                               decoration: BoxDecoration(
-                                color: Colors.white, // Nội dung bên trong trắng
+                                color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Chat with AI',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Color.fromRGBO(0, 0, 0, 0.87),
+                                      color: Theme.of(context).colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -433,97 +431,35 @@ class _DashboardState extends State<Dashboard>
                                   ),
                                   const SizedBox(height: 8),
                                   if (_aiResponse.isNotEmpty)
-                                    Text(
-                                      _aiResponse,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Theme.of(context).colorScheme.onSurface,
-                                      ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            _aiResponse,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Theme.of(context).colorScheme.onSurface,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.close, size: 20),
+                                          onPressed: _clearChatResponse,
+                                          tooltip: 'Clear response',
+                                        ),
+                                      ],
                                     ),
                                 ],
                               ),
                             ),
                           ),
                         ),
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          color: Colors.white, // Nền trắng cho box "Learning Progress"
-                          child: Container(
-                            padding: const EdgeInsets.all(4), // Tạo viền gradient giống Quick Action
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color.fromRGBO(173, 216, 230, 1),
-                                  Color.fromRGBO(135, 206, 235, 1),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white, // Nội dung bên trong trắng
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Learning Progress',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(0, 0, 0, 0.87),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Words Learned: 0',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color.fromRGBO(0, 0, 0, 0.6),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        const StatsCard(),
+                        const StreakCard(), // Add StreakCard here
                         FadeTransition(
                           opacity: _animation,
-                          child: Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            color: Colors.white, // Nền trắng cho Quick Action
-                            child: Container(
-                              padding: const EdgeInsets.all(4), // Viền gradient
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color.fromRGBO(173, 216, 230, 1),
-                                    Color.fromRGBO(135, 206, 235, 1),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(12.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white, // Nội dung bên trong trắng
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: QuickActionCard(),
-                              ),
-                            ),
-                          ),
+                          child: const QuickActionCard(),
                         ),
                       ],
                     ),
