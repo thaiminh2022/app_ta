@@ -17,6 +17,9 @@
 git checkout dev
 ```
 
+3. Create .env file in root
+4. Add `GEMINI_API = your_apikey` to your file
+
 ### Create your own FEATURE branch
 
 ```bash
