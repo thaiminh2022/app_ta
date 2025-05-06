@@ -1,5 +1,7 @@
+import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/dictionary/presentation/widget/learned_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,9 +9,10 @@ import 'meaning_display.dart';
 import 'phonetic_display.dart';
 
 class WordInfosDisplay extends StatelessWidget {
-  const WordInfosDisplay({super.key, required this.wordInfos});
+  const WordInfosDisplay({super.key, required this.wordInfos, this.cerf});
 
   final List<WordInfo> wordInfos;
+  final WordCerf? cerf;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +32,12 @@ class WordInfoDisplay extends StatelessWidget {
     super.key,
     required this.wordInfo,
     required this.appState,
+    this.cerf,
   });
 
   final WordInfo wordInfo;
   final AppState appState;
+  final WordCerf? cerf;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,24 @@ class WordInfoDisplay extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic,
     );
-    var learnedWords = appState.learnedWords;
+
+    Widget buildCerf() {
+      if (cerf == null) {
+        return FutureBuilder(
+          future: appState.getWordCerf(wordInfo.word),
+          builder: (ctx, snapshot) {
+            if (snapshot.hasData) {
+              var cerf = snapshot.requireData;
+
+              return Text(cerf.name.toUpperCase());
+            }
+            return SizedBox.shrink();
+          },
+        );
+      }
+
+      return Text(cerf!.name.toUpperCase());
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,25 +71,20 @@ class WordInfoDisplay extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                "${wordInfo.word} - ${wordInfo.license.name}",
-                style: textStyle,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Badge(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 7),
+                    offset: Offset(10, -5),
+                    label: buildCerf(),
+                    child: Text(wordInfo.word, style: textStyle),
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              onPressed: () {
-                if (!learnedWords.contains(wordInfo.word)) {
-                  appState.addWordToLearned(wordInfo.word);
-                } else {
-                  appState.removeWordFromLearned(wordInfo.word);
-                }
-              },
-              icon: Icon(
-                learnedWords.contains(wordInfo.word)
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-              ),
-            ),
+            LearnedButton(word: wordInfo.word),
           ],
         ),
         // Phonetics
