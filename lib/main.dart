@@ -12,7 +12,13 @@ import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Th�
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-void main() {
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding
+  tz.initializeTimeZones(); // Cấu hình Timezone
+  final appState = AppState();
+  await appState.loadLearnedWords(); // Load trước khi runApp
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState(),
