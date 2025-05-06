@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
 class MenuActionButton extends StatelessWidget {
-  const MenuActionButton({super.key, required this.icon, required this.label});
+  const MenuActionButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
   final IconData icon;
   final String label;
+  final Widget route;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (label == 'Dictionary') {
-          Navigator.pushNamed(context, '/dictionary');
-        } else if (label == 'Hangman') {
-          Navigator.pushNamed(context, '/hangman');
-        }
+        Navigator.push(context, MaterialPageRoute(builder: (ctx) => route));
       },
       child: Column(
         children: [

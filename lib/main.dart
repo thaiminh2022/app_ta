@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
 import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Thêm màn hình Word of the Day
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -63,7 +66,8 @@ class _MyAppState extends State<MyApp> {
     await flutterLocalNotificationsPlugin.initialize(initSettings);
 
     // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
-    await _scheduleDailyWordNotification();
+    // notification not implemented for windows
+    if (!Platform.isWindows) await _scheduleDailyWordNotification();
   }
 
   Future<void> _scheduleDailyWordNotification() async {
@@ -141,16 +145,14 @@ class _BottomNavbarState extends State<BottomNavbar> {
     WordOfTheDayScreen(),
     DictionarySearch(),
     const Dashboard(),
-
     Hangman(),
-
-    // Thêm màn hình Word of the Day vào đây
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _widgetOptions.elementAt(_idx),
+
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
@@ -165,6 +167,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
         ],
         currentIndex: _idx,
+
         onTap: (value) {
           if (value >= _widgetOptions.length || value < 0) return;
           if (value != _idx) {
