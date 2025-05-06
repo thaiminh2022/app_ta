@@ -70,7 +70,6 @@ class _BottomNavbarState extends State<BottomNavbar> {
     Hangman(),
   ];
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
