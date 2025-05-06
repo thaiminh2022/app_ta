@@ -66,7 +66,6 @@ class _BottomNavbarState extends State<BottomNavbar> {
   final List<Widget> _widgetOptions = <Widget>[
     WordOfTheDayScreen(),
     DictionarySearch(),
-    PronunciationCheckerScreen(),
     const Dashboard(),
     Hangman(),
   ];
