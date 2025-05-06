@@ -399,7 +399,7 @@ class _DashboardState extends State<Dashboard>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Chat with AI:',
+                                    'Chat with AI',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
