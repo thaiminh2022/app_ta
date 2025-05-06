@@ -23,11 +23,16 @@ class _DashboardState extends State<Dashboard>
   late AnimationController _controller;
   late Animation<double> _animation;
   late VideoPlayerController _videoController;
-  bool _isVideoInitialized = false; // Add flag to track video initialization
+  bool _isVideoInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    // Tiền tải hình ảnh dashboard.png để giảm độ trễ
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage('assets/home_screen/dashboard.png'), context);
+    });
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -35,17 +40,21 @@ class _DashboardState extends State<Dashboard>
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
-    if (!Platform.isWindows && !Platform.isLinux) {
-      _videoController = VideoPlayerController.asset(
-        'assets/home_screen/video_background.mp4',
-      )..initialize().then((_) {
-        setState(() {
-          _isVideoInitialized = true; // Update state when video is ready
-        });
-        _videoController.play();
-        _videoController.setLooping(true);
+    // Khởi tạo và preload video ngay lập tức
+    _videoController = VideoPlayerController.asset(
+      'assets/home_screen/video_background.mp4',
+    )..initialize().then((_) {
+      setState(() {
+        _isVideoInitialized = true; // Cập nhật khi video sẵn sàng
       });
-    }
+      _videoController.play();
+      _videoController.setLooping(true);
+    }).catchError((error) {
+      //print("Lỗi khởi tạo video: $error");
+      setState(() {
+        _isVideoInitialized = false;
+      });
+    });
   }
 
   @override
@@ -144,14 +153,47 @@ class _DashboardState extends State<Dashboard>
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          _isVideoInitialized && _videoController.value.isInitialized
-              ? Positioned.fill(
-            child: Opacity(
-              opacity: 0.8,
-              child: VideoPlayer(_videoController),
+          // Hiển thị dashboard.png làm placeholder với BoxFit.cover
+          if (!_isVideoInitialized || (Platform.isWindows || Platform.isLinux))
+            Positioned.fill(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.matrix([
+                    1, 0, 0, 0, 0,    // R: Giữ nguyên đỏ
+                    0, 1, 0, 0, 0,    // G: Giữ nguyên xanh lá
+                    0, 0, 1, 0, 0,    // B: Giữ nguyên xanh dương
+                    0, 0, 0, 1, 0,    // A: Giữ nguyên alpha
+                    // Thêm điều chỉnh gamma nếu cần
+                    // Ví dụ: 0, 0, 0, 0, -10 để giảm độ sáng
+                  ]),
+                  child: Image.asset(
+                    'assets/home_screen/dashboard.png',
+                    gaplessPlayback: true,
+                  ),
+                ),
+              ),
             ),
-          )
-              : Container(color: const Color.fromRGBO(0, 0, 0, 1)),
+          // Hiển thị video với BoxFit.cover khi đã tải xong
+          if (_isVideoInitialized && _videoController.value.isInitialized)
+            Positioned.fill(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _videoController.value.size.width,
+                  height: _videoController.value.size.height,
+                  child: ColorFiltered(
+                    colorFilter: const ColorFilter.matrix([
+                      1, 0, 0, 0, 0,    // R: Giữ nguyên đỏ
+                      0, 1, 0, 0, 0,    // G: Giữ nguyên xanh lá
+                      0, 0, 1, 0, 0,    // B: Giữ nguyên xanh dương
+                      0, 0, 0, 1, 0,    // A: Giữ nguyên alpha
+                    ]),
+                    child: VideoPlayer(_videoController),
+                  ),
+                ),
+              ),
+            ),
           SafeArea(
             child: Column(
               children: [
@@ -196,8 +238,7 @@ class _DashboardState extends State<Dashboard>
                                 style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                  Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   shadows: [
                                     Shadow(
                                       color: const Color.fromRGBO(0, 0, 0, 0.3),
