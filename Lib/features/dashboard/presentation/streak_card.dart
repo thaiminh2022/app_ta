@@ -33,7 +33,7 @@ class StreakCard extends StatelessWidget {
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
-              minWidth: 200, // Set a minimum width to make the card larger
+              minWidth: 200,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -44,7 +44,7 @@ class StreakCard extends StatelessWidget {
                     Text(
                       'Daily Streak',
                       style: TextStyle(
-                        fontSize: 20, // Increase font size for title
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -53,18 +53,18 @@ class StreakCard extends StatelessWidget {
                     Text(
                       'Streak: ${appState.streakDays} days',
                       style: TextStyle(
-                        fontSize: 18, // Increase font size for streak text
+                        fontSize: 18,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
                 Icon(
-                  Icons.local_fire_department, // Add a fire icon for visual balance
+                  Icons.local_fire_department,
                   color: appState.streakDays > 0
-                      ? Colors.orangeAccent // Active streak color
-                      : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5), // Inactive streak color
-                  size: 40, // Larger icon size
+                      ? Colors.orangeAccent
+                      : const Color.fromRGBO(120, 120, 120, 0.5), // Set opacity directly in Color.fromRGBO
+                  size: 40,
                 ),
               ],
             ),
