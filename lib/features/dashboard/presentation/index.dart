@@ -1,13 +1,14 @@
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
+import 'package:app_ta/features/dashboard/presentation/random_button.dart';
 import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
-import 'package:app_ta/features/dashboard/presentation/streak_card.dart'; // Import StreakCard
+import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
-import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/services.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -76,10 +77,8 @@ class _DashboardState extends State<Dashboard>
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       String rawResponse = data['candidates'][0]['content']['parts'][0]['text'];
-      // Loại bỏ các câu dư thừa
       List<String> lines = rawResponse.split('\n');
       lines = lines.where((line) => !line.contains('Bạn cần cung cấp thêm ngữ cảnh để có bản dịch chính xác nhất')).toList();
-      // Giới hạn 15 dòng
       if (lines.length > 15) {
         rawResponse = lines.sublist(0, 15).join('\n');
       } else {
@@ -122,7 +121,7 @@ class _DashboardState extends State<Dashboard>
           children: [
             Row(
               children: [
-                Expanded(child: Text("Theme: ")),
+                const Expanded(child: Text("Theme: ")),
                 Switch(
                   thumbIcon: WidgetStatePropertyAll(
                     Icon(
@@ -236,7 +235,10 @@ class _DashboardState extends State<Dashboard>
           value: 'about',
           child: Row(
             children: [
-              Icon(Icons.info, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                Icons.info,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Text(
                 'About',
@@ -251,7 +253,10 @@ class _DashboardState extends State<Dashboard>
           value: 'quit',
           child: Row(
             children: [
-              const Icon(Icons.exit_to_app, color: Color.fromRGBO(255, 66, 66, 1)),
+              const Icon(
+                Icons.exit_to_app,
+                color: Color.fromRGBO(255, 66, 66, 1),
+              ),
               const SizedBox(width: 8),
               Text(
                 'Quit',
@@ -341,7 +346,7 @@ class _DashboardState extends State<Dashboard>
                                   shadows: [
                                     Shadow(
                                       color: const Color.fromRGBO(0, 0, 0, 0.3),
-                                      offset: const Offset(1, 1),
+                                      offset: Offset(1, 1),
                                       blurRadius: 2,
                                     ),
                                   ],
@@ -351,13 +356,20 @@ class _DashboardState extends State<Dashboard>
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: _showProfileMenu,
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: AssetImage('assets/icon/icon.png'),
-                          child: const Icon(Icons.person, color: Color.fromRGBO(128, 128, 128, 1)),
-                        ),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: _showProfileMenu,
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: const AssetImage('assets/icon/icon.png'),
+                              child: const Icon(
+                                Icons.person,
+                                color: Color.fromRGBO(128, 128, 128, 1),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -372,7 +384,8 @@ class _DashboardState extends State<Dashboard>
                       children: [
                         Card(
                           elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                           color: Theme.of(context).cardColor,
                           child: Container(
                             padding: const EdgeInsets.all(4),
@@ -401,7 +414,8 @@ class _DashboardState extends State<Dashboard>
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                      color:
+                                      Theme.of(context).colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -413,7 +427,8 @@ class _DashboardState extends State<Dashboard>
                                           decoration: InputDecoration(
                                             hintText: 'Type your question...',
                                             border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                              BorderRadius.circular(8),
                                             ),
                                           ),
                                         ),
@@ -422,7 +437,8 @@ class _DashboardState extends State<Dashboard>
                                         icon: const Icon(Icons.send),
                                         onPressed: () {
                                           if (_chatController.text.isNotEmpty) {
-                                            _sendChatMessage(_chatController.text);
+                                            _sendChatMessage(
+                                                _chatController.text);
                                             _chatController.clear();
                                           }
                                         },
@@ -432,14 +448,17 @@ class _DashboardState extends State<Dashboard>
                                   const SizedBox(height: 8),
                                   if (_aiResponse.isNotEmpty)
                                     Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Expanded(
                                           child: Text(
                                             _aiResponse,
                                             style: TextStyle(
                                               fontSize: 16,
-                                              color: Theme.of(context).colorScheme.onSurface,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
                                             ),
                                           ),
                                         ),
@@ -456,7 +475,7 @@ class _DashboardState extends State<Dashboard>
                           ),
                         ),
                         const StatsCard(),
-                        const StreakCard(), // Add StreakCard here
+                        const StreakCard(),
                         FadeTransition(
                           opacity: _animation,
                           child: const QuickActionCard(),
@@ -465,6 +484,14 @@ class _DashboardState extends State<Dashboard>
                     ),
                   ),
                 ),
+                const Spacer(), // Thêm Spacer để đẩy RandomButton lên cao
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RandomButton(context: context),
+                  ],
+                ),
+                const SizedBox(height: 16.0), // Khoảng cách dưới cùng
               ],
             ),
           ),
