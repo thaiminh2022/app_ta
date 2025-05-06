@@ -50,7 +50,7 @@ class _MeaningDisplayState extends State<MeaningDisplay> {
                   readMore = false;
                 });
               },
-              child: Text("collapsed"),
+              child: Text("collasped"),
             ),
           );
         }
