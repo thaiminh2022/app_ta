@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -18,6 +20,8 @@ class _DashboardState extends State<Dashboard>
   late AnimationController _controller;
   late Animation<double> _animation;
   late VideoPlayerController _videoController;
+  final TextEditingController _chatController = TextEditingController();
+  String _aiResponse = '';
 
   @override
   void initState() {
@@ -41,7 +45,53 @@ class _DashboardState extends State<Dashboard>
   void dispose() {
     _controller.dispose();
     _videoController.dispose();
+    _chatController.dispose();
     super.dispose();
+  }
+
+  Future<void> _sendChatMessage(String message) async {
+    const apiKey = 'AIzaSyDxFtb9jCOKE59g1y0UlECC3AwyzdKMDt0';
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+    final response = await http.post(
+      Uri.parse('$apiUrl?key=$apiKey'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'contents': [
+          {
+            'parts': [
+              {
+                'text':
+                'Bạn là app học tiếng anh DailyE, hãy trợ giúp người dùng trả lời những câu hỏi thật ngắn gọn, chính xác, đồng thời trả lời bằng tiếng việt, giới hạn trong 15 dòng. User question: $message'
+              }
+            ]
+          }
+        ],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      String rawResponse = data['candidates'][0]['content']['parts'][0]['text'];
+      // Loại bỏ các câu dư thừa
+      List<String> lines = rawResponse.split('\n');
+      lines = lines.where((line) => !line.contains('Bạn cần cung cấp thêm ngữ cảnh để có bản dịch chính xác nhất')).toList();
+      // Giới hạn 15 dòng
+      if (lines.length > 15) {
+        rawResponse = lines.sublist(0, 15).join('\n');
+      } else {
+        rawResponse = lines.join('\n');
+      }
+      setState(() {
+        _aiResponse = rawResponse;
+      });
+    } else {
+      setState(() {
+        _aiResponse = 'Error: Could not get response from AI. Status: ${response.statusCode} - ${response.body}';
+      });
+    }
   }
 
   void _showSettingsDialog() {
@@ -243,7 +293,7 @@ class _DashboardState extends State<Dashboard>
             ),
           )
               : Container(
-            color: const Color.fromRGBO(0, 0, 0, 1), // Fallback background
+            color: const Color.fromRGBO(0, 0, 0, 1),
           ),
           SafeArea(
             child: Column(
@@ -260,8 +310,8 @@ class _DashboardState extends State<Dashboard>
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color.fromRGBO(173, 216, 230, 1), // Xanh nhạt
-                                  Color.fromRGBO(135, 206, 235, 1), // Xanh dương nhạt hơn
+                                  Color.fromRGBO(173, 216, 230, 1),
+                                  Color.fromRGBO(135, 206, 235, 1),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -306,7 +356,7 @@ class _DashboardState extends State<Dashboard>
                       GestureDetector(
                         onTap: _showProfileMenu,
                         child: CircleAvatar(
-                          radius: 20,
+                          radius: 30,
                           backgroundImage: AssetImage('assets/icon/icon.png'),
                           child: const Icon(Icons.person, color: Color.fromRGBO(128, 128, 128, 1)),
                         ),
@@ -315,16 +365,168 @@ class _DashboardState extends State<Dashboard>
                   ),
                 ),
                 Expanded(
-                  child: ListView(
+                  child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    children: [
-                      FadeTransition(opacity: _animation, child: StatsCard()),
-                      const SizedBox(height: 16),
-                      FadeTransition(
-                        opacity: _animation,
-                        child: QuickActionCard(),
-                      ),
-                    ],
+                    child: Wrap(
+                      spacing: 16.0,
+                      runSpacing: 16.0,
+                      alignment: WrapAlignment.start,
+                      children: [
+                        Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          color: Colors.white, // Nền trắng cho box "Type your question"
+                          child: Container(
+                            padding: const EdgeInsets.all(4), // Tạo viền gradient giống Quick Action
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color.fromRGBO(173, 216, 230, 1),
+                                  Color.fromRGBO(135, 206, 235, 1),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white, // Nội dung bên trong trắng
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Chat with AI:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromRGBO(0, 0, 0, 0.87),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _chatController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Type your question...',
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.send),
+                                        onPressed: () {
+                                          if (_chatController.text.isNotEmpty) {
+                                            _sendChatMessage(_chatController.text);
+                                            _chatController.clear();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (_aiResponse.isNotEmpty)
+                                    Text(
+                                      _aiResponse,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          color: Colors.white, // Nền trắng cho box "Learning Progress"
+                          child: Container(
+                            padding: const EdgeInsets.all(4), // Tạo viền gradient giống Quick Action
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color.fromRGBO(173, 216, 230, 1),
+                                  Color.fromRGBO(135, 206, 235, 1),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white, // Nội dung bên trong trắng
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Learning Progress',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color.fromRGBO(0, 0, 0, 0.87),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Words Learned: 0',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color.fromRGBO(0, 0, 0, 0.6),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        FadeTransition(
+                          opacity: _animation,
+                          child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            color: Colors.white, // Nền trắng cho Quick Action
+                            child: Container(
+                              padding: const EdgeInsets.all(4), // Viền gradient
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color.fromRGBO(173, 216, 230, 1),
+                                    Color.fromRGBO(135, 206, 235, 1),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(12.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white, // Nội dung bên trong trắng
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: QuickActionCard(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
