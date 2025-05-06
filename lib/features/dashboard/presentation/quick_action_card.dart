@@ -12,7 +12,10 @@ class QuickActionCard extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Theme.of(context).cardColor, // Use theme's cardColor instead of hardcoded Colors.white
+      color:
+          Theme.of(
+            context,
+          ).cardColor, // Use theme's cardColor instead of hardcoded Colors.white
       child: Container(
         padding: const EdgeInsets.all(4), // Viền gradient
         decoration: BoxDecoration(
@@ -29,7 +32,10 @@ class QuickActionCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor, // Use theme's cardColor for inner container
+            color:
+                Theme.of(
+                  context,
+                ).cardColor, // Use theme's cardColor for inner container
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -46,6 +52,7 @@ class QuickActionCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   MenuActionButton(
                     icon: Icons.book,
