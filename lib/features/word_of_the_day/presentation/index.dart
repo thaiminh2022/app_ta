@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class WordOfTheDayScreen extends StatelessWidget {
   WordOfTheDayScreen({super.key});
-  final _word_service = WordOfTheDayService();
+  final _wordService = WordOfTheDayService();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class WordOfTheDayScreen extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<WordOfTheDay?>(
-        future: _word_service.getWordOfTheDay(context.read<AppState>()),
+        future: _wordService.getWordOfTheDay(context.read<AppState>()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

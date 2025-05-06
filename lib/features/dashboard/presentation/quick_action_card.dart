@@ -1,4 +1,7 @@
 import 'package:app_ta/features/dashboard/presentation/widgets/menu_action_button.dart';
+import 'package:app_ta/features/dictionary/presentation/index.dart';
+import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter/material.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -30,8 +33,21 @@ class QuickActionCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                MenuActionButton(icon: Icons.book, label: 'Dictionary'),
-                MenuActionButton(icon: Icons.gamepad, label: 'Hangman'),
+                MenuActionButton(
+                  icon: Icons.book,
+                  label: 'Dictionary',
+                  route: DictionarySearch(),
+                ),
+                MenuActionButton(
+                  icon: Icons.gamepad,
+                  label: 'Hangman',
+                  route: Hangman(),
+                ),
+                MenuActionButton(
+                  icon: Icons.lightbulb_outline,
+                  label: 'Word of the day',
+                  route: WordOfTheDayScreen(),
+                ),
               ],
             ),
           ],
