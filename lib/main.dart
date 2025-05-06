@@ -6,23 +6,23 @@ import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
 import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:app_ta/features/word_of_the_day/presentation/index.dart'; // Thêm màn hình Word of the Day
+import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
-void main() async {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+
   WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding
   tz.initializeTimeZones(); // Cấu hình Timezone
-  final appState = AppState();
-  await appState.loadLearnedWords(); // Load trước khi runApp
   runApp(
     ChangeNotifierProvider(
-      create: (context) => AppState(),
+      create: (context) => AppState(), // Use the initialized appState
       child: const MyApp(),
     ),
   );
@@ -31,7 +31,7 @@ void main() async {
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
-      AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -53,6 +53,7 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppState>().loadLearnedWords();
       context.read<AppState>().loadTheme();
+      context.read<AppState>().loadStreak();
       _initNotifications();
     });
   }
@@ -158,7 +159,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.lightbulb),
             label: "Word of the Day",
-          ), // Thêm item mới cho Word of the Day
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
@@ -177,9 +178,9 @@ class _BottomNavbarState extends State<BottomNavbar> {
           }
         },
         selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(
-          153,
-        ), // Sử dụng withAlpha thay vì withOpacity
+        unselectedItemColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withAlpha(153),
         selectedLabelStyle: const TextStyle(fontSize: 18),
         unselectedLabelStyle: const TextStyle(fontSize: 18),
         selectedIconTheme: const IconThemeData(size: 30),

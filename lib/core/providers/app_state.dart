@@ -19,6 +19,13 @@ class AppState extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   bool get isDarkTheme => _themeMode == ThemeMode.dark;
 
+  // New streak properties
+  int _streakDays = 0;
+  DateTime? _lastStudyDate;
+
+  // Getter for streak
+  int get streakDays => _streakDays;
+
   Future<void> loadTheme() async {
     var prefs = await SharedPreferences.getInstance();
     var res = prefs.getString("theme_mode");
@@ -44,6 +51,37 @@ class AppState extends ChangeNotifier {
     prefs.setString("theme_mode", _themeMode.name);
 
     notifyListeners(); // Notify listeners to rebuild the UI
+  }
+
+  Future<void> loadStreak() async {
+    var prefs = await SharedPreferences.getInstance();
+    _streakDays = prefs.getInt("streak_days") ?? 0;
+    String? lastDateStr = prefs.getString("last_study_date");
+    _lastStudyDate = lastDateStr != null ? DateTime.parse(lastDateStr) : null;
+    _checkAndUpdateStreak();
+    notifyListeners();
+  }
+
+  void _checkAndUpdateStreak() {
+    final now = DateTime.now();
+    if (_lastStudyDate == null) {
+      _streakDays = 0;
+    } else {
+      final difference = now.difference(_lastStudyDate!).inDays;
+      if (difference > 1) {
+        _streakDays = 0; // Reset streak if more than 1 day has passed
+      } else if (difference == 1) {
+        _streakDays++; // Increment streak if studied today
+      }
+    }
+    _lastStudyDate = now;
+    _saveStreak();
+  }
+
+  Future<void> _saveStreak() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setInt("streak_days", _streakDays);
+    await prefs.setString("last_study_date", _lastStudyDate!.toIso8601String());
   }
 
   Future<WordCerfResult> getRandomWordCerf() async {
@@ -83,12 +121,15 @@ class AppState extends ChangeNotifier {
     } else {
       learnedWords = res.unwrap();
     }
+    _checkAndUpdateStreak(); // Update streak when loading learned words
+    notifyListeners();
   }
 
   Future<void> addWordToLearned(String word) async {
     word = word.trim();
     if (!learnedWords.contains(word)) {
       learnedWords.add(word);
+      _checkAndUpdateStreak(); // Update streak when adding a new word
       notifyListeners();
     }
     await saveLearnedWords();

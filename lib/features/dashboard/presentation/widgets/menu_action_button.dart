@@ -33,7 +33,7 @@ class MenuActionButton extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onSurface, // Use onSurface for better contrast in dark mode
             ),
           ),
         ],

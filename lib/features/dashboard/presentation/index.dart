@@ -1,12 +1,15 @@
+import 'dart:io';
+
+import 'package:app_ta/features/dashboard/presentation/widgets/about_dialog.dart';
+import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
+import 'package:app_ta/features/dashboard/presentation/widgets/settings_dialog.dart';
+import 'package:app_ta/features/dashboard/presentation/widgets/random_button.dart';
 import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
+import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:app_ta/core/providers/app_state.dart';
-import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:flutter/services.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -20,8 +23,6 @@ class _DashboardState extends State<Dashboard>
   late AnimationController _controller;
   late Animation<double> _animation;
   late VideoPlayerController _videoController;
-  final TextEditingController _chatController = TextEditingController();
-  String _aiResponse = '';
 
   @override
   void initState() {
@@ -33,175 +34,29 @@ class _DashboardState extends State<Dashboard>
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
-    _videoController = VideoPlayerController.asset('assets/home_screen/video_background.mp4')
-      ..initialize().then((_) {
-        setState(() {});
-        _videoController.play();
-        _videoController.setLooping(true);
-      });
+    if (!Platform.isWindows && !Platform.isLinux) {
+      _videoController = VideoPlayerController.asset(
+          'assets/home_screen/video_background.mp4',
+        )
+        ..initialize().then((_) {
+          _videoController.play();
+          _videoController.setLooping(true);
+        });
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _videoController.dispose();
-    _chatController.dispose();
     super.dispose();
   }
 
-  Future<void> _sendChatMessage(String message) async {
-    const apiKey = 'AIzaSyDxFtb9jCOKE59g1y0UlECC3AwyzdKMDt0';
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
-    final response = await http.post(
-      Uri.parse('$apiUrl?key=$apiKey'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'contents': [
-          {
-            'parts': [
-              {
-                'text':
-                'Bạn là app học tiếng anh DailyE, hãy trợ giúp người dùng trả lời những câu hỏi thật ngắn gọn, chính xác, đồng thời trả lời bằng tiếng việt, giới hạn trong 15 dòng. User question: $message'
-              }
-            ]
-          }
-        ],
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      String rawResponse = data['candidates'][0]['content']['parts'][0]['text'];
-      // Loại bỏ các câu dư thừa
-      List<String> lines = rawResponse.split('\n');
-      lines = lines.where((line) => !line.contains('Bạn cần cung cấp thêm ngữ cảnh để có bản dịch chính xác nhất')).toList();
-      // Giới hạn 15 dòng
-      if (lines.length > 15) {
-        rawResponse = lines.sublist(0, 15).join('\n');
-      } else {
-        rawResponse = lines.join('\n');
-      }
-      setState(() {
-        _aiResponse = rawResponse;
-      });
-    } else {
-      setState(() {
-        _aiResponse = 'Error: Could not get response from AI. Status: ${response.statusCode} - ${response.body}';
-      });
-    }
-  }
-
   void _showSettingsDialog() {
-    final appState = Provider.of<AppState>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        backgroundColor:
-        Theme.of(dialogContext).brightness == Brightness.dark
-            ? const Color.fromRGBO(66, 66, 66, 1)
-            : const Color.fromRGBO(255, 255, 255, 1),
-        title: Text(
-          'Settings',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(dialogContext).colorScheme.onSurface,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Expanded(child: Text("Theme: ")),
-                Switch(
-                  thumbIcon: WidgetStatePropertyAll(
-                    Icon(
-                      appState.isDarkTheme
-                          ? Icons.dark_mode
-                          : Icons.light_mode,
-                    ),
-                  ),
-                  value: !appState.isDarkTheme,
-                  onChanged: (value) async {
-                    if (appState.isDarkTheme == value) {
-                      await appState.toggleTheme();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Close',
-              style: TextStyle(
-                color: Theme.of(dialogContext).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    showDialog(context: context, builder: (ctx) => SettingsDialog());
   }
 
   void _showAboutDialog() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        backgroundColor:
-        Theme.of(dialogContext).brightness == Brightness.dark
-            ? const Color.fromRGBO(66, 66, 66, 1)
-            : const Color.fromRGBO(255, 255, 255, 1),
-        title: Text(
-          'About',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(dialogContext).colorScheme.onSurface,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'App Name: DailyE',
-              style: TextStyle(
-                color: Theme.of(dialogContext).colorScheme.onSurface,
-              ),
-            ),
-            Text(
-              'Version: V1.0.0',
-              style: TextStyle(
-                color: Theme.of(dialogContext).colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Close',
-              style: TextStyle(
-                color: Theme.of(dialogContext).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    showDialog(context: context, builder: (ctx) => AboutDialogView());
   }
 
   void _quitApp() {
@@ -250,7 +105,10 @@ class _DashboardState extends State<Dashboard>
           value: 'quit',
           child: Row(
             children: [
-              const Icon(Icons.exit_to_app, color: Color.fromRGBO(255, 66, 66, 1)),
+              const Icon(
+                Icons.exit_to_app,
+                color: Color.fromRGBO(255, 66, 66, 1),
+              ),
               const SizedBox(width: 8),
               Text(
                 'Quit',
@@ -264,10 +122,7 @@ class _DashboardState extends State<Dashboard>
       ],
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color:
-      Theme.of(context).brightness == Brightness.dark
-          ? const Color.fromRGBO(66, 66, 66, 1)
-          : const Color.fromRGBO(255, 255, 255, 1),
+      color: Theme.of(context).cardColor,
     ).then((value) {
       if (value == 'settings') {
         _showSettingsDialog();
@@ -287,14 +142,12 @@ class _DashboardState extends State<Dashboard>
         children: [
           _videoController.value.isInitialized
               ? Positioned.fill(
-            child: Opacity(
-              opacity: 0.8,
-              child: VideoPlayer(_videoController),
-            ),
-          )
-              : Container(
-            color: const Color.fromRGBO(0, 0, 0, 1),
-          ),
+                child: Opacity(
+                  opacity: 0.8,
+                  child: VideoPlayer(_videoController),
+                ),
+              )
+              : Container(color: const Color.fromRGBO(0, 0, 0, 1)),
           SafeArea(
             child: Column(
               children: [
@@ -339,11 +192,12 @@ class _DashboardState extends State<Dashboard>
                                 style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                   shadows: [
                                     Shadow(
                                       color: const Color.fromRGBO(0, 0, 0, 0.3),
-                                      offset: const Offset(1, 1),
+                                      offset: Offset(1, 1),
                                       blurRadius: 2,
                                     ),
                                   ],
@@ -353,13 +207,22 @@ class _DashboardState extends State<Dashboard>
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: _showProfileMenu,
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: AssetImage('assets/icon/icon.png'),
-                          child: const Icon(Icons.person, color: Color.fromRGBO(128, 128, 128, 1)),
-                        ),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: _showProfileMenu,
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: const AssetImage(
+                                'assets/icon/icon.png',
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                color: Color.fromRGBO(128, 128, 128, 1),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -372,163 +235,24 @@ class _DashboardState extends State<Dashboard>
                       runSpacing: 16.0,
                       alignment: WrapAlignment.start,
                       children: [
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          color: Colors.white, // Nền trắng cho box "Type your question"
-                          child: Container(
-                            padding: const EdgeInsets.all(4), // Tạo viền gradient giống Quick Action
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color.fromRGBO(173, 216, 230, 1),
-                                  Color.fromRGBO(135, 206, 235, 1),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white, // Nội dung bên trong trắng
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Chat with AI',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color.fromRGBO(0, 0, 0, 0.87),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: _chatController,
-                                          decoration: InputDecoration(
-                                            hintText: 'Type your question...',
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.send),
-                                        onPressed: () {
-                                          if (_chatController.text.isNotEmpty) {
-                                            _sendChatMessage(_chatController.text);
-                                            _chatController.clear();
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  if (_aiResponse.isNotEmpty)
-                                    Text(
-                                      _aiResponse,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Theme.of(context).colorScheme.onSurface,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          color: Colors.white, // Nền trắng cho box "Learning Progress"
-                          child: Container(
-                            padding: const EdgeInsets.all(4), // Tạo viền gradient giống Quick Action
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color.fromRGBO(173, 216, 230, 1),
-                                  Color.fromRGBO(135, 206, 235, 1),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white, // Nội dung bên trong trắng
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Learning Progress',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(0, 0, 0, 0.87),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Words Learned: 0',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color.fromRGBO(0, 0, 0, 0.6),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        AIChat(),
+                        const StatsCard(),
+                        const StreakCard(),
                         FadeTransition(
                           opacity: _animation,
-                          child: Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            color: Colors.white, // Nền trắng cho Quick Action
-                            child: Container(
-                              padding: const EdgeInsets.all(4), // Viền gradient
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color.fromRGBO(173, 216, 230, 1),
-                                    Color.fromRGBO(135, 206, 235, 1),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(12.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white, // Nội dung bên trong trắng
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: QuickActionCard(),
-                              ),
-                            ),
-                          ),
+                          child: const QuickActionCard(),
                         ),
                       ],
                     ),
                   ),
                 ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [RandomButton(context: context)],
+                  ),
+                ),
+                SizedBox(height: 20),
               ],
             ),
           ),

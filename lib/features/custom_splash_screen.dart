@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_ta/main.dart';
 
-
 class CustomSplashScreen extends StatefulWidget {
   const CustomSplashScreen({super.key});
 
@@ -9,7 +8,8 @@ class CustomSplashScreen extends StatefulWidget {
   State<CustomSplashScreen> createState() => _CustomSplashScreenState();
 }
 
-class _CustomSplashScreenState extends State<CustomSplashScreen> with SingleTickerProviderStateMixin {
+class _CustomSplashScreenState extends State<CustomSplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Color?> _gradientStartColor;
@@ -25,10 +25,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> with SingleTick
 
     // Animation fade
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOutQuint,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint),
     );
 
     // Animation gradient nền
@@ -36,26 +33,20 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> with SingleTick
       begin: Colors.transparent,
       end: Color.fromRGBO(173, 216, 230, 0.8), // LightBlue với opacity 0.8
     ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOutQuint,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint),
     );
 
     _gradientEndColor = ColorTween(
       begin: Colors.transparent,
       end: Color.fromRGBO(0, 0, 255, 0.6), // Blue với opacity 0.6
     ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOutQuint,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuint),
     );
 
     _controller.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(milliseconds: 1500), () {
         if (mounted) {
           Navigator.pushReplacement(
             context,
