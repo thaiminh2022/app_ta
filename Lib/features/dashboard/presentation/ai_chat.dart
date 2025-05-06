@@ -12,6 +12,7 @@ class _AIChatState extends State<AIChat> {
   final TextEditingController _chatController = TextEditingController();
   final _chatService = AiChatService();
   var _aiRes = '';
+
   @override
   void dispose() {
     super.dispose();
@@ -77,15 +78,13 @@ class _AIChatState extends State<AIChat> {
                         _chatController.text,
                       );
 
-                      if (res.isError) {
-                        setState(() {
+                      setState(() {
+                        if (res.isError) {
                           _aiRes = res.unwrapError();
-                        });
-                      } else {
-                        setState(() {
+                        } else {
                           _aiRes = res.unwrap();
-                        });
-                      }
+                        }
+                      });
 
                       _chatController.clear();
                     },
@@ -110,7 +109,9 @@ class _AIChatState extends State<AIChat> {
                     IconButton(
                       icon: const Icon(Icons.close, size: 20),
                       onPressed: () {
-                        _aiRes = '';
+                        setState(() {
+                          _aiRes = ''; // Add setState to update UI
+                        });
                       },
                       tooltip: 'Clear response',
                     ),

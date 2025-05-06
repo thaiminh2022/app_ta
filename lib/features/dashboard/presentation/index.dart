@@ -23,6 +23,7 @@ class _DashboardState extends State<Dashboard>
   late AnimationController _controller;
   late Animation<double> _animation;
   late VideoPlayerController _videoController;
+  bool _isVideoInitialized = false; // Add flag to track video initialization
 
   @override
   void initState() {
@@ -36,17 +37,20 @@ class _DashboardState extends State<Dashboard>
 
     if (!Platform.isWindows && !Platform.isLinux) {
       _videoController = VideoPlayerController.asset(
-          'assets/home_screen/video_background.mp4',
-        )
-        ..initialize().then((_) {
-          _videoController.play();
-          _videoController.setLooping(true);
+        'assets/home_screen/video_background.mp4',
+      )..initialize().then((_) {
+        setState(() {
+          _isVideoInitialized = true; // Update state when video is ready
         });
+        _videoController.play();
+        _videoController.setLooping(true);
+      });
     }
   }
 
   @override
   void dispose() {
+    _videoController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -140,13 +144,13 @@ class _DashboardState extends State<Dashboard>
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          _videoController.value.isInitialized
+          _isVideoInitialized && _videoController.value.isInitialized
               ? Positioned.fill(
-                child: Opacity(
-                  opacity: 0.8,
-                  child: VideoPlayer(_videoController),
-                ),
-              )
+            child: Opacity(
+              opacity: 0.8,
+              child: VideoPlayer(_videoController),
+            ),
+          )
               : Container(color: const Color.fromRGBO(0, 0, 0, 1)),
           SafeArea(
             child: Column(
@@ -193,7 +197,7 @@ class _DashboardState extends State<Dashboard>
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                   color:
-                                      Theme.of(context).colorScheme.onSurface,
+                                  Theme.of(context).colorScheme.onSurface,
                                   shadows: [
                                     Shadow(
                                       color: const Color.fromRGBO(0, 0, 0, 0.3),
