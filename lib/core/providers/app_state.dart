@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'dart:math';
+import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_cerf.dart';
@@ -10,12 +12,14 @@ import 'package:app_ta/core/services/dictionary_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
-  final DictionaryApi _dictApi = DictionaryApi();
-  final Database _db = Database();
-  final CerfReader _cerfReader = CerfReader();
+  final _dictApi = DictionaryApi();
+  final _db = Database();
+  final _cerfReader = CerfReader();
+  final _wordInfoCleanupService = WordInfoCleanupService();
 
   var learnedWords = <String>[];
-  ThemeMode _themeMode = ThemeMode.light; // Default to system theme
+  var _themeMode = ThemeMode.light; // Default to light theme
+
   ThemeMode get themeMode => _themeMode;
   bool get isDarkTheme => _themeMode == ThemeMode.dark;
 
@@ -97,7 +101,7 @@ class AppState extends ChangeNotifier {
     return await _cerfReader.getWordCerf(word);
   }
 
-  Future<Result<List<WordInfo>, String>> searchWord(String word) async {
+  Future<Result<WordInfoUsable, String>> searchWord(String word) async {
     word = word.trim();
     var res = await _db.getCache(word);
     if (res.isError) {
@@ -109,9 +113,9 @@ class AppState extends ChangeNotifier {
       }
       var info = wordDatas.unwrap();
       await _db.writeCache(info);
-      return Result.ok(info);
+      return _wordInfoCleanupService.cleanUp(info);
     }
-    return res;
+    return _wordInfoCleanupService.cleanUp(res.unwrap());
   }
 
   Future<void> loadLearnedWords() async {

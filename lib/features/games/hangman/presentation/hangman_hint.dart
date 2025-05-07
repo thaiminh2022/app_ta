@@ -34,21 +34,16 @@ class _HangmanHintState extends State<HangmanHint> {
 
               var data = dataRes.unwrap();
               var examples = <String>[];
-
-              _outer_loop:
-              for (var wordInfo in data) {
-                for (var meanings in wordInfo.meanings) {
-                  for (var def in meanings.definitions) {
-                    if (def.example == null) {
-                      continue;
-                    } else {
-                      examples.add(def.example!);
-                    }
-
-                    if (examples.length == 3) {
-                      break _outer_loop;
+              outer:
+              for (var m in data.meanings.values) {
+                for (var def in m) {
+                  if (def.exmaple != null && def.exmaple!.isNotEmpty) {
+                    if (def.exmaple!.contains(widget.word)) {
+                      examples.add(def.exmaple!);
                     }
                   }
+
+                  if (examples.length >= 3) break outer;
                 }
               }
 

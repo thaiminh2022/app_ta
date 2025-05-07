@@ -14,7 +14,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
@@ -31,7 +31,7 @@ Future<void> main() async {
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
     );
   }
@@ -145,7 +145,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
   final List<Widget> _widgetOptions = <Widget>[
     WordOfTheDayScreen(),
     DictionarySearch(),
-    const Dashboard(),
+    // const Dashboard(),
+    const Text("Placeholder"),
     Hangman(),
   ];
 
@@ -176,14 +177,17 @@ class _BottomNavbarState extends State<BottomNavbar> {
           }
         },
         selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+        unselectedItemColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withAlpha(153),
         selectedLabelStyle: const TextStyle(fontSize: 18),
         unselectedLabelStyle: const TextStyle(fontSize: 18),
         selectedIconTheme: const IconThemeData(size: 30),
         unselectedIconTheme: const IconThemeData(size: 30),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? const Color.fromRGBO(30, 30, 30, 1)
-            : const Color.fromRGBO(255, 255, 255, 1),
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? const Color.fromRGBO(30, 30, 30, 1)
+                : const Color.fromRGBO(255, 255, 255, 1),
       ),
     );
   }

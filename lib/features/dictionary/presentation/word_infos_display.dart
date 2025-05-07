@@ -1,6 +1,6 @@
 import 'package:app_ta/core/models/word_cerf.dart';
-import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:app_ta/features/dictionary/presentation/widget/learned_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,9 +9,9 @@ import 'meaning_display.dart';
 import 'phonetic_display.dart';
 
 class WordInfosDisplay extends StatelessWidget {
-  const WordInfosDisplay({super.key, required this.wordInfos, this.cerf});
+  const WordInfosDisplay({super.key, required this.wordInfo, this.cerf});
 
-  final List<WordInfo> wordInfos;
+  final WordInfoUsable wordInfo;
   final WordCerf? cerf;
 
   @override
@@ -19,10 +19,7 @@ class WordInfosDisplay extends StatelessWidget {
     var appState = context.watch<AppState>();
 
     return ListView(
-      children: [
-        for (var w in wordInfos)
-          WordInfoDisplay(wordInfo: w, appState: appState),
-      ],
+      children: [WordInfoDisplay(wordInfo: wordInfo, appState: appState)],
     );
   }
 }
@@ -35,14 +32,13 @@ class WordInfoDisplay extends StatelessWidget {
     this.cerf,
   });
 
-  final WordInfo wordInfo;
+  final WordInfoUsable wordInfo;
   final AppState appState;
   final WordCerf? cerf;
 
   @override
   Widget build(BuildContext context) {
     var textStyle = Theme.of(context).primaryTextTheme.titleLarge?.copyWith(
-      color: Colors.black,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic,
     );
@@ -75,7 +71,8 @@ class WordInfoDisplay extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Badge(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor:
+                        Theme.of(context).badgeTheme.backgroundColor,
                     padding: EdgeInsets.symmetric(horizontal: 7),
                     offset: Offset(10, -5),
                     label: buildCerf(),
@@ -88,9 +85,10 @@ class WordInfoDisplay extends StatelessWidget {
           ],
         ),
         // Phonetics
-        for (var p in wordInfo.phonetics) PhoneticDisplay(p: p),
+        for (var p in wordInfo.phonetics.keys) PhoneticDisplay(text: p),
         Divider(),
-        for (var m in wordInfo.meanings) MeaningDisplay(m: m),
+        for (var entry in wordInfo.meanings.entries)
+          MeaningDisplay(partOfSpeech: entry.key, definitions: entry.value),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,7 @@ class WordInfoView extends StatefulWidget {
 }
 
 class _WordInfoViewState extends State<WordInfoView> {
-  Future<Result<List<WordInfo>, String>> loadWord(BuildContext ctx) async {
+  Future<Result<WordInfoUsable, String>> loadWord(BuildContext ctx) async {
     var res = await ctx.read<AppState>().searchWord(widget.searchWord);
     return res;
   }
@@ -28,7 +29,7 @@ class _WordInfoViewState extends State<WordInfoView> {
       appBar: AppBar(title: Text(widget.searchWord)),
       body: Container(
         margin: EdgeInsets.all(10.0),
-        child: FutureBuilder<Result<List<WordInfo>, String>>(
+        child: FutureBuilder<Result<WordInfoUsable, String>>(
           future: loadWord(context),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
@@ -37,7 +38,7 @@ class _WordInfoViewState extends State<WordInfoView> {
                 return Text("cannot find word, error: ${res.error}");
               } else {
                 var wordInfo = res.unwrap();
-                return WordInfosDisplay(wordInfos: wordInfo);
+                return WordInfosDisplay(wordInfo: wordInfo);
               }
             } else if (snapshot.hasError) {
               return Text(
