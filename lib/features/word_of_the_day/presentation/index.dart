@@ -1,3 +1,4 @@
+import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/word_of_the_day/models/word_of_the_day_model.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/features/word_of_the_day/services/word_of_the_day_service.dart';
@@ -28,43 +29,86 @@ class WordOfTheDayScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<WordOfTheDayModel>(
-        future: _wordService.getWordOfTheDay(context.read<AppState>()),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final word = snapshot.data;
-          if (word == null) {
-            return const Center(child: Text("No word available today."));
-          }
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  word.word,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: FutureBuilder<WordOfTheDayModel>(
+          future: _wordService.getWordOfTheDay(context.read<AppState>()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final word = snapshot.requireData;
+            return WordOfTheDay(word: word);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class WordOfTheDay extends StatelessWidget {
+  const WordOfTheDay({super.key, required this.word});
+
+  final WordOfTheDayModel word;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          children: [
+            Icon(Icons.lightbulb, size: 100),
+            Badge(
+              label: Text(word.cerf.name.toUpperCase()),
+              offset: Offset(20, 0),
+              child: Text(
+                word.word,
+                style: theme.primaryTextTheme.titleLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Text(
+              word.definition ?? "",
+              textAlign: TextAlign.center,
+              style: theme.primaryTextTheme.bodyLarge?.copyWith(
+                fontStyle: FontStyle.italic,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            SizedBox(height: 10),
+
+            Visibility(
+              visible: word.definition != null,
+              child: FilledButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => WordInfoView(searchWord: word.word),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.search),
+                      SizedBox(width: 10),
+                      Text("Check definition"),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 20),
-                const Text(
-                  'Meaning:',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  word.definition ?? "",
-                  style: const TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

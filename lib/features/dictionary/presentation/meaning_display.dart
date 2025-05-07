@@ -60,7 +60,12 @@ class _MeaningDisplayState extends State<MeaningDisplay> {
           );
         }
       }
-
+      children.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: Divider(),
+        ),
+      );
       return children;
     }
 
@@ -69,10 +74,16 @@ class _MeaningDisplayState extends State<MeaningDisplay> {
       children: [
         Card(
           elevation: 0,
-          child: Container(
+          color: Theme.of(context).colorScheme.primary,
+          child: Padding(
             padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(borderRadius: BorderRadius.zero),
-            child: Text(widget.partOfSpeech),
+            child: Text(
+              widget.partOfSpeech,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
         LimitedBox(

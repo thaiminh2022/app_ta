@@ -1,6 +1,5 @@
 import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_cerf.dart';
-import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';

@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
+import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
-import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -145,8 +145,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
   final List<Widget> _widgetOptions = <Widget>[
     WordOfTheDayScreen(),
     DictionarySearch(),
-    // const Dashboard(),
-    const Text("Placeholder"),
+    const Dashboard(),
+    // const Text("Placeholder"),
     Hangman(),
   ];
 

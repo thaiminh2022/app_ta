@@ -52,15 +52,19 @@ class Hangman extends StatelessWidget {
               onPressed: () async {
                 var wordRes =
                     await context.read<AppState>().getRandomWordCerf();
-                Navigator.push(
-                  // handle this later
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            HangmanGame(word: wordRes.word, cerf: wordRes.cerf),
-                  ),
-                );
+                if (context.mounted) {
+                  Navigator.push(
+                    // handle this later
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => HangmanGame(
+                            word: wordRes.word,
+                            cerf: wordRes.cerf,
+                          ),
+                    ),
+                  );
+                }
               },
               child: Text("From a random words"),
             ),

@@ -38,8 +38,7 @@ class WordInfoDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var textStyle = Theme.of(context).primaryTextTheme.titleLarge?.copyWith(
-      color: Colors.black,
+    var textStyle = Theme.of(context).textTheme.titleLarge?.copyWith(
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic,
     );
@@ -72,7 +71,8 @@ class WordInfoDisplay extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Badge(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor:
+                        Theme.of(context).badgeTheme.backgroundColor,
                     padding: EdgeInsets.symmetric(horizontal: 7),
                     offset: Offset(10, -5),
                     label: buildCerf(),
@@ -85,8 +85,13 @@ class WordInfoDisplay extends StatelessWidget {
           ],
         ),
         // Phonetics
-        for (var p in wordInfo.phonetics.entries)
-          PhoneticDisplay(text: p.key, phonetic: p.value),
+        Row(
+          children: [
+            for (var p in wordInfo.phonetics.entries)
+              PhoneticDisplay(text: p.key, phonetic: p.value),
+          ],
+        ),
+
         Divider(),
         for (var m in wordInfo.meanings.entries)
           MeaningDisplay(partOfSpeech: m.key, definitions: m.value),

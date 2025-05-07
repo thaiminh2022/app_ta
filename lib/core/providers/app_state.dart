@@ -1,11 +1,9 @@
-import 'dart:developer';
 import 'dart:math';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/models/word_cerf_result.dart';
-import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/services/cerf.dart';
 import 'package:app_ta/core/services/database.dart';
 import 'package:app_ta/core/services/dictionary_api.dart';
