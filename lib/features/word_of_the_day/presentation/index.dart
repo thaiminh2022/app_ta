@@ -1,3 +1,4 @@
+import 'package:app_ta/features/word_of_the_day/models/word_of_the_day_model.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/features/word_of_the_day/services/word_of_the_day_service.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/notification_setting_screen.dart';
@@ -27,7 +28,7 @@ class WordOfTheDayScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<WordOfTheDay>(
+      body: FutureBuilder<WordOfTheDayModel>(
         future: _wordService.getWordOfTheDay(context.read<AppState>()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -49,31 +50,17 @@ class WordOfTheDayScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  word.ipa,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
+
                 const SizedBox(height: 20),
                 const Text(
                   'Meaning:',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                Text(word.meaning, style: const TextStyle(fontSize: 18)),
-                const SizedBox(height: 20),
-                const Text(
-                  'Example:',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
                 Text(
-                  word.example,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
-                  ),
+                  word.definition ?? "",
+                  style: const TextStyle(fontSize: 18),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           );
