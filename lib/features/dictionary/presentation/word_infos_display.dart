@@ -1,5 +1,4 @@
 import 'package:app_ta/core/models/word_cerf.dart';
-import 'package:app_ta/core/models/word_info.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:app_ta/features/dictionary/presentation/widget/learned_button.dart';
@@ -86,7 +85,8 @@ class WordInfoDisplay extends StatelessWidget {
           ],
         ),
         // Phonetics
-        for (var p in wordInfo.phonetics) PhoneticDisplay(p: p),
+        for (var p in wordInfo.phonetics.entries)
+          PhoneticDisplay(text: p.key, phonetic: p.value),
         Divider(),
         for (var m in wordInfo.meanings.entries)
           MeaningDisplay(partOfSpeech: m.key, definitions: m.value),
