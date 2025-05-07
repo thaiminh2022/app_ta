@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:app_ta/features/dashboard/presentation/widgets/about_dialog.dart';
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
@@ -24,6 +23,7 @@ class _DashboardState extends State<Dashboard>
   late Animation<double> _animation;
   late VideoPlayerController _videoController;
   bool _isVideoInitialized = false;
+  final bool _useVideo = false; // Đặt thành final vì không thay đổi
 
   @override
   void initState() {
@@ -40,21 +40,25 @@ class _DashboardState extends State<Dashboard>
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
-    // Khởi tạo và preload video ngay lập tức
+    // Khởi tạo VideoPlayerController nhưng không initialize nếu không dùng video
     _videoController = VideoPlayerController.asset(
       'assets/home_screen/video_background.mp4',
-    )..initialize().then((_) {
-      setState(() {
-        _isVideoInitialized = true; // Cập nhật khi video sẵn sàng
+    );
+    if (_useVideo) {
+      _videoController.initialize().then((_) {
+        setState(() {
+          _isVideoInitialized = true; // Cập nhật khi video sẵn sàng
+        });
+        _videoController.play();
+        _videoController.setLooping(true);
+      }).catchError((error) {
+        // Bỏ print trong production code
+        // print("Lỗi khởi tạo video: $error");
+        setState(() {
+          _isVideoInitialized = false;
+        });
       });
-      _videoController.play();
-      _videoController.setLooping(true);
-    }).catchError((error) {
-      //print("Lỗi khởi tạo video: $error");
-      setState(() {
-        _isVideoInitialized = false;
-      });
-    });
+    }
   }
 
   @override
@@ -153,29 +157,26 @@ class _DashboardState extends State<Dashboard>
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Hiển thị dashboard.png làm placeholder với BoxFit.cover
-          if (!_isVideoInitialized || (Platform.isWindows || Platform.isLinux))
-            Positioned.fill(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: ColorFiltered(
-                  colorFilter: const ColorFilter.matrix([
-                    1, 0, 0, 0, 0,    // R: Giữ nguyên đỏ
-                    0, 1, 0, 0, 0,    // G: Giữ nguyên xanh lá
-                    0, 0, 1, 0, 0,    // B: Giữ nguyên xanh dương
-                    0, 0, 0, 1, 0,    // A: Giữ nguyên alpha
-                    // Thêm điều chỉnh gamma nếu cần
-                    // Ví dụ: 0, 0, 0, 0, -10 để giảm độ sáng
-                  ]),
-                  child: Image.asset(
-                    'assets/home_screen/dashboard.png',
-                    gaplessPlayback: true,
-                  ),
+          // Hiển thị dashboard.png làm nền mặc định
+          Positioned.fill(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: ColorFiltered(
+                colorFilter: const ColorFilter.matrix([
+                  1, 0, 0, 0, 0,    // R
+                  0, 1, 0, 0, 0,    // G
+                  0, 0, 1, 0, 0,    // B
+                  0, 0, 0, 1, 0,    // A
+                ]),
+                child: Image.asset(
+                  'assets/home_screen/dashboard.png',
+                  gaplessPlayback: true,
                 ),
               ),
             ),
-          // Hiển thị video với BoxFit.cover khi đã tải xong
-          if (_isVideoInitialized && _videoController.value.isInitialized)
+          ),
+          // Hiển thị video nếu _useVideo là true
+          if (_useVideo && _isVideoInitialized && _videoController.value.isInitialized)
             Positioned.fill(
               child: FittedBox(
                 fit: BoxFit.cover,
@@ -184,10 +185,10 @@ class _DashboardState extends State<Dashboard>
                   height: _videoController.value.size.height,
                   child: ColorFiltered(
                     colorFilter: const ColorFilter.matrix([
-                      1, 0, 0, 0, 0,    // R: Giữ nguyên đỏ
-                      0, 1, 0, 0, 0,    // G: Giữ nguyên xanh lá
-                      0, 0, 1, 0, 0,    // B: Giữ nguyên xanh dương
-                      0, 0, 0, 1, 0,    // A: Giữ nguyên alpha
+                      1, 0.1, 0.1, 0, 0,  // Tinh chỉnh R
+                      0.1, 1, 0.1, 0, 0,  // Tinh chỉnh G
+                      0.1, 0.1, 1, 0, 0,  // Tinh chỉnh B
+                      0, 0, 0, 1, 0,      // A
                     ]),
                     child: VideoPlayer(_videoController),
                   ),
