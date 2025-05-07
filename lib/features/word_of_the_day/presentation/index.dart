@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:app_ta/features/word_of_the_day/models/word_of_the_day.dart';
 import 'package:app_ta/features/word_of_the_day/services/word_of_the_day_service.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/notification_setting_screen.dart';
 import 'package:app_ta/core/providers/app_state.dart';
@@ -28,7 +27,7 @@ class WordOfTheDayScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<WordOfTheDay?>(
+      body: FutureBuilder<WordOfTheDay>(
         future: _wordService.getWordOfTheDay(context.read<AppState>()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
