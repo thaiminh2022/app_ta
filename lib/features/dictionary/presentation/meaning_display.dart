@@ -1,15 +1,10 @@
-import 'package:app_ta/core/services/word_info_cleanup_service.dart';
+import 'package:app_ta/core/models/word_info.dart';
 import 'package:flutter/material.dart';
 
 class MeaningDisplay extends StatefulWidget {
-  const MeaningDisplay({
-    super.key,
-    required this.partOfSpeech,
-    required this.definitions,
-  });
+  const MeaningDisplay({super.key, required this.m});
 
-  final List<WordDefinition> definitions;
-  final String partOfSpeech;
+  final Meaning m;
 
   @override
   State<MeaningDisplay> createState() => _MeaningDisplayState();
@@ -20,14 +15,14 @@ class _MeaningDisplayState extends State<MeaningDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    var definitions = widget.m.definitions;
     List<Widget> definitionsView() {
-      var definitions = widget.definitions;
       const maxView = 3;
       List<Widget> children = [];
       for (int i = 0; i < (readMore ? definitions.length : maxView); i++) {
         if (i >= definitions.length) break;
 
-        var d = definitions[i];
+        var d = widget.m.definitions[i];
         children.add(
           ListTile(
             title: Text(d.definition),
@@ -72,7 +67,7 @@ class _MeaningDisplayState extends State<MeaningDisplay> {
           child: Container(
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(borderRadius: BorderRadius.zero),
-            child: Text(widget.partOfSpeech),
+            child: Text(widget.m.partOfSpeech),
           ),
         ),
         LimitedBox(
