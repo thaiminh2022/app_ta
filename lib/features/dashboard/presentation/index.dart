@@ -1,9 +1,10 @@
 import 'dart:io';
+
+import 'package:app_ta/features/dashboard/presentation/widgets/gamespace_button.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/about_dialog.dart';
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/settings_dialog.dart';
-import 'package:app_ta/features/dashboard/presentation/widgets/random_button.dart';
 import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
 import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +29,10 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
-    // Tiền tải hình ảnh dashboard.png để giảm độ trễ
+    // Tiền tải hình ảnh dashboard.png và gamespace_icon.png để giảm độ trễ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       precacheImage(const AssetImage('assets/home_screen/dashboard.png'), context);
+      precacheImage(const AssetImage('assets/icon/gamespace_icon.png'), context);
     });
 
     _controller = AnimationController(
@@ -69,11 +71,11 @@ class _DashboardState extends State<Dashboard>
   }
 
   void _showSettingsDialog() {
-    showDialog(context: context, builder: (ctx) => SettingsDialog());
+    showDialog(context: context, builder: (ctx) => const SettingsDialog());
   }
 
   void _showAboutDialog() {
-    showDialog(context: context, builder: (ctx) => AboutDialogView());
+    showDialog(context: context, builder: (ctx) => const AboutDialogView());
   }
 
   void _quitApp() {
@@ -149,6 +151,13 @@ class _DashboardState extends State<Dashboard>
         _quitApp();
       }
     });
+  }
+
+  void _showGamespaceDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => const GamespaceDialog(),
+    );
   }
 
   @override
@@ -295,10 +304,12 @@ class _DashboardState extends State<Dashboard>
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [RandomButton(context: context)],
+                    children: [
+                      GamespaceButton(onPressed: _showGamespaceDialog),
+                    ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20), // Sử dụng SizedBox thay cho khoảng cách cứng
               ],
             ),
           ),
