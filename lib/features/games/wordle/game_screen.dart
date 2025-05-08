@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:google_fonts/google_fonts.dart';
 import 'game_state.dart';
 import 'api_service.dart';
 import 'keyboard.dart';
@@ -11,10 +10,10 @@ class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
 
   @override
-  _GameScreenState createState() => _GameScreenState();
+  GameScreenState createState() => GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class GameScreenState extends State<GameScreen> {
   late GameState gameState;
   final ApiService apiService = ApiService();
   bool isLoading = true;
@@ -71,38 +70,40 @@ class _GameScreenState extends State<GameScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => ResultDialog(
-            hasWon: gameState.hasWon(),
-            targetWord: gameState.targetWord,
-            onPlayAgain: () {
-              Navigator.pop(context);
-              startNewGame();
-            },
-            onExit: () => Navigator.pop(context),
-          ),
+      builder: (context) => ResultDialog(
+        hasWon: gameState.hasWon(),
+        targetWord: gameState.targetWord,
+        onPlayAgain: () {
+          Navigator.pop(context);
+          startNewGame();
+        },
+        onExit: () => Navigator.pop(context),
+      ),
     );
   }
 
   Future<void> showHint() async {
-    final definition = await apiService.fetchWordDefinition(
-      gameState.targetWord,
-    );
+    // Check if the widget is still mounted before proceeding
+    if (!mounted) return;
+
+    final definition = await apiService.fetchWordDefinition(gameState.targetWord);
+    // Check again after the async operation
+    if (!mounted) return;
+
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Hint'),
-            content: Text(
-              definition.isNotEmpty ? definition : 'No definition found.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Hint'),
+        content: Text(
+          definition.isNotEmpty ? definition : 'No definition found.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
           ),
+        ],
+      ),
     );
   }
 
@@ -110,68 +111,124 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.cyan,
-      appBar: AppBar(title: const Text('WORDLE'), centerTitle: true),
-      body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : LayoutBuilder(
-                builder: (context, constraints) {
-                  final totalHeight = constraints.maxHeight;
-                  final keyboardHeight = 180.0;
-                  final hintHeight = 50.0;
-                  final guessAreaHeight =
-                      totalHeight - keyboardHeight - hintHeight;
-
-                  return Column(
-                    children: [
-                      // Lưới đoán từ
-                      SizedBox(
-                        height: guessAreaHeight,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(gameState.maxGuesses, (i) {
-                            return GuessRow(
-                              guess:
-                                  i < gameState.guesses.length
-                                      ? gameState.guesses[i]
-                                      : (i == gameState.guesses.length
-                                          ? gameState.currentGuess
-                                          : ''),
-                              targetWord: gameState.targetWord,
-                              isSubmitted: i < gameState.guesses.length,
-                              wordLength: gameState.targetWord.length,
-                            );
-                          }),
-                        ),
-                      ),
-
-                      // Nút Hint
-                      SizedBox(
-                        height: hintHeight,
-                        child: Center(
-                          child: ElevatedButton(
-                            onPressed: showHint,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                            ),
-                            child: const Text('Hint'),
-                          ),
-                        ),
-                      ),
-
-                      // Bàn phím
-                      SizedBox(
-                        height: keyboardHeight,
-                        child: VirtualKeyboard(
-                          onKeyPress: handleKeyPress,
-                          usedLetters: gameState.getUsedLetters(),
-                        ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color.fromRGBO(173, 216, 230, 1),
+                        Color.fromRGBO(135, 206, 235, 1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromRGBO(0, 0, 0, 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
                     ],
-                  );
-                },
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'WORDLE',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        shadows: [
+                          Shadow(
+                            color: const Color.fromRGBO(0, 0, 0, 0.3),
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        centerTitle: true,
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : LayoutBuilder(
+        builder: (context, constraints) {
+          final totalHeight = constraints.maxHeight;
+          final keyboardHeight = 180.0;
+          final hintHeight = 50.0;
+          final guessAreaHeight = totalHeight - keyboardHeight - hintHeight;
+
+          return Column(
+            children: [
+              // Lưới đoán từ
+              SizedBox(
+                height: guessAreaHeight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(gameState.maxGuesses, (i) {
+                    return GuessRow(
+                      guess: i < gameState.guesses.length
+                          ? gameState.guesses[i]
+                          : (i == gameState.guesses.length
+                          ? gameState.currentGuess
+                          : ''),
+                      targetWord: gameState.targetWord,
+                      isSubmitted: i < gameState.guesses.length,
+                      wordLength: gameState.targetWord.length,
+                    );
+                  }),
+                ),
               ),
+
+              // Nút Hint
+              SizedBox(
+                height: hintHeight,
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: showHint,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                    child: const Text('Hint'),
+                  ),
+                ),
+              ),
+
+              // Bàn phím
+              SizedBox(
+                height: keyboardHeight,
+                child: VirtualKeyboard(
+                  onKeyPress: handleKeyPress,
+                  usedLetters: gameState.getUsedLetters(),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
