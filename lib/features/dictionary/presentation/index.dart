@@ -13,63 +13,97 @@ class DictionarySearch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Dictionary")),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.library_books, size: 150),
-              SizedBox(height: 10),
-              DictionarySearchBarView(
-                controller: _controller,
-                historyService: searchHistoryService,
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/home_screen/dashboard.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Container(
+            padding: EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromRGBO(173, 216, 230, 1),
+                  Color.fromRGBO(135, 206, 235, 1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_controller.text.isEmpty) return;
-
-                        await searchHistoryService.saveItem(_controller.text);
-                        if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => WordInfoView(
-                                    searchWord: _controller.text.toLowerCase(),
-                                  ),
-                            ),
-                          );
-                        }
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text("Dictionary"),
+          ),
+        ),
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.library_books, size: 150),
+                SizedBox(height: 20),
+                Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      DictionarySearchBarView(
+                        controller: _controller,
+                        historyService: searchHistoryService,
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 10),
-                          Text("Search"),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (_controller.text.isEmpty) return;
+
+                                await searchHistoryService.saveItem(_controller.text);
+                                if (context.mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => WordInfoView(
+                                        searchWord: _controller.text.toLowerCase(),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.search),
+                                  SizedBox(width: 10),
+                                  Text("Search"),
+                                ],
+                              ),
+                            ),
+                          ),
+                          FilledButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (ctx) => LearnedWordsView()),
+                              );
+                            },
+                            child: Text("Learned words"),
+                          ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                  FilledButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (ctx) => LearnedWordsView()),
-                      );
-                    },
-                    child: Text("Learned words"),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -103,7 +137,6 @@ class DictionarySearchBarView extends StatelessWidget {
             padding: const WidgetStatePropertyAll<EdgeInsets>(
               EdgeInsets.symmetric(horizontal: 16),
             ),
-
             leading: Icon(Icons.search),
             trailing: [
               IconButton(
@@ -165,33 +198,32 @@ class _SearchHistoryItemViewState extends State<SearchHistoryItemView> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children:
-          widget.data
-              .map(
-                (s) => ListTile(
-                  title: Row(
-                    children: [
-                      Expanded(child: Text(s)),
-                      IconButton(
-                        onPressed: () {
-                          widget.historyService.removeItem(s);
-                          setState(() {});
-                        },
-                        icon: Icon(Icons.delete_outline),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (ctx) => WordInfoView(searchWord: s),
-                      ),
-                    );
-                  },
-                ),
-              )
-              .toList(),
+      children: widget.data
+          .map(
+            (s) => ListTile(
+          title: Row(
+            children: [
+              Expanded(child: Text(s)),
+              IconButton(
+                onPressed: () {
+                  widget.historyService.removeItem(s);
+                  setState(() {});
+                },
+                icon: Icon(Icons.delete_outline),
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => WordInfoView(searchWord: s),
+              ),
+            );
+          },
+        ),
+      )
+          .toList(),
     );
   }
 }

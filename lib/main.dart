@@ -13,11 +13,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+// 👇 Đã chỉnh lại đường dẫn cho GameScreen
+import 'package:app_ta/features/games/wordle/game_screen.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
@@ -33,8 +37,7 @@ Future<void> main() async {
 }
 
 Future<void> _initializeNotifications() async {
-  const AndroidInitializationSettings androidInitializationSettings =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -64,8 +67,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initNotifications() async {
     tz.initializeTimeZones(); // Quan trọng
 
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidInit);
+    const AndroidInitializationSettings androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initSettings = InitializationSettings(android: androidInit);
 
     await flutterLocalNotificationsPlugin.initialize(initSettings);
 
@@ -90,8 +93,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
     );
   }
@@ -145,11 +147,13 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 2;
+
   final List<Widget> _widgetOptions = <Widget>[
     WordOfTheDayScreen(),
     DictionarySearch(),
     const Dashboard(),
     Hangman(),
+    const GameScreen(), // 👈 Wordle tab
   ];
 
   @override
@@ -172,6 +176,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
             label: "Pronunciation",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
+          BottomNavigationBarItem(icon: Icon(Icons.grid_on), label: "Wordle"),
         ],
         currentIndex: _idx,
         onTap: (value) {
@@ -183,15 +188,12 @@ class _BottomNavbarState extends State<BottomNavbar> {
           }
         },
         selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(
-          context,
-        ).colorScheme.onSurface.withAlpha(153),
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(153),
         selectedLabelStyle: const TextStyle(fontSize: 18),
         unselectedLabelStyle: const TextStyle(fontSize: 18),
         selectedIconTheme: const IconThemeData(size: 30),
         unselectedIconTheme: const IconThemeData(size: 30),
-        backgroundColor:
-        Theme.of(context).brightness == Brightness.dark
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? const Color.fromRGBO(30, 30, 30, 1)
             : const Color.fromRGBO(255, 255, 255, 1),
       ),

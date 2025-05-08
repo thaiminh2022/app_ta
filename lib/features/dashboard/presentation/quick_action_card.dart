@@ -1,6 +1,7 @@
 import 'package:app_ta/features/dashboard/presentation/widgets/menu_action_button.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/games/wordle/game_screen.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter/material.dart';
 
@@ -12,12 +13,9 @@ class QuickActionCard extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color:
-          Theme.of(
-            context,
-          ).cardColor, // Use theme's cardColor instead of hardcoded Colors.white
+      color: Theme.of(context).cardColor,
       child: Container(
-        padding: const EdgeInsets.all(4), // Viền gradient
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
@@ -32,10 +30,7 @@ class QuickActionCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
-            color:
-                Theme.of(
-                  context,
-                ).cardColor, // Use theme's cardColor for inner container
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -52,22 +47,38 @@ class QuickActionCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  MenuActionButton(
-                    icon: Icons.book,
-                    label: 'Dictionary',
-                    route: DictionarySearch(),
+                  SizedBox(
+                    width: 80,
+                    child: MenuActionButton(
+                      icon: Icons.book,
+                      label: 'Dictionary',
+                      route: DictionarySearch(),
+                    ),
                   ),
-                  MenuActionButton(
-                    icon: Icons.gamepad,
-                    label: 'Hangman',
-                    route: Hangman(),
+                  SizedBox(
+                    width: 80,
+                    child: MenuActionButton(
+                      icon: Icons.gamepad,
+                      label: 'Hangman',
+                      route: Hangman(),
+                    ),
                   ),
-                  MenuActionButton(
-                    icon: Icons.lightbulb_outline,
-                    label: 'Word of the day',
-                    route: WordOfTheDayScreen(),
+                  SizedBox(
+                    width: 80,
+                    child: MenuActionButton(
+                      icon: Icons.lightbulb_outline,
+                      label: 'Daily Word',
+                      route: WordOfTheDayScreen(),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 80,
+                    child: MenuActionButton(
+                      icon: Icons.grid_on,
+                      label: 'Wordle',
+                      route: const GameScreen(),
+                    ),
                   ),
                 ],
               ),
