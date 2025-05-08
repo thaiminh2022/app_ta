@@ -45,4 +45,18 @@ app.*.map.json
 /android/app/release
 
 
-*.env
+# Ignore Python virtual environments and cache
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Flask server logs or compiled files
+instance/
+*.db
+*.sqlite3
+
+# Local config or secret files
+config.py
+.env
