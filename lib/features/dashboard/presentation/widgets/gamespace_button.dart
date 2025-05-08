@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
-import 'package:app_ta/features/games/wordle/game_screen.dart'; // Added import for GameScreen
+import 'package:app_ta/features/games/wordle/presentation/index.dart'; // Added import for GameScreen
 import 'package:flutter/material.dart';
 
 // Widget cho nút Gamespace với icon tùy chỉnh
@@ -26,9 +26,10 @@ class _GamespaceButtonState extends State<GamespaceButton>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _controller.reverse();
@@ -61,11 +62,7 @@ class _GamespaceButtonState extends State<GamespaceButton>
                 height: 60,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Icons.error,
-                    color: Colors.red,
-                    size: 60,
-                  );
+                  return const Icon(Icons.error, color: Colors.red, size: 60);
                 },
               ),
             ),
@@ -97,12 +94,14 @@ class _GamespaceDialogState extends State<GamespaceDialog>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
-    _rotateAnimation = Tween<double>(begin: 0.0, end: 2 * pi).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _rotateAnimation = Tween<double>(
+      begin: 0.0,
+      end: 2 * pi,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _controller.forward();
   }
 
@@ -165,7 +164,9 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GameScreen()), // Navigate to Wordle
+                  MaterialPageRoute(
+                    builder: (context) => const WordleGame(),
+                  ), // Navigate to Wordle
                 );
               }),
               _buildGameButton(context, 'Puzzle', 2, () {
@@ -188,24 +189,26 @@ class _GamespaceDialogState extends State<GamespaceDialog>
   }
 
   Widget _buildGameButton(
-      BuildContext context, String label, int index, VoidCallback onTap) {
+    BuildContext context,
+    String label,
+    int index,
+    VoidCallback onTap,
+  ) {
     const double radius = 100; // Khoảng cách từ tâm đến nút
-    final double angle = (index * 90) * pi / 180; // Góc cho từng phần (90 độ mỗi phần)
+    final double angle =
+        (index * 90) * pi / 180; // Góc cho từng phần (90 độ mỗi phần)
     final double x = radius * cos(angle);
     final double y = radius * sin(angle);
 
     return Positioned(
       left: 150 + x - 40, // 150 là tâm vòng tròn, 40 là nửa chiều rộng nút
-      top: 150 + y - 40,  // 150 là tâm vòng tròn, 40 là nửa chiều cao nút
+      top: 150 + y - 40, // 150 là tâm vòng tròn, 40 là nửa chiều cao nút
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: child,
-            );
+            return Transform.scale(scale: _scaleAnimation.value, child: child);
           },
           child: Container(
             width: 80,
@@ -306,9 +309,10 @@ class GamespaceCirclePainter extends CustomPainter {
       final shader = gradients[i].createShader(
         Rect.fromCircle(center: center, radius: radius),
       );
-      final Paint paint = Paint()
-        ..shader = shader
-        ..style = PaintingStyle.fill;
+      final Paint paint =
+          Paint()
+            ..shader = shader
+            ..style = PaintingStyle.fill;
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         i * sweepAngle - pi / 2, // Bắt đầu từ góc -90 độ (đỉnh vòng tròn)
@@ -319,10 +323,11 @@ class GamespaceCirclePainter extends CustomPainter {
     }
 
     // Thêm hiệu ứng ánh sáng ở giữa
-    final glowPaint = Paint()
-      ..color = Colors.white.withAlpha(50)
-      ..style = PaintingStyle.fill
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
+    final glowPaint =
+        Paint()
+          ..color = Colors.white.withAlpha(50)
+          ..style = PaintingStyle.fill
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
     canvas.drawCircle(center, 50, glowPaint);
   }
 

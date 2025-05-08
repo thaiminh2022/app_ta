@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:google_fonts/google_fonts.dart';
-import 'game_state.dart';
-import 'api_service.dart';
+import '../services/game_state.dart';
+import '../services/wordle_service.dart';
 import 'keyboard.dart';
 import 'guess_tile.dart';
 import 'result_dialog.dart';
 
-class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+class WordleGame extends StatefulWidget {
+  const WordleGame({super.key});
 
   @override
-  _GameScreenState createState() => _GameScreenState();
+  WordleGameState createState() => WordleGameState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class WordleGameState extends State<WordleGame> {
   late GameState gameState;
-  final ApiService apiService = ApiService();
+  final WordleService apiService = WordleService();
   bool isLoading = true;
 
   @override
