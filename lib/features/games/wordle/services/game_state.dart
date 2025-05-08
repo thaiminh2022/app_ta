@@ -19,12 +19,17 @@ class GameState {
   }
 
   bool canSubmitGuess() {
-    return currentGuess.length == targetWord.length;
+    return currentGuess.length >= targetWord.length;
   }
 
   void submitGuess() {
     if (canSubmitGuess()) {
-      guesses.add(currentGuess);
+      var word = targetWord.toUpperCase();
+      if (currentGuess.length > word.length) {
+        guesses.add(currentGuess.substring(0, word.length));
+      } else {
+        guesses.add(currentGuess);
+      }
       currentGuess = '';
     }
   }

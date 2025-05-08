@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'dart:math';
+
+import 'package:app_ta/core/providers/app_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../services/game_state.dart';
 import '../services/wordle_service.dart';
-import 'keyboard.dart';
-import 'guess_tile.dart';
 import 'result_dialog.dart';
 
 class WordleGame extends StatefulWidget {
@@ -15,8 +18,21 @@ class WordleGame extends StatefulWidget {
 
 class WordleGameState extends State<WordleGame> {
   late GameState gameState;
-  final WordleService apiService = WordleService();
-  bool isLoading = true;
+  final _submitController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> startNewGame() async {
+    _isLoading = true;
+    final wordRes = await context.read<AppState>().getRandomWordCerf();
+
+    setState(() {
+      gameState = GameState(
+        targetWord: wordRes.word.toUpperCase(),
+        maxGuesses: wordRes.word.length >= 7 ? 8 : 6,
+      );
+    });
+    _isLoading = false;
+  }
 
   @override
   void initState() {
@@ -24,46 +40,23 @@ class WordleGameState extends State<WordleGame> {
     startNewGame();
   }
 
-  Future<void> startNewGame() async {
-    setState(() => isLoading = true);
-    final random = Random();
-
-    final probability = random.nextDouble();
-    int randomLength;
-
-    if (probability < 0.7) {
-      randomLength = 3 + random.nextInt(3); // 3–5
-    } else if (probability < 0.9) {
-      randomLength = 6 + random.nextInt(3); // 6–8
-    } else {
-      randomLength = 9 + random.nextInt(2); // 9–10
-    }
-
-    final word = await apiService.fetchRandomWord(randomLength);
+  void onInputChanged(String newInput) {
     setState(() {
-      gameState = GameState(
-        targetWord: word.toUpperCase(),
-        maxGuesses: word.length >= 7 ? 8 : 6,
-      );
-      isLoading = false;
+      if (newInput.length <= gameState.targetWord.length) {
+        gameState.currentGuess = newInput;
+      }
     });
   }
 
-  void handleKeyPress(String key) {
-    setState(() {
-      if (key == 'ENTER') {
-        if (gameState.canSubmitGuess()) {
-          gameState.submitGuess();
-          if (gameState.hasWon() || gameState.hasLost()) {
-            showResultDialog();
-          }
-        }
-      } else if (key == 'BACK') {
-        gameState.deleteLastLetter();
-      } else {
-        gameState.addLetter(key);
+  void onSubmited() {
+    if (gameState.canSubmitGuess()) {
+      gameState.submitGuess();
+      setState(() {});
+      if (gameState.hasWon() || gameState.hasLost()) {
+        showResultDialog();
       }
-    });
+    }
+    _submitController.text = ' ';
   }
 
   void showResultDialog() {
@@ -79,34 +72,6 @@ class WordleGameState extends State<WordleGame> {
               startNewGame();
             },
             onExit: () => Navigator.pop(context),
-          ),
-    );
-  }
-
-  Future<void> showHint() async {
-    // Check if the widget is still mounted before proceeding
-    if (!mounted) return;
-
-    final definition = await apiService.fetchWordDefinition(
-      gameState.targetWord,
-    );
-    // Check again after the async operation
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Hint'),
-            content: Text(
-              definition.isNotEmpty ? definition : 'No definition found.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
           ),
     );
   }
@@ -176,66 +141,221 @@ class WordleGameState extends State<WordleGame> {
         centerTitle: true,
       ),
       body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : LayoutBuilder(
-                builder: (context, constraints) {
-                  final totalHeight = constraints.maxHeight;
-                  final keyboardHeight = 180.0;
-                  final hintHeight = 50.0;
-                  final guessAreaHeight =
-                      totalHeight - keyboardHeight - hintHeight;
-
-                  return Column(
-                    children: [
-                      // Lưới đoán từ
-                      SizedBox(
-                        height: guessAreaHeight,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(gameState.maxGuesses, (i) {
-                            return GuessRow(
-                              guess:
-                                  i < gameState.guesses.length
-                                      ? gameState.guesses[i]
-                                      : (i == gameState.guesses.length
-                                          ? gameState.currentGuess
-                                          : ''),
-                              targetWord: gameState.targetWord,
-                              isSubmitted: i < gameState.guesses.length,
-                              wordLength: gameState.targetWord.length,
-                            );
-                          }),
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Lưới đoán từ
+                    Expanded(
+                      child: Center(child: GuessGrid(gameState: gameState)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: TextField(
+                        controller: _submitController,
+                        onChanged: onInputChanged,
+                        decoration: InputDecoration(
+                          label: Text("Guess a word"),
                         ),
-                      ),
-
-                      // Nút Hint
-                      SizedBox(
-                        height: hintHeight,
-                        child: Center(
-                          child: ElevatedButton(
-                            onPressed: showHint,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                            ),
-                            child: const Text('Hint'),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^[a-zA-Z]+$'),
                           ),
-                        ),
+                        ],
+                        textCapitalization: TextCapitalization.characters,
+                        onSubmitted: (_) => onSubmited(),
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        HintBtn(targetWord: gameState.targetWord),
+                        FilledButton(
+                          onPressed: onSubmited,
+                          child: Text("submit"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+    );
+  }
+}
 
-                      // Bàn phím
-                      SizedBox(
-                        height: keyboardHeight,
-                        child: VirtualKeyboard(
-                          onKeyPress: handleKeyPress,
-                          usedLetters: gameState.getUsedLetters(),
-                        ),
-                      ),
-                    ],
-                  );
+class GuessGrid extends StatelessWidget {
+  const GuessGrid({super.key, required this.gameState});
+  final GameState gameState;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    List<Widget> buildChildren() {
+      var widgets = <Widget>[];
+      var wordLength = gameState.targetWord.length;
+      for (int i = 0; i < gameState.maxGuesses; i++) {
+        // Submited
+        if (i + 1 <= gameState.guesses.length) {
+          int idx = 0;
+          for (var c in gameState.guesses[i].characters) {
+            c = c.toUpperCase();
+            late final Color color;
+
+            if (gameState.targetWord[idx] == c) {
+              color = Colors.green;
+            } else if (gameState.targetWord.contains(c)) {
+              color = Colors.yellow;
+            } else {
+              color = Colors.red;
+            }
+
+            widgets.add(
+              GuessTile(character: c, tileColor: color, wordLength: wordLength),
+            );
+            idx++;
+          }
+          // Not submited
+        } else if (i == gameState.guesses.length) {
+          for (int j = 0; j < wordLength; j++) {
+            var char = ' ';
+            if (j < gameState.currentGuess.length) {
+              char = gameState.currentGuess[j];
+            }
+
+            widgets.add(
+              GuessTile(
+                character: char,
+                tileColor: theme.colorScheme.primary,
+                wordLength: wordLength,
+              ),
+            );
+          }
+          // Unrelated
+        } else {
+          for (var _ in gameState.targetWord.characters) {
+            widgets.add(
+              GuessTile(
+                character: ' ',
+                tileColor: theme.colorScheme.primary,
+                wordLength: wordLength,
+              ),
+            );
+          }
+        }
+      }
+      return widgets;
+    }
+
+    return GridView.count(
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      shrinkWrap: true,
+      padding: EdgeInsets.all(20),
+      crossAxisCount: gameState.targetWord.length,
+      children: buildChildren(),
+    );
+  }
+}
+
+class GuessTile extends StatelessWidget {
+  const GuessTile({
+    super.key,
+    required this.character,
+    required this.tileColor,
+    required this.wordLength,
+  });
+  final String character;
+  final Color tileColor;
+  final int wordLength;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Giới hạn kích thước dựa trên cả chiều rộng và chiều cao
+    final maxTileSize = 50.0;
+
+    return Container(
+      color: tileColor,
+      width: maxTileSize,
+      constraints: BoxConstraints(
+        maxWidth: maxTileSize,
+        maxHeight: maxTileSize,
+      ),
+      height: maxTileSize,
+      child: Center(
+        child: Text(
+          character,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HintBtn extends StatelessWidget {
+  HintBtn({super.key, required this.targetWord});
+
+  final String targetWord;
+  final _apiService = WordleService();
+
+  Future<void> showHint(BuildContext context) async {
+    // Check if the widget is still mounted before proceeding
+
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Hint'),
+              content: FutureBuilder(
+                future: _apiService.fetchWordDefinition(targetWord),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.requireData.isEmpty
+                          ? "No definition"
+                          : snapshot.requireData,
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("internal error");
+                  } else {
+                    return CircularProgressIndicator();
+                  }
                 },
               ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ElevatedButton(
+        onPressed: () {
+          showHint(context);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+        ),
+        child: const Text('Hint'),
+      ),
     );
   }
 }

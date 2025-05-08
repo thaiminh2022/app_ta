@@ -5,20 +5,19 @@ class GuessRow extends StatelessWidget {
   final String guess;
   final String targetWord;
   final bool isSubmitted;
-  final int wordLength;
 
   const GuessRow({
     super.key,
     required this.guess,
     required this.targetWord,
     required this.isSubmitted,
-    required this.wordLength,
   });
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final wordLength = targetWord.length;
 
     // Giới hạn kích thước dựa trên cả chiều rộng và chiều cao
     final maxTileSize = min(screenWidth / (wordLength + 2), screenHeight / 16);
