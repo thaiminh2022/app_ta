@@ -43,6 +43,7 @@ dependencies:
   shared_preferences: ^2.5.3
   video_player: ^2.9.5
   flutter_dotenv: ^5.2.1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
