@@ -1,9 +1,10 @@
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/features/games/wordle/presentation/guess_grid.dart';
+import 'package:app_ta/features/games/wordle/presentation/hint_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../services/game_state.dart';
-import '../services/wordle_service.dart';
 import 'result_dialog.dart';
 
 class WordleGame extends StatefulWidget {
@@ -49,9 +50,9 @@ class WordleGameState extends State<WordleGame> {
     if (gameState.canSubmitGuess()) {
       gameState.submitGuess();
       setState(() {});
-      if (gameState.hasWon() || gameState.hasLost()) {
-        showResultDialog();
-      }
+    }
+    if (gameState.hasWon() || gameState.hasLost()) {
+      showResultDialog();
     }
     _submitController.text = ' ';
   }
@@ -178,178 +179,6 @@ class WordleGameState extends State<WordleGame> {
                   ],
                 ),
               ),
-    );
-  }
-}
-
-class GuessGrid extends StatelessWidget {
-  const GuessGrid({super.key, required this.gameState});
-  final GameState gameState;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    List<Widget> buildChildren() {
-      var widgets = <Widget>[];
-      var wordLength = gameState.targetWord.length;
-      for (int i = 0; i < gameState.maxGuesses; i++) {
-        // Submited
-        if (i + 1 <= gameState.guesses.length) {
-          int idx = 0;
-          for (var c in gameState.guesses[i].characters) {
-            c = c.toUpperCase();
-            late final Color color;
-
-            if (gameState.targetWord[idx] == c) {
-              color = Colors.green;
-            } else if (gameState.targetWord.contains(c)) {
-              color = Colors.yellow;
-            } else {
-              color = Colors.red;
-            }
-
-            widgets.add(
-              GuessTile(character: c, tileColor: color, wordLength: wordLength),
-            );
-            idx++;
-          }
-          // Not submited
-        } else if (i == gameState.guesses.length) {
-          for (int j = 0; j < wordLength; j++) {
-            var char = ' ';
-            if (j < gameState.currentGuess.length) {
-              char = gameState.currentGuess[j];
-            }
-
-            widgets.add(
-              GuessTile(
-                character: char,
-                tileColor: theme.colorScheme.primary,
-                wordLength: wordLength,
-              ),
-            );
-          }
-          // Unrelated
-        } else {
-          for (var _ in gameState.targetWord.characters) {
-            widgets.add(
-              GuessTile(
-                character: ' ',
-                tileColor: theme.colorScheme.primary,
-                wordLength: wordLength,
-              ),
-            );
-          }
-        }
-      }
-      return widgets;
-    }
-
-    return GridView.count(
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      shrinkWrap: true,
-      padding: EdgeInsets.all(20),
-      crossAxisCount: gameState.targetWord.length,
-      children: buildChildren(),
-    );
-  }
-}
-
-class GuessTile extends StatelessWidget {
-  const GuessTile({
-    super.key,
-    required this.character,
-    required this.tileColor,
-    required this.wordLength,
-  });
-  final String character;
-  final Color tileColor;
-  final int wordLength;
-
-  @override
-  Widget build(BuildContext context) {
-    // Giới hạn kích thước dựa trên cả chiều rộng và chiều cao
-    final maxTileSize = 50.0;
-
-    return Container(
-      color: tileColor,
-      width: maxTileSize,
-      constraints: BoxConstraints(
-        maxWidth: maxTileSize,
-        maxHeight: maxTileSize,
-      ),
-      height: maxTileSize,
-      child: Center(
-        child: Text(
-          character,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HintBtn extends StatelessWidget {
-  HintBtn({super.key, required this.targetWord});
-
-  final String targetWord;
-  final _apiService = WordleService();
-
-  Future<void> showHint(BuildContext context) async {
-    // Check if the widget is still mounted before proceeding
-
-    if (context.mounted) {
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Hint'),
-              content: FutureBuilder(
-                future: _apiService.fetchWordDefinition(targetWord),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(
-                      snapshot.requireData.isEmpty
-                          ? "No definition"
-                          : snapshot.requireData,
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("internal error");
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: ElevatedButton(
-        onPressed: () {
-          showHint(context);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-        ),
-        child: const Text('Hint'),
-      ),
     );
   }
 }

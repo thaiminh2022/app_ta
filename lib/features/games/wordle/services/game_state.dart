@@ -41,23 +41,4 @@ class GameState {
   bool hasLost() {
     return guesses.length >= maxGuesses && !hasWon();
   }
-
-  Map<String, String> getUsedLetters() {
-    Map<String, String> usedLetters = {};
-    for (var guess in guesses) {
-      for (int i = 0; i < guess.length; i++) {
-        String letter = guess[i];
-        if (!usedLetters.containsKey(letter)) {
-          if (targetWord[i] == letter) {
-            usedLetters[letter] = 'correct';
-          } else if (targetWord.contains(letter)) {
-            usedLetters[letter] = 'present';
-          } else {
-            usedLetters[letter] = 'absent';
-          }
-        }
-      }
-    }
-    return usedLetters;
-  }
 }
