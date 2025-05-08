@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
-import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -13,28 +13,36 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+// 👇 Đã chỉnh lại đường dẫn cho GameScreen
+import 'package:app_ta/features/games/wordle/game_screen.dart';
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
-  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo binding
-  tz.initializeTimeZones(); // Cấu hình Timezone
+  WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+
   runApp(
     ChangeNotifierProvider(
-      create: (context) => AppState(), // Use the initialized appState
+      create: (context) => AppState(),
       child: const MyApp(),
     ),
   );
+
   _initializeNotifications();
 }
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
       AndroidInitializationSettings('@mipmap/ic_launcher');
+
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
+
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
@@ -49,7 +57,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Sử dụng Future.microtask để đảm bảo context an toàn
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppState>().loadLearnedWords();
       context.read<AppState>().loadTheme();
@@ -59,16 +66,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initNotifications() async {
-    tz.initializeTimeZones(); // Quan trọng
+    tz.initializeTimeZones();
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidInit);
 
     await flutterLocalNotificationsPlugin.initialize(initSettings);
 
-    // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
-    // notification not implemented for windows
-    if (!Platform.isWindows) await _scheduleDailyWordNotification();
+    if (!Platform.isWindows) {
+      await _scheduleDailyWordNotification();
+    }
   }
 
   Future<void> _scheduleDailyWordNotification() async {
@@ -76,7 +83,7 @@ class _MyAppState extends State<MyApp> {
       0,
       'Word of the Day',
       'Tap to see today\'s word!',
-      _nextInstanceOfHour(8), // 8 giờ sáng, tùy chọn
+      _nextInstanceOfHour(8),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'word_daily_channel',
@@ -89,7 +96,7 @@ class _MyAppState extends State<MyApp> {
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
@@ -142,12 +149,13 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 2;
+
   final List<Widget> _widgetOptions = <Widget>[
     WordOfTheDayScreen(),
     DictionarySearch(),
     const Dashboard(),
-    // const Text("Placeholder"),
     Hangman(),
+    const GameScreen(), // 👈 Wordle tab
   ];
 
   @override
@@ -166,6 +174,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
             label: "Dashboard",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
+          BottomNavigationBarItem(icon: Icon(Icons.grid_on), label: "Wordle"),
         ],
         currentIndex: _idx,
         onTap: (value) {
