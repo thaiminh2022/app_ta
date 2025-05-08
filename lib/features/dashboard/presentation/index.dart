@@ -1,9 +1,10 @@
 import 'dart:io';
+
+import 'package:app_ta/features/dashboard/presentation/widgets/gamespace_button.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/about_dialog.dart';
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/settings_dialog.dart';
-import 'package:app_ta/features/dashboard/presentation/widgets/random_button.dart';
 import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
 import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +29,10 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
-    // Tiền tải hình ảnh dashboard.png để giảm độ trễ
+    // Tiền tải hình ảnh dashboard.png và gamespace_icon.png để giảm độ trễ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       precacheImage(const AssetImage('assets/home_screen/dashboard.png'), context);
+      precacheImage(const AssetImage('assets/icon/gamespace_icon.png'), context);
     });
 
     _controller = AnimationController(
@@ -52,8 +54,6 @@ class _DashboardState extends State<Dashboard>
         _videoController.play();
         _videoController.setLooping(true);
       }).catchError((error) {
-        // Bỏ print trong production code
-        // print("Lỗi khởi tạo video: $error");
         setState(() {
           _isVideoInitialized = false;
         });
@@ -151,6 +151,13 @@ class _DashboardState extends State<Dashboard>
     });
   }
 
+  void _showGamespaceDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => const GamespaceDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,109 +203,130 @@ class _DashboardState extends State<Dashboard>
               ),
             ),
           SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
                     children: [
-                      Stack(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color.fromRGBO(173, 216, 230, 1),
-                                  Color.fromRGBO(135, 206, 235, 1),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromRGBO(0, 0, 0, 0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Stack(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color.fromRGBO(173, 216, 230, 1),
+                                        Color.fromRGBO(135, 206, 235, 1),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color.fromRGBO(0, 0, 0, 0.2),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'DailyE Dashboard',
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                        shadows: [
+                                          Shadow(
+                                            color: const Color.fromRGBO(0, 0, 0, 0.3),
+                                            offset: Offset(1, 1),
+                                            blurRadius: 2,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'DailyE Dashboard',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                  shadows: [
-                                    Shadow(
-                                      color: const Color.fromRGBO(0, 0, 0, 0.3),
-                                      offset: Offset(1, 1),
-                                      blurRadius: 2,
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: _showProfileMenu,
+                                  child: CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: const AssetImage(
+                                      'assets/icon/icon.png',
                                     ),
-                                  ],
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Color.fromRGBO(128, 128, 128, 1),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: _showProfileMenu,
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: const AssetImage(
-                                'assets/icon/icon.png',
-                              ),
-                              child: const Icon(
-                                Icons.person,
-                                color: Color.fromRGBO(128, 128, 128, 1),
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Wrap(
-                      spacing: 16.0,
-                      runSpacing: 16.0,
-                      alignment: WrapAlignment.start,
-                      children: [
-                        AIChat(),
-                        const StatsCard(),
-                        const StreakCard(),
-                        FadeTransition(
-                          opacity: _animation,
-                          child: const QuickActionCard(),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Wrap(
+                          spacing: 16.0,
+                          runSpacing: 16.0,
+                          alignment: WrapAlignment.start,
+                          children: [
+                            AIChat(),
+                            const StatsCard(),
+                            const StreakCard(),
+                            FadeTransition(
+                              opacity: _animation,
+                              child: const QuickActionCard(),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [RandomButton(context: context)],
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const SizedBox(height: 20),
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GamespaceButton(onPressed: _showGamespaceDialog),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20), // Không gian thở dưới cùng
+                    ],
                   ),
                 ),
-                SizedBox(height: 20),
               ],
             ),
           ),
