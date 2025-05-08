@@ -1,7 +1,7 @@
 import 'package:app_ta/features/dashboard/presentation/widgets/menu_action_button.dart';
 import 'package:app_ta/features/dictionary/presentation/index.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
-import 'package:app_ta/features/games/wordle/game_screen.dart';
+import 'package:app_ta/features/games/wordle/presentation/index.dart';
 import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter/material.dart';
 
@@ -77,7 +77,7 @@ class QuickActionCard extends StatelessWidget {
                     child: MenuActionButton(
                       icon: Icons.grid_on,
                       label: 'Wordle',
-                      route: const GameScreen(),
+                      route: const WordleGame(),
                     ),
                   ),
                 ],

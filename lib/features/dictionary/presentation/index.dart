@@ -86,7 +86,11 @@ class DictionarySearch extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.library_books, size: 150),
+                Icon(
+                  Icons.library_books,
+                  size: 150,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 SizedBox(height: 20),
                 Padding(
                   padding: EdgeInsets.all(12.0),
@@ -106,14 +110,18 @@ class DictionarySearch extends StatelessWidget {
                               onPressed: () async {
                                 if (_controller.text.isEmpty) return;
 
-                                await searchHistoryService.saveItem(_controller.text);
+                                await searchHistoryService.saveItem(
+                                  _controller.text,
+                                );
                                 if (context.mounted) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => WordInfoView(
-                                        searchWord: _controller.text.toLowerCase(),
-                                      ),
+                                      builder:
+                                          (context) => WordInfoView(
+                                            searchWord:
+                                                _controller.text.toLowerCase(),
+                                          ),
                                     ),
                                   );
                                 }
@@ -132,7 +140,9 @@ class DictionarySearch extends StatelessWidget {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (ctx) => LearnedWordsView()),
+                                MaterialPageRoute(
+                                  builder: (ctx) => LearnedWordsView(),
+                                ),
                               );
                             },
                             child: Text("Learned words"),
@@ -238,32 +248,33 @@ class _SearchHistoryItemViewState extends State<SearchHistoryItemView> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: widget.data
-          .map(
-            (s) => ListTile(
-          title: Row(
-            children: [
-              Expanded(child: Text(s)),
-              IconButton(
-                onPressed: () {
-                  widget.historyService.removeItem(s);
-                  setState(() {});
-                },
-                icon: Icon(Icons.delete_outline),
-              ),
-            ],
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (ctx) => WordInfoView(searchWord: s),
-              ),
-            );
-          },
-        ),
-      )
-          .toList(),
+      children:
+          widget.data
+              .map(
+                (s) => ListTile(
+                  title: Row(
+                    children: [
+                      Expanded(child: Text(s)),
+                      IconButton(
+                        onPressed: () {
+                          widget.historyService.removeItem(s);
+                          setState(() {});
+                        },
+                        icon: Icon(Icons.delete_outline),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => WordInfoView(searchWord: s),
+                      ),
+                    );
+                  },
+                ),
+              )
+              .toList(),
     );
   }
 }

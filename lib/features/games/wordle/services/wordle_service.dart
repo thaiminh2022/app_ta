@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ApiService {
+class WordleService {
   // Lấy từ ngẫu nhiên từ API với độ dài xác định (hỗ trợ từ 1-20 ký tự)
   Future<String> fetchRandomWord(int length) async {
     final response = await http.get(
