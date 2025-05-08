@@ -19,12 +19,17 @@ class GameState {
   }
 
   bool canSubmitGuess() {
-    return currentGuess.length == targetWord.length;
+    return currentGuess.length >= targetWord.length;
   }
 
   void submitGuess() {
     if (canSubmitGuess()) {
-      guesses.add(currentGuess);
+      var word = targetWord.toUpperCase();
+      if (currentGuess.length > word.length) {
+        guesses.add(currentGuess.substring(0, word.length));
+      } else {
+        guesses.add(currentGuess);
+      }
       currentGuess = '';
     }
   }
@@ -35,24 +40,5 @@ class GameState {
 
   bool hasLost() {
     return guesses.length >= maxGuesses && !hasWon();
-  }
-
-  Map<String, String> getUsedLetters() {
-    Map<String, String> usedLetters = {};
-    for (var guess in guesses) {
-      for (int i = 0; i < guess.length; i++) {
-        String letter = guess[i];
-        if (!usedLetters.containsKey(letter)) {
-          if (targetWord[i] == letter) {
-            usedLetters[letter] = 'correct';
-          } else if (targetWord.contains(letter)) {
-            usedLetters[letter] = 'present';
-          } else {
-            usedLetters[letter] = 'absent';
-          }
-        }
-      }
-    }
-    return usedLetters;
   }
 }
