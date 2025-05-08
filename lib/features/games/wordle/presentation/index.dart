@@ -84,9 +84,15 @@ class WordleGameState extends State<WordleGame> {
   }
 
   Future<void> showHint() async {
+    // Check if the widget is still mounted before proceeding
+    if (!mounted) return;
+
     final definition = await apiService.fetchWordDefinition(
       gameState.targetWord,
     );
+    // Check again after the async operation
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder:
@@ -109,7 +115,66 @@ class WordleGameState extends State<WordleGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.cyan,
-      appBar: AppBar(title: const Text('WORDLE'), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color.fromRGBO(173, 216, 230, 1),
+                        Color.fromRGBO(135, 206, 235, 1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromRGBO(0, 0, 0, 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'WORDLE',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        shadows: [
+                          Shadow(
+                            color: const Color.fromRGBO(0, 0, 0, 0.3),
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        centerTitle: true,
+      ),
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())
