@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/games/wordle/game_screen.dart'; // Added import for GameScreen
 import 'package:flutter/material.dart';
 
 // Widget cho nút Gamespace với icon tùy chỉnh
@@ -160,10 +161,11 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                   MaterialPageRoute(builder: (context) => Hangman()),
                 );
               }),
-              _buildGameButton(context, 'Word Search', 1, () {
+              _buildGameButton(context, 'Wordle', 1, () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Word Search coming soon!')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GameScreen()), // Navigate to Wordle
                 );
               }),
               _buildGameButton(context, 'Puzzle', 2, () {
@@ -212,8 +214,8 @@ class _GamespaceDialogState extends State<GamespaceDialog>
               shape: BoxShape.circle,
               gradient: const LinearGradient(
                 colors: [
-                  Color.fromRGBO(255, 105, 180, 1), // Pink
-                  Color.fromRGBO(138, 43, 226, 1),  // BlueViolet
+                  Color.fromRGBO(0, 180, 90, 1), // Vibrant teal
+                  Color.fromRGBO(0, 140, 70, 1), // Darker teal
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -268,32 +270,32 @@ class GamespaceCirclePainter extends CustomPainter {
     final List<LinearGradient> gradients = [
       const LinearGradient(
         colors: [
-          Color.fromRGBO(255, 99, 71, 1),    // Tomato
-          Color.fromRGBO(255, 165, 0, 1),    // Orange
+          Color.fromRGBO(173, 216, 230, 1), // Light blue
+          Color.fromRGBO(135, 206, 235, 0.8), // Sky blue
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       const LinearGradient(
         colors: [
-          Color.fromRGBO(60, 179, 113, 1),   // MediumSeaGreen
-          Color.fromRGBO(32, 178, 170, 1),   // LightSeaGreen
+          Color.fromRGBO(135, 206, 235, 0.8), // Sky blue
+          Color.fromRGBO(100, 149, 237, 0.6), // Cornflower blue
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       const LinearGradient(
         colors: [
-          Color.fromRGBO(106, 90, 205, 1),   // SlateBlue
-          Color.fromRGBO(147, 112, 219, 1),  // MediumPurple
+          Color.fromRGBO(100, 149, 237, 0.6), // Cornflower blue
+          Color.fromRGBO(65, 105, 225, 0.4), // Royal blue
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       const LinearGradient(
         colors: [
-          Color.fromRGBO(255, 215, 0, 1),    // Gold
-          Color.fromRGBO(255, 255, 102, 1),  // LightYellow
+          Color.fromRGBO(65, 105, 225, 0.4), // Royal blue
+          Color.fromRGBO(30, 144, 255, 0.2), // Dodger blue
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
