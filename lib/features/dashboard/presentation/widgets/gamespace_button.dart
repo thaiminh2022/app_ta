@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
-import 'package:app_ta/features/games/wordle/presentation/index.dart'; // Added import for GameScreen
+import 'package:app_ta/features/games/wordle/presentation/index.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:app_ta/core/providers/app_state.dart';
 
 // Widget cho nút Gamespace với icon tùy chỉnh
 class GamespaceButton extends StatefulWidget {
@@ -157,7 +159,34 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Hangman()),
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      body: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: ColorFiltered(
+                                colorFilter: ColorFilter.matrix([
+                                  1, 0, 0, 0, 0, // R
+                                  0, 1, 0, 0, 0, // G
+                                  0, 0, 1, 0, 0, // B
+                                  0, 0, 0, 1, 0, // A
+                                ]),
+                                child: Image.asset(
+                                  context.watch<AppState>().isDarkTheme
+                                      ? "assets/home_screen/dashboard_black.png"
+                                      : "assets/home_screen/dashboard.png",
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Hangman(),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               }),
               _buildGameButton(context, 'Wordle', 1, () {
@@ -165,8 +194,33 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const WordleGame(),
-                  ), // Navigate to Wordle
+                    builder: (context) => Scaffold(
+                      body: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: ColorFiltered(
+                                colorFilter: ColorFilter.matrix([
+                                  1, 0, 0, 0, 0, // R
+                                  0, 1, 0, 0, 0, // G
+                                  0, 0, 1, 0, 0, // B
+                                  0, 0, 0, 1, 0, // A
+                                ]),
+                                child: Image.asset(
+                                  context.watch<AppState>().isDarkTheme
+                                      ? "assets/home_screen/dashboard_black.png"
+                                      : "assets/home_screen/dashboard.png",
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const WordleGame(),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               }),
               _buildGameButton(context, 'Puzzle', 2, () {
@@ -189,20 +243,19 @@ class _GamespaceDialogState extends State<GamespaceDialog>
   }
 
   Widget _buildGameButton(
-    BuildContext context,
-    String label,
-    int index,
-    VoidCallback onTap,
-  ) {
-    const double radius = 100; // Khoảng cách từ tâm đến nút
-    final double angle =
-        (index * 90) * pi / 180; // Góc cho từng phần (90 độ mỗi phần)
+      BuildContext context,
+      String label,
+      int index,
+      VoidCallback onTap,
+      ) {
+    const double radius = 100;
+    final double angle = (index * 90) * pi / 180;
     final double x = radius * cos(angle);
     final double y = radius * sin(angle);
 
     return Positioned(
-      left: 150 + x - 40, // 150 là tâm vòng tròn, 40 là nửa chiều rộng nút
-      top: 150 + y - 40, // 150 là tâm vòng tròn, 40 là nửa chiều cao nút
+      left: 150 + x - 40,
+      top: 150 + y - 40,
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedBuilder(
@@ -217,15 +270,15 @@ class _GamespaceDialogState extends State<GamespaceDialog>
               shape: BoxShape.circle,
               gradient: const LinearGradient(
                 colors: [
-                  Color.fromRGBO(0, 180, 90, 1), // Vibrant teal
-                  Color.fromRGBO(0, 140, 70, 1), // Darker teal
+                  Color.fromRGBO(0, 180, 90, 1),
+                  Color.fromRGBO(0, 140, 70, 1),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha(51), // 0.2 * 255
+                  color: Colors.black.withAlpha(51),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -273,32 +326,32 @@ class GamespaceCirclePainter extends CustomPainter {
     final List<LinearGradient> gradients = [
       const LinearGradient(
         colors: [
-          Color.fromRGBO(173, 216, 230, 1), // Light blue
-          Color.fromRGBO(135, 206, 235, 0.8), // Sky blue
+          Color.fromRGBO(173, 216, 230, 1),
+          Color.fromRGBO(135, 206, 235, 0.8),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       const LinearGradient(
         colors: [
-          Color.fromRGBO(135, 206, 235, 0.8), // Sky blue
-          Color.fromRGBO(100, 149, 237, 0.6), // Cornflower blue
+          Color.fromRGBO(135, 206, 235, 0.8),
+          Color.fromRGBO(100, 149, 237, 0.6),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       const LinearGradient(
         colors: [
-          Color.fromRGBO(100, 149, 237, 0.6), // Cornflower blue
-          Color.fromRGBO(65, 105, 225, 0.4), // Royal blue
+          Color.fromRGBO(100, 149, 237, 0.6),
+          Color.fromRGBO(65, 105, 225, 0.4),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       const LinearGradient(
         colors: [
-          Color.fromRGBO(65, 105, 225, 0.4), // Royal blue
-          Color.fromRGBO(30, 144, 255, 0.2), // Dodger blue
+          Color.fromRGBO(65, 105, 225, 0.4),
+          Color.fromRGBO(30, 144, 255, 0.2),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -310,12 +363,12 @@ class GamespaceCirclePainter extends CustomPainter {
         Rect.fromCircle(center: center, radius: radius),
       );
       final Paint paint =
-          Paint()
-            ..shader = shader
-            ..style = PaintingStyle.fill;
+      Paint()
+        ..shader = shader
+        ..style = PaintingStyle.fill;
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
-        i * sweepAngle - pi / 2, // Bắt đầu từ góc -90 độ (đỉnh vòng tròn)
+        i * sweepAngle - pi / 2,
         sweepAngle,
         true,
         paint,
@@ -324,10 +377,10 @@ class GamespaceCirclePainter extends CustomPainter {
 
     // Thêm hiệu ứng ánh sáng ở giữa
     final glowPaint =
-        Paint()
-          ..color = Colors.white.withAlpha(50)
-          ..style = PaintingStyle.fill
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
+    Paint()
+      ..color = Colors.white.withAlpha(50)
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
     canvas.drawCircle(center, 50, glowPaint);
   }
 

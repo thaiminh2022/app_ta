@@ -192,7 +192,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.lightbulb),
-            label: "Word of the Day",
+            label: "Daily Word",
           ),
           NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
           NavigationDestination(
