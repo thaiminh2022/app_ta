@@ -72,8 +72,9 @@ flutter:
     - assets/words.csv
     - assets/word_pos.csv
     - assets/hangman/
-    - assets/home_screen/home_screen.png
+    - assets/home_screen/
     - assets/home_screen/dashboard.png
+    - assets/home_screen/dashboard_black.png
     - assets/icon/icon.png
     - assets/home_screen/video_background.mp4
     - assets/icon/gamespace_icon.png
