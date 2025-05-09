@@ -45,40 +45,33 @@ class QuickActionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              ListView(
+                shrinkWrap: true,
                 children: [
-                  SizedBox(
-                    width: 80,
-                    child: MenuActionButton(
-                      icon: Icons.book,
-                      label: 'Dictionary',
-                      route: DictionarySearch(),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 80,
-                    child: MenuActionButton(
-                      icon: Icons.gamepad,
-                      label: 'Hangman',
-                      route: Hangman(),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 80,
-                    child: MenuActionButton(
-                      icon: Icons.lightbulb_outline,
-                      label: 'Daily Word',
-                      route: WordOfTheDayScreen(),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 80,
-                    child: MenuActionButton(
-                      icon: Icons.grid_on,
-                      label: 'Wordle',
-                      route: const WordleGame(),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MenuActionButton(
+                        icon: Icons.book,
+                        label: 'Dictionary',
+                        route: DictionarySearch(),
+                      ),
+                      MenuActionButton(
+                        icon: Icons.gamepad,
+                        label: 'Hangman',
+                        route: Hangman(),
+                      ),
+                      MenuActionButton(
+                        icon: Icons.lightbulb_outline,
+                        label: 'Daily Word',
+                        route: WordOfTheDayScreen(),
+                      ),
+                      MenuActionButton(
+                        icon: Icons.grid_on,
+                        label: 'Wordle',
+                        route: const WordleGame(),
+                      ),
+                    ],
                   ),
                 ],
               ),

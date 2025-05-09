@@ -161,8 +161,32 @@ class _BottomNavbarState extends State<BottomNavbar> {
 
   @override
   Widget build(BuildContext context) {
+    var darkTheme = context.watch<AppState>().isDarkTheme;
     return Scaffold(
-      body: _widgetOptions.elementAt(_idx),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: ColorFiltered(
+                colorFilter: ColorFilter.matrix([
+                  1, 0, 0, 0, 0, // R
+                  0, 1, 0, 0, 0, // G
+                  0, 0, 1, 0, 0, // B
+                  0, 0, 0, 1, 0, // A
+                ]),
+                child: Image.asset(
+                  darkTheme
+                      ? "assets/home_screen/dashboard_black.png"
+                      : "assets/home_screen/dashboard.png",
+                  gaplessPlayback: true,
+                ),
+              ),
+            ),
+          ),
+          SafeArea(child: _widgetOptions[_idx]),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
