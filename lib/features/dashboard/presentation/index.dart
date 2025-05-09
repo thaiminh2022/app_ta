@@ -22,18 +22,6 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
-    // Tiền tải hình ảnh dashboard.png và gamespace_icon.png để giảm độ trễ
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      precacheImage(
-        const AssetImage('assets/home_screen/dashboard.png'),
-        context,
-      );
-      precacheImage(
-        const AssetImage('assets/icon/gamespace_icon.png'),
-        context,
-      );
-    });
-
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
