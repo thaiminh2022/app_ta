@@ -8,6 +8,7 @@ class LearnedWordsView extends StatelessWidget {
   LearnedWordsView({super.key});
 
   final List<String> _deletedWords = [];
+  static const routeName = "/learnedWords";
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +37,10 @@ class LearnedWordsView extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (ctx) => WordInfoView(searchWord: word),
-                  ),
+                  WordInfoView.routeName,
+                  arguments: WordInfoViewArgs(word),
                 );
               },
             ),

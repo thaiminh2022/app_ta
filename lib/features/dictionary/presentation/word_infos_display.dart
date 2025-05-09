@@ -5,8 +5,8 @@ import 'package:app_ta/features/dictionary/presentation/widget/learned_button.da
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'meaning_display.dart';
-import 'phonetic_display.dart';
+import 'widget/meaning_display.dart';
+import 'widget/phonetic_display.dart';
 
 class WordInfosDisplay extends StatelessWidget {
   const WordInfosDisplay({super.key, required this.wordInfo, this.cerf});

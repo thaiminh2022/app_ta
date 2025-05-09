@@ -156,11 +156,10 @@ class WordOfTheDay extends StatelessWidget {
                 visible: word.definition != null,
                 child: FilledButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (ctx) => WordInfoView(searchWord: word.word),
-                      ),
+                      WordInfoView.routeName,
+                      arguments: WordInfoViewArgs(word.word, cerf: word.cerf),
                     );
                   },
                   child: Padding(
