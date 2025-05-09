@@ -92,12 +92,19 @@ class WordOfTheDayScreen extends StatelessWidget {
           child: FutureBuilder<WordOfTheDayModel>(
             future: _wordService.getWordOfTheDay(context.read<AppState>()),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.hasData && snapshot.data != null) {
+                return WordOfTheDay(word: snapshot.requireData);
+              }
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    "Error: ${snapshot.error}",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                );
+              } else {
                 return const Center(child: CircularProgressIndicator());
               }
-
-              final word = snapshot.requireData;
-              return WordOfTheDay(word: word);
             },
           ),
         ),
