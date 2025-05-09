@@ -7,8 +7,16 @@ import 'package:provider/provider.dart';
 
 import 'word_infos_display.dart';
 
+class WordInfoViewArgs {
+  final String searchWord;
+  final WordCerf? cerf;
+  const WordInfoViewArgs(this.searchWord, {this.cerf});
+}
+
 class WordInfoView extends StatefulWidget {
   const WordInfoView({super.key, required this.searchWord, this.cerf});
+  static const routeName = "/search";
+
   final String searchWord;
   final WordCerf? cerf;
 
@@ -17,8 +25,11 @@ class WordInfoView extends StatefulWidget {
 }
 
 class _WordInfoViewState extends State<WordInfoView> {
-  Future<Result<WordInfoUsable, String>> loadWord(BuildContext ctx) async {
-    var res = await ctx.read<AppState>().searchWord(widget.searchWord);
+  Future<Result<WordInfoUsable, String>> loadWord(
+    BuildContext ctx,
+    String searchWord,
+  ) async {
+    var res = await ctx.read<AppState>().searchWord(searchWord);
     return res;
   }
 
@@ -29,7 +40,7 @@ class _WordInfoViewState extends State<WordInfoView> {
       body: Container(
         margin: EdgeInsets.all(10.0),
         child: FutureBuilder<Result<WordInfoUsable, String>>(
-          future: loadWord(context),
+          future: loadWord(context, widget.searchWord),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
               var res = snapshot.data!;

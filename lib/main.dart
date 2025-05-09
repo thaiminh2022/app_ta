@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
 import 'package:app_ta/features/dashboard/presentation/index.dart';
-import 'package:app_ta/features/dictionary/presentation/index.dart';
-import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/navigators/dashboard_navigator.dart';
+import 'package:app_ta/navigators/dictionary_navigator.dart';
+import 'package:app_ta/navigators/hangman_navigator.dart';
+import 'package:app_ta/navigators/word_of_the_day_navigator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:app_ta/features/word_of_the_day/presentation/index.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -152,11 +153,11 @@ class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 2;
 
   final List<Widget> _widgetOptions = <Widget>[
-    WordOfTheDayScreen(),
-    DictionarySearch(),
-    const Dashboard(),
-    Hangman(),
-    const WordleGame(), // 👈 Wordle tab
+    WordOfTheDayNavigator(),
+    DictionaryNavigator(),
+    DashboardNavigator(),
+    HangmanNavigator(),
+    WordleGame(), // 👈 Wordle tab
   ];
 
   @override
@@ -184,25 +185,25 @@ class _BottomNavbarState extends State<BottomNavbar> {
               ),
             ),
           ),
-          SafeArea(child: _widgetOptions[_idx]),
+          SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
+      bottomNavigationBar: NavigationBar(
+        destinations: const [
+          NavigationDestination(
             icon: Icon(Icons.lightbulb),
             label: "Word of the Day",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Dictionary"),
-          BottomNavigationBarItem(
+          NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
+          NavigationDestination(
             icon: Icon(Icons.dashboard),
             label: "Dashboard",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: "Hangman"),
-          BottomNavigationBarItem(icon: Icon(Icons.grid_on), label: "Wordle"),
+          NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
+          NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
         ],
-        currentIndex: _idx,
-        onTap: (value) {
+        selectedIndex: _idx,
+        onDestinationSelected: (value) {
           if (value >= _widgetOptions.length || value < 0) return;
           if (value != _idx) {
             setState(() {
@@ -210,14 +211,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
             });
           }
         },
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(
-          context,
-        ).colorScheme.onSurface.withAlpha(153),
-        selectedLabelStyle: const TextStyle(fontSize: 18),
-        unselectedLabelStyle: const TextStyle(fontSize: 18),
-        selectedIconTheme: const IconThemeData(size: 30),
-        unselectedIconTheme: const IconThemeData(size: 30),
+        indicatorColor: Theme.of(context).colorScheme.primary,
         backgroundColor:
             Theme.of(context).brightness == Brightness.dark
                 ? const Color.fromRGBO(30, 30, 30, 1)

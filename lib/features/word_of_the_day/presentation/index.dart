@@ -167,28 +167,29 @@ class WordOfTheDay extends StatelessWidget {
                     color: theme.colorScheme.onSurface,
                   ),
                 ),
-                SizedBox(height: 10),
-                Visibility(
-                  visible: word.definition != null,
-                  child: FilledButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => WordInfoView(searchWord: word.word),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 10),
-                          Text("Check definition"),
-                        ],
-                      ),
+
+              ),
+              SizedBox(height: 10),
+              Visibility(
+                visible: word.definition != null,
+                child: FilledButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      WordInfoView.routeName,
+                      arguments: WordInfoViewArgs(word.word, cerf: word.cerf),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.search),
+                        SizedBox(width: 10),
+                        Text("Check definition"),
+                      ],
+
                     ),
                   ),
                 ),

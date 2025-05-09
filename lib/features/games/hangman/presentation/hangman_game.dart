@@ -1,14 +1,23 @@
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/games/hangman/models/hangman.dart';
-import 'package:app_ta/features/games/hangman/presentation/hangman_hint.dart';
-import 'package:app_ta/features/games/hangman/presentation/the_hangman_visual.dart';
+import 'package:app_ta/features/games/hangman/presentation/widgets/hangman_hint.dart';
+import 'package:app_ta/features/games/hangman/presentation/widgets/the_hangman_visual.dart';
 import 'package:flutter/material.dart';
+
+class HangmanGameArgs {
+  final String word;
+  final WordCerf? cerf;
+
+  HangmanGameArgs(this.word, {this.cerf});
+}
 
 class HangmanGame extends StatefulWidget {
   const HangmanGame({super.key, required this.word, this.cerf});
   final String word;
   final WordCerf? cerf;
+
+  static const routeName = "/hangman_game";
 
   @override
   State<HangmanGame> createState() => _HangmanGameState();
@@ -26,7 +35,7 @@ class _HangmanGameState extends State<HangmanGame> {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildGameEnd() {
+    Widget buildGameEnd(BuildContext dialogContext) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -34,15 +43,11 @@ class _HangmanGameState extends State<HangmanGame> {
           SizedBox(height: 10),
           FilledButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.maybePop(dialogContext);
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => WordInfoView(
-                        searchWord: game.word,
-                        cerf: widget.cerf,
-                      ),
-                ),
+                WordInfoView.routeName,
+                arguments: WordInfoViewArgs(game.word, cerf: widget.cerf),
               );
             },
             child: Text("Check definition"),
@@ -53,14 +58,14 @@ class _HangmanGameState extends State<HangmanGame> {
             children: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(dialogContext);
                   Navigator.maybePop(context);
                 },
                 child: Text("Replay?"),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(dialogContext);
                 },
                 child: Text("Close"),
               ),
@@ -119,7 +124,7 @@ class _HangmanGameState extends State<HangmanGame> {
                         builder:
                             (b) => AlertDialog.adaptive(
                               title: Text(game.isWon ? "You won" : "You lost"),
-                              content: buildGameEnd(),
+                              content: buildGameEnd(b),
                             ),
                       );
                     }

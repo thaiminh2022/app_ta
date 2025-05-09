@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/games/hangman/presentation/hangman_game.dart';
-import 'package:app_ta/features/games/hangman/presentation/the_hangman_visual.dart';
+import 'package:app_ta/features/games/hangman/presentation/widgets/the_hangman_visual.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Hangman extends StatelessWidget {
   const Hangman({super.key});
+  static const routeName = "/hangman";
 
   @override
   Widget build(BuildContext context) {

@@ -107,15 +107,10 @@ class DictionarySearch extends StatelessWidget {
                                 _controller.text,
                               );
                               if (context.mounted) {
-                                Navigator.push(
+                                Navigator.pushNamed(
                                   context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => WordInfoView(
-                                          searchWord:
-                                              _controller.text.toLowerCase(),
-                                        ),
-                                  ),
+                                  WordInfoView.routeName,
+                                  arguments: WordInfoViewArgs(_controller.text),
                                 );
                               }
                             },
@@ -131,11 +126,9 @@ class DictionarySearch extends StatelessWidget {
                         ),
                         FilledButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushNamed(
                               context,
-                              MaterialPageRoute(
-                                builder: (ctx) => LearnedWordsView(),
-                              ),
+                              LearnedWordsView.routeName,
                             );
                           },
                           child: Text("Learned words"),
@@ -257,11 +250,10 @@ class _SearchHistoryItemViewState extends State<SearchHistoryItemView> {
                     ],
                   ),
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (ctx) => WordInfoView(searchWord: s),
-                      ),
+                      WordInfoView.routeName,
+                      arguments: WordInfoViewArgs(s),
                     );
                   },
                 ),
