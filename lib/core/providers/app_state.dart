@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:app_ta/core/services/random_word_service.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/core/models/result.dart';
@@ -14,6 +15,7 @@ class AppState extends ChangeNotifier {
   final _db = Database();
   final _cerfReader = CerfReader();
   final _wordInfoCleanupService = WordInfoCleanupService();
+  final _randomWordService = RandomWordService();
 
   var learnedWords = <String>[];
   var _themeMode = ThemeMode.light; // Default to light theme
@@ -86,13 +88,25 @@ class AppState extends ChangeNotifier {
     await prefs.setString("last_study_date", _lastStudyDate!.toIso8601String());
   }
 
-  Future<WordCerfResult> getRandomWordCerf() async {
-    await _cerfReader.cacheWordCerf();
-    var wordList = _cerfReader.cacheWordCerfModel;
-    var randWord = wordList[Random().nextInt(wordList.length)].word;
-    var cerfRes = await _cerfReader.getWordCerf(randWord);
+  Future<Result<WordCerfResult, String>> getRandomWordCerf({
+    RandomWordType t = RandomWordType.vocabulary,
+  }) async {
+    var res = await _randomWordService.getRandom(t: t);
+    if (res.isError) {
+      return Result.err(res.unwrapError());
+    } else {
+      // try until find a word that have definition
+      Result<WordInfoUsable, String> searchRes;
+      while (true) {
+        searchRes = await searchWord(res.unwrap().word.toLowerCase());
+        if (searchRes.isSuccess) break;
+        res = await _randomWordService.getRandom();
+      }
 
-    return WordCerfResult(word: randWord, cerf: cerfRes);
+      final val = searchRes.unwrap();
+      var cerf = await getWordCerf(val.word);
+      return Result.ok(WordCerfResult(word: val.word, cerf: cerf));
+    }
   }
 
   Future<WordCerf> getWordCerf(String word) async {
