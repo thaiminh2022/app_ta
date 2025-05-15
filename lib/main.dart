@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
-import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:app_ta/navigators/dashboard_navigator.dart';
 import 'package:app_ta/navigators/dictionary_navigator.dart';
 import 'package:app_ta/navigators/hangman_navigator.dart';
@@ -14,12 +13,13 @@ import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter/services.dart'; // Thêm để sử dụng SystemNavigator
 
 // 👇 Đã chỉnh lại đường dẫn cho GameScreen
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -37,7 +37,7 @@ Future<void> main() async {
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  AndroidInitializationSettings('@mipmap/ic_launcher');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
     tz.initializeTimeZones(); // Quan trọng
 
     const AndroidInitializationSettings androidInit =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initSettings = InitializationSettings(
       android: androidInit,
     );
@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
     );
   }
@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromRGBO(173, 216, 230, 1),
         ),
-        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 250, 1),
         cardColor: const Color.fromRGBO(255, 255, 255, 1),
       ),
       darkTheme: ThemeData(
@@ -151,71 +151,100 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 2;
+  int _backPressCount = 0; // Biến đếm số lần nhấn back
+  DateTime? _lastBackPressTime; // Biến lưu thời gian nhấn back cuối cùng
 
   final List<Widget> _widgetOptions = <Widget>[
     WordOfTheDayNavigator(),
     DictionaryNavigator(),
     DashboardNavigator(),
     HangmanNavigator(),
-    WordleGame(), // 👈 Wordle tab
+    WordleGame(),
   ];
 
   @override
   Widget build(BuildContext context) {
     var darkTheme = context.watch<AppState>().isDarkTheme;
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix([
-                  1, 0, 0, 0, 0, // R
-                  0, 1, 0, 0, 0, // G
-                  0, 0, 1, 0, 0, // B
-                  0, 0, 0, 1, 0, // A
-                ]),
-                child: Image.asset(
-                  darkTheme
-                      ? "assets/home_screen/dashboard_black.png"
-                      : "assets/home_screen/dashboard.png",
-                  gaplessPlayback: true,
+    return PopScope(
+      canPop: false, // Không cho phép pop tự động
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return; // Nếu đã pop, không làm gì thêm
+        // Kiểm tra thời gian giữa 2 lần nhấn back (2 giây)
+        if (_lastBackPressTime == null ||
+            DateTime.now().difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+          _backPressCount = 1;
+          _lastBackPressTime = DateTime.now();
+          // Hiển thị thông báo
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          _backPressCount++;
+          if (_backPressCount >= 2) {
+            // Thoát ứng dụng
+            if (Platform.isAndroid || Platform.isIOS) {
+              SystemNavigator.pop(); // Thoát hoàn toàn ứng dụng
+            }
+          }
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.matrix([
+                    1, 0, 0, 0, 0, // R
+                    0, 1, 0, 0, 0, // G
+                    0, 0, 1, 0, 0, // B
+                    0, 0, 0, 1, 0, // A
+                  ]),
+                  child: Image.asset(
+                    darkTheme
+                        ? "assets/home_screen/dashboard_black.png"
+                        : "assets/home_screen/dashboard.png",
+                    gaplessPlayback: true,
+                  ),
                 ),
               ),
             ),
-          ),
-          SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.lightbulb),
-            label: "Daily Word",
-          ),
-          NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
-          NavigationDestination(
-            icon: Icon(Icons.dashboard),
-            label: "Dashboard",
-          ),
-          NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
-          NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
-        ],
-        selectedIndex: _idx,
-        onDestinationSelected: (value) {
-          if (value >= _widgetOptions.length || value < 0) return;
-          if (value != _idx) {
-            setState(() {
-              _idx = value;
-            });
-          }
-        },
-        indicatorColor: Theme.of(context).colorScheme.primary,
-        backgroundColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? const Color.fromRGBO(30, 30, 30, 1)
-                : const Color.fromRGBO(255, 255, 255, 1),
+            SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.lightbulb),
+              label: "Daily Word",
+            ),
+            NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
+            NavigationDestination(
+              icon: Icon(Icons.dashboard),
+              label: "Dashboard",
+            ),
+            NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
+            NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
+          ],
+          selectedIndex: _idx,
+          onDestinationSelected: (value) {
+            if (value >= _widgetOptions.length || value < 0) return;
+            if (value != _idx) {
+              setState(() {
+                _idx = value;
+              });
+            }
+          },
+          indicatorColor: Theme.of(context).colorScheme.primary,
+          backgroundColor:
+          Theme.of(context).brightness == Brightness.dark
+              ? const Color.fromRGBO(30, 30, 30, 1)
+              : const Color.fromRGBO(255, 255, 255, 1),
+        ),
       ),
     );
   }
