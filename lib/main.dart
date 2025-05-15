@@ -15,7 +15,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/services.dart'; // Thêm để sử dụng SystemNavigator
 
-// 👇 Đã chỉnh lại đường dẫn cho GameScreen
+// Đã chỉnh lại đường dẫn cho GameScreen
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -75,7 +75,8 @@ class _MyAppState extends State<MyApp> {
 
     await flutterLocalNotificationsPlugin.initialize(initSettings);
 
-    // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
+    // Add thêm chức năng notifications:
+
     // notification not implemented for windows
     if (!Platform.isWindows) await _scheduleDailyWordNotification();
   }

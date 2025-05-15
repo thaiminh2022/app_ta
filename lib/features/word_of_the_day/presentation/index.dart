@@ -3,7 +3,6 @@ import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/word_of_the_day/models/word_of_the_day_model.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/features/word_of_the_day/services/word_of_the_day_service.dart';
-import 'package:app_ta/features/word_of_the_day/presentation/notification_setting_screen.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:provider/provider.dart';
 
@@ -73,19 +72,6 @@ class WordOfTheDayScreen extends StatelessWidget {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const NotificationSettingsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Center(
         child: Padding(
