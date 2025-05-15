@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app_ta/core/services/random_word_service.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
@@ -95,11 +97,20 @@ class AppState extends ChangeNotifier {
       return Result.err(res.unwrapError());
     } else {
       // try until find a word that have definition
-      Result<WordInfoUsable, String> searchRes;
-      while (true) {
+      late Result<WordInfoUsable, String> searchRes;
+      // max 10 attemps;
+      int attemps;
+      for (attemps = 0; attemps < 10; attemps++) {
         searchRes = await searchWord(res.unwrap().word.toLowerCase());
         if (searchRes.isSuccess) break;
         res = await _randomWordService.getRandom();
+      }
+      log("Total attemps at this word: $attemps");
+
+      if (searchRes.isError) {
+        return Result.err(
+          "cannot search for word definition, please retry or add more attempts in dev pharses",
+        );
       }
 
       final val = searchRes.unwrap();

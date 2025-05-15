@@ -216,7 +216,7 @@ class WordleGameState extends State<WordleGame> {
         centerTitle: true,
       ),
       body:
-          _canPlay
+          !_canPlay
               ? Center(
                 child: Card(
                   child: Column(
