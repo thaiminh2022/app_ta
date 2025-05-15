@@ -1,10 +1,10 @@
+import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
+import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/gamespace_button.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/about_dialog.dart';
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/settings_dialog.dart';
-import 'package:app_ta/features/dashboard/presentation/stats_card.dart';
-import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -32,12 +32,11 @@ class _DashboardState extends State<Dashboard>
   @override
   void dispose() {
     _controller.dispose();
-
     super.dispose();
   }
 
   void _showSettingsDialog() {
-    showDialog(context: context, builder: (ctx) => SettingsDialog());
+    showDialog(context: context, builder: (ctx) => const SettingsDialog());
   }
 
   void _showAboutDialog() {
@@ -55,17 +54,20 @@ class _DashboardState extends State<Dashboard>
       items: [
         PopupMenuItem(
           value: 'settings',
+          height: 48, // Chiều cao cố định cho tất cả các mục
           child: Row(
             children: [
               Icon(
                 Icons.settings,
                 color: Theme.of(context).colorScheme.primary,
+                size: 24, // Giảm kích thước icon về 24 để đồng nhất
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12), // Tăng khoảng cách giữa icon và text
               Text(
                 'Settings',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 16, // Đảm bảo font size đồng nhất
                 ),
               ),
             ],
@@ -73,14 +75,20 @@ class _DashboardState extends State<Dashboard>
         ),
         PopupMenuItem(
           value: 'about',
+          height: 48, // Chiều cao cố định
           child: Row(
             children: [
-              Icon(Icons.info, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
+              Icon(
+                Icons.info,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24, // Kích thước đồng nhất
+              ),
+              const SizedBox(width: 12),
               Text(
                 'About',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 16,
                 ),
               ),
             ],
@@ -88,17 +96,20 @@ class _DashboardState extends State<Dashboard>
         ),
         PopupMenuItem(
           value: 'quit',
+          height: 48, // Chiều cao cố định
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.exit_to_app,
-                color: Color.fromRGBO(255, 66, 66, 1),
+                color: const Color.fromRGBO(255, 66, 66, 1),
+                size: 24, // Kích thước đồng nhất
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Text(
                 'Quit',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 16,
                 ),
               ),
             ],
