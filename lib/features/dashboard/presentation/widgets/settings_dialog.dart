@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/word_of_the_day/models/notification_config.dart';
 import 'package:app_ta/features/word_of_the_day/services/notification_service.dart';
@@ -13,7 +15,10 @@ class SettingsDialog extends StatefulWidget {
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
-  TimeOfDay _selectedTime = const TimeOfDay(hour: 00, minute: 00); // Mặc định là 00:00
+  TimeOfDay _selectedTime = const TimeOfDay(
+    hour: 00,
+    minute: 00,
+  ); // Mặc định là 00:00
   final NotificationService _notificationService = NotificationService();
   bool _isNotificationEnabled = true; // Trạng thái bật/tắt thông báo
 
@@ -55,7 +60,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Notification changed to ${_selectedTime.format(context)}'),
+              content: Text(
+                'Notification changed to ${_selectedTime.format(context)}',
+              ),
             ),
           );
         }
@@ -66,13 +73,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
   Future<void> _toggleNotification() async {
     if (_isNotificationEnabled) {
       // Tắt thông báo
-      await _notificationService.flutterLocalNotificationsPlugin.cancel(0);
+      if (!Platform.isWindows) {
+        await _notificationService.flutterLocalNotificationsPlugin.cancel(0);
+      }
       setState(() {
         _isNotificationEnabled = false;
       });
     } else {
       // Bật thông báo với thời gian hiện tại
-      await _saveNotification();
+      if (!Platform.isWindows) {
+        await _saveNotification();
+      }
       setState(() {
         _isNotificationEnabled = true;
       });
@@ -157,7 +168,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
               Switch(
                 thumbIcon: WidgetStatePropertyAll(
                   Icon(
-                    _isNotificationEnabled ? Icons.notifications : Icons.notifications_off,
+                    _isNotificationEnabled
+                        ? Icons.notifications
+                        : Icons.notifications_off,
                     size: 20,
                   ),
                 ),
@@ -174,12 +187,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               decoration: BoxDecoration(
                 color: const Color.fromRGBO(240, 248, 255, 1),
-                border: Border.all(color: Theme.of(context).colorScheme.primary),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 timeText,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
