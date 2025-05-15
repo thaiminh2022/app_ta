@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:app_ta/core/services/random_word_service.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +104,7 @@ class AppState extends ChangeNotifier {
 
       final val = searchRes.unwrap();
       var cerf = await getWordCerf(val.word);
-      return Result.ok(WordCerfResult(word: val.word, cerf: cerf));
+      return Result.ok(WordCerfResult(wordInfo: val, cerf: cerf));
     }
   }
 
