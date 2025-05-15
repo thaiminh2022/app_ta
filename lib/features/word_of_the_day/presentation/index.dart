@@ -1,3 +1,4 @@
+import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/word_of_the_day/models/word_of_the_day_model.dart';
 import 'package:flutter/material.dart';
@@ -75,17 +76,41 @@ class WordOfTheDayScreen extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: FutureBuilder<WordOfTheDayModel>(
+          child: FutureBuilder<Result<WordOfTheDayModel, String>>(
             future: _wordService.getWordOfTheDay(context.read<AppState>()),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
-                return WordOfTheDay(word: snapshot.requireData);
+                final res = snapshot.requireData;
+                if (res.isError) {
+                  return Center(
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text("Word of the day is not available"),
+                            Text(res.unwrapError()),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return WordOfTheDay(word: res.unwrap());
               }
               if (snapshot.hasError) {
                 return Center(
-                  child: Text(
-                    "Error: ${snapshot.error}",
-                    style: TextStyle(color: Colors.red),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text("Word of the day is not available"),
+                          Text(snapshot.error.toString()),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               } else {

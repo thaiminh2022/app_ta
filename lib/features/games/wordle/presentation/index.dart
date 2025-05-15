@@ -18,15 +18,23 @@ class WordleGameState extends State<WordleGame> {
   late GameState gameState;
   final _submitController = TextEditingController();
   bool _isLoading = false;
+  bool _canPlay = true;
 
   Future<void> startNewGame() async {
     _isLoading = true;
     final wordRes = await context.read<AppState>().getRandomWordCerf();
 
+    if (wordRes.isError) {
+      _canPlay = false;
+      return;
+    }
+
+    final wordData = wordRes.unwrap();
+
     setState(() {
       gameState = GameState(
-        targetWord: wordRes.word.toUpperCase(),
-        maxGuesses: wordRes.word.length >= 7 ? 8 : 6,
+        targetWord: wordData.wordInfo.word.toUpperCase(),
+        maxGuesses: wordData.wordInfo.word.length >= 7 ? 8 : 6,
       );
     });
     _isLoading = false;
@@ -61,21 +69,90 @@ class WordleGameState extends State<WordleGame> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => ResultDialog(
-        hasWon: gameState.hasWon(),
-        targetWord: gameState.targetWord,
-        onPlayAgain: () {
-          Navigator.pop(context);
-          startNewGame();
-        },
-        onExit: () => Navigator.pop(context),
-      ),
+      builder:
+          (context) => ResultDialog(
+            hasWon: gameState.hasWon(),
+            targetWord: gameState.targetWord,
+            onPlayAgain: () {
+              Navigator.pop(context);
+              startNewGame();
+            },
+            onExit: () => Navigator.pop(context),
+          ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    Widget buildBody() {
+      if (_isLoading) {
+        return Center(child: CircularProgressIndicator());
+      } else {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Lưới đoán từ
+              Expanded(child: Center(child: GuessGrid(gameState: gameState))),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Container(
+                  padding: const EdgeInsets.all(
+                    4,
+                  ), // Padding for the gradient border
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color.fromRGBO(173, 216, 230, 1),
+                        Color.fromRGBO(135, 206, 235, 1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromRGBO(0, 0, 0, 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextField(
+                      controller: _submitController,
+                      onChanged: onInputChanged,
+                      decoration: InputDecoration(label: Text("Guess a word")),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^[a-zA-Z]+$'),
+                        ),
+                      ],
+                      textCapitalization: TextCapitalization.characters,
+                      onSubmitted: (_) => onSubmited(),
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  HintBtn(targetWord: gameState.targetWord),
+                  FilledButton(onPressed: onSubmited, child: Text("Submit")),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -138,74 +215,16 @@ class WordleGameState extends State<WordleGame> {
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Lưới đoán từ
-            Expanded(
-              child: Center(child: GuessGrid(gameState: gameState)),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Container(
-                padding: const EdgeInsets.all(4), // Padding for the gradient border
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color.fromRGBO(173, 216, 230, 1),
-                      Color.fromRGBO(135, 206, 235, 1),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromRGBO(0, 0, 0, 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _submitController,
-                    onChanged: onInputChanged,
-                    decoration: InputDecoration(
-                      label: Text("Guess a word"),
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'^[a-zA-Z]+$'),
-                      ),
-                    ],
-                    textCapitalization: TextCapitalization.characters,
-                    onSubmitted: (_) => onSubmited(),
+      body:
+          !_canPlay
+              ? Center(
+                child: Card(
+                  child: Column(
+                    children: [Text("Wordle not available, try again later")],
                   ),
                 ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                HintBtn(targetWord: gameState.targetWord),
-                FilledButton(
-                  onPressed: onSubmited,
-                  child: Text("Submit"),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+              )
+              : buildBody(),
     );
   }
 }
