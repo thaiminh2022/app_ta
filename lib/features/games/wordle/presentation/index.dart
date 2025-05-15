@@ -116,7 +116,7 @@ class WordleGameState extends State<WordleGame> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'WORDLE',
+                      'Wordle',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
