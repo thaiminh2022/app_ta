@@ -68,69 +68,67 @@ class _WordMatchState extends State<WordMatch> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: PageHeader("Word Match: ${_isSynonymMode ? "Synonym" : "Antonym"}"),
+        title: const PageHeader("Word Match"),
         actions: const [
           ProfileMenu(),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: FutureBuilder<Result<WordMatchData, String>>(
-            future: _matchFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data != null) {
-                final res = snapshot.requireData;
-                if (res.isError) {
-                  return Center(
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            const Text("Word Match is not available"),
-                            Text(res.unwrapError()),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                return WordMatchScreen(
-                  initialMatch: res.unwrap(),
-                  isSynonymMode: _isSynonymMode,
-                  onRefresh: _refreshMatch,
-                  onToggleMode: _toggleMode,
-                  score: _score,
-                  highestScore: _highestScore,
-                  onScoreUpdate: (int newScore) {
-                    setState(() {
-                      _score = newScore;
-                      _saveHighestScore();
-                    });
-                  },
-                );
-              }
-              if (snapshot.hasError) {
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: FutureBuilder<Result<WordMatchData, String>>(
+          future: _matchFuture,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              final res = snapshot.requireData;
+              if (res.isError) {
                 return Center(
                   child: Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
-                          const Text("Word Match is not available"),
-                          Text(snapshot.error.toString()),
+                          const Text("Word Match is not work"),
+                          Text(res.unwrapError()),
                         ],
                       ),
                     ),
                   ),
                 );
-              } else {
-                return const Center(child: CircularProgressIndicator());
               }
-            },
-          ),
+
+              return WordMatchScreen(
+                initialMatch: res.unwrap(),
+                isSynonymMode: _isSynonymMode,
+                onRefresh: _refreshMatch,
+                onToggleMode: _toggleMode,
+                score: _score,
+                highestScore: _highestScore,
+                onScoreUpdate: (int newScore) {
+                  setState(() {
+                    _score = newScore;
+                    _saveHighestScore();
+                  });
+                },
+              );
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        const Text("Word Match is not work"),
+                        Text(snapshot.error.toString()),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
         ),
       ),
     );
@@ -186,110 +184,140 @@ class WordMatchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color.fromRGBO(173, 216, 230, 1),
-                Color.fromRGBO(135, 206, 235, 1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: const Color.fromRGBO(0, 0, 0, 0.2),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0, // Adjusted to align with the left edge of the center box
           child: Container(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(2.0),
             decoration: BoxDecoration(
-              color: theme.cardColor,
-              borderRadius: BorderRadius.circular(8),
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromRGBO(173, 216, 230, 1),
+                  Color.fromRGBO(135, 206, 235, 1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(6),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          "Score: $score",
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Text(
-                          "Highest: $highestScore",
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Mode: ${isSynonymMode ? 'Synonym' : 'Antonym'}",
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Switch Mode: ",
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.swap_horiz, size: 30),
-                          onPressed: onToggleMode,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  initialMatch.word.toUpperCase(),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                const SizedBox(height: 20),
-                Column(
-                  children: initialMatch.answerOptions.map((option) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => _handleAnswer(context, option),
-                          child: Text(option),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: const Icon(Icons.swap_horiz, size: 24),
+                    onPressed: onToggleMode,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
+        Center(
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromRGBO(173, 216, 230, 1),
+                  Color.fromRGBO(135, 206, 235, 1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromRGBO(0, 0, 0, 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            "Score: $score",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            "Highest: $highestScore",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    initialMatch.word.toUpperCase(),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Column(
+                    children: initialMatch.answerOptions.map((option) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => _handleAnswer(context, option),
+                            child: Text(option),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
