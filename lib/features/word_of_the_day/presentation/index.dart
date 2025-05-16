@@ -8,9 +8,28 @@ import 'package:app_ta/features/word_of_the_day/services/word_of_the_day_service
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:provider/provider.dart';
 
-class WordOfTheDayScreen extends StatelessWidget {
-  WordOfTheDayScreen({super.key});
+class WordOfTheDayScreen extends StatefulWidget {
+  const WordOfTheDayScreen({super.key});
+
+  @override
+  State<WordOfTheDayScreen> createState() => _WordOfTheDayScreenState();
+}
+
+class _WordOfTheDayScreenState extends State<WordOfTheDayScreen> {
   final _wordService = WordOfTheDayService();
+  late Future<Result<WordOfTheDayModel, String>> _wordFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _wordFuture = _wordService.getWordOfTheDay(context.read<AppState>());
+  }
+
+  void _refreshWord() {
+    setState(() {
+      _wordFuture = _wordService.getWordOfTheDay(context.read<AppState>(), true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +38,14 @@ class WordOfTheDayScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: PageHeader("Daily Word"),
-        actions: [ProfileMenu()],
+        title: const PageHeader("Daily Word"),
+        actions: const [ProfileMenu()],
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: FutureBuilder<Result<WordOfTheDayModel, String>>(
-            future: _wordService.getWordOfTheDay(context.read<AppState>()),
+            future: _wordFuture,
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 final res = snapshot.requireData;
@@ -37,7 +56,7 @@ class WordOfTheDayScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text("Word of the day is not available"),
+                            const Text("Word of the day is not available"),
                             Text(res.unwrapError()),
                           ],
                         ),
@@ -46,7 +65,7 @@ class WordOfTheDayScreen extends StatelessWidget {
                   );
                 }
 
-                return WordOfTheDay(word: res.unwrap());
+                return WordOfTheDay(word: res.unwrap(), onRefresh: _refreshWord);
               }
               if (snapshot.hasError) {
                 return Center(
@@ -55,7 +74,7 @@ class WordOfTheDayScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
-                          Text("Word of the day is not available"),
+                          const Text("Word of the day is not available"),
                           Text(snapshot.error.toString()),
                         ],
                       ),
@@ -74,9 +93,10 @@ class WordOfTheDayScreen extends StatelessWidget {
 }
 
 class WordOfTheDay extends StatelessWidget {
-  const WordOfTheDay({super.key, required this.word});
+  const WordOfTheDay({super.key, required this.word, required this.onRefresh});
 
   final WordOfTheDayModel word;
+  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -110,53 +130,64 @@ class WordOfTheDay extends StatelessWidget {
               color: theme.cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+            child: Stack(
               children: [
-                Icon(Icons.lightbulb, size: 100),
-                Badge(
-                  label: Text(word.cerf.name.toUpperCase()),
-                  offset: Offset(20, 0),
-                  child: Text(
-                    word.word,
-                    style: theme.primaryTextTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Text(
-                  word.definition ?? "",
-                  textAlign: TextAlign.center,
-                  style: theme.primaryTextTheme.bodyLarge?.copyWith(
-                    fontStyle: FontStyle.italic,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-
-                SizedBox(height: 10),
-                Visibility(
-                  visible: word.definition != null,
-                  child: FilledButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        WordInfoView.routeName,
-                        arguments: WordInfoViewArgs(word.word, cerf: word.cerf),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 10),
-                          Text("Check definition"),
-                        ],
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.lightbulb, size: 100),
+                    Badge(
+                      label: Text(word.cerf.name.toUpperCase()),
+                      offset: const Offset(20, 0),
+                      child: Text(
+                        word.word,
+                        style: theme.primaryTextTheme.titleLarge?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+                    Text(
+                      word.definition ?? "",
+                      textAlign: TextAlign.center,
+                      style: theme.primaryTextTheme.bodyLarge?.copyWith(
+                        fontStyle: FontStyle.italic,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Visibility(
+                      visible: word.definition != null,
+                      child: FilledButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            WordInfoView.routeName,
+                            arguments: WordInfoViewArgs(word.word, cerf: word.cerf),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.search),
+                              SizedBox(width: 10),
+                              Text("Check definition"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.refresh, color: Colors.grey),
+                    onPressed: onRefresh,
                   ),
                 ),
               ],

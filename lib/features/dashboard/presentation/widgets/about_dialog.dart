@@ -24,7 +24,7 @@ class AboutDialogView extends StatelessWidget {
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           Text(
-            'Version: V1.0.0',
+            'Version: V1.1.0',
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
         ],

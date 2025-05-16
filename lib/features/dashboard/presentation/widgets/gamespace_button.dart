@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/games/word_match/presentation/index.dart';
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,15 +58,39 @@ class _GamespaceButtonState extends State<GamespaceButton>
         builder: (context, child) {
           return Transform.scale(
             scale: _scaleAnimation.value,
-            child: ClipOval(
-              child: Image.asset(
-                'assets/icon/gamespace_icon.png',
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.error, color: Colors.red, size: 60);
-                },
+            child: Container(
+              padding: const EdgeInsets.all(4), // Add gradient border
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [
+                    Color.fromRGBO(173, 216, 230, 1),
+                    Color.fromRGBO(135, 206, 235, 1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white, // Inner background color
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/icon/gamespace_icon.png',
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.error,
+                        color: Colors.red,
+                        size: 60,
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           );
@@ -218,17 +243,48 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                                   ),
                                 ),
                               ),
+
                               const WordleView(),
+
                             ],
                           ),
                         ),
                   ),
                 );
               }),
-              _buildGameButton(context, 'Puzzle', 2, () {
+              _buildGameButton(context, 'Word Match', 2, () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Puzzle coming soon!')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => Scaffold(
+                          body: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.matrix([
+                                      1, 0, 0, 0, 0, // R
+                                      0, 1, 0, 0, 0, // G
+                                      0, 0, 1, 0, 0, // B
+                                      0, 0, 0, 1, 0, // A
+                                    ]),
+                                    child: Image.asset(
+                                      context.watch<AppState>().isDarkTheme
+                                          ? "assets/home_screen/dashboard_black.png"
+                                          : "assets/home_screen/dashboard.png",
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const WordMatch(),
+                            ],
+                          ),
+                        ),
+                  ),
                 );
               }),
               _buildGameButton(context, 'Quiz', 3, () {
