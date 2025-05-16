@@ -19,13 +19,27 @@ class MenuActionButton extends StatelessWidget {
       },
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            child: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.onPrimary,
-              size: 30,
+          Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromRGBO(173, 216, 230, 1),
+                  Color.fromRGBO(135, 206, 235, 1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.transparent, width: 2), // Đảm bảo viền không che gradient
+            ),
+            child: CircleAvatar(
+              radius: 30,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Icon(
+                icon,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 30,
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -33,7 +47,7 @@ class MenuActionButton extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface, // Use onSurface for better contrast in dark mode
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],

@@ -6,6 +6,7 @@ import 'package:app_ta/navigators/dashboard_navigator.dart';
 import 'package:app_ta/navigators/dictionary_navigator.dart';
 import 'package:app_ta/navigators/hangman_navigator.dart';
 import 'package:app_ta/navigators/word_of_the_day_navigator.dart';
+import 'package:app_ta/navigators/wordle_navigator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,11 +16,14 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/services.dart'; // Thêm để sử dụng SystemNavigator
 
-// Đã chỉnh lại đường dẫn cho GameScreen
+
+// 👇 Đã chỉnh lại đường dẫn cho GameScreen
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
+// Thêm import cho FlashcardGame
+import 'package:app_ta/features/flashcard/presentation/flashcard_game.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -37,7 +41,7 @@ Future<void> main() async {
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -68,7 +72,7 @@ class _MyAppState extends State<MyApp> {
     tz.initializeTimeZones(); // Quan trọng
 
     const AndroidInitializationSettings androidInit =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initSettings = InitializationSettings(
       android: androidInit,
     );
@@ -98,7 +102,7 @@ class _MyAppState extends State<MyApp> {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
     );
   }
@@ -156,11 +160,14 @@ class _BottomNavbarState extends State<BottomNavbar> {
   DateTime? _lastBackPressTime; // Biến lưu thời gian nhấn back cuối cùng
 
   final List<Widget> _widgetOptions = <Widget>[
-    WordOfTheDayNavigator(),
+    FlashcardGame(), // Flashcard lên đầu
     DictionaryNavigator(),
     DashboardNavigator(),
     HangmanNavigator(),
-    WordleGame(),
+
+    WordOfTheDayNavigator(), // Word of the Day xuống cuối
+    WordleNavigator(),
+
   ];
 
   @override
@@ -172,7 +179,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
         if (didPop) return; // Nếu đã pop, không làm gì thêm
         // Kiểm tra thời gian giữa 2 lần nhấn back (2 giây)
         if (_lastBackPressTime == null ||
-            DateTime.now().difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+            DateTime.now().difference(_lastBackPressTime!) >
+                const Duration(seconds: 2)) {
           _backPressCount = 1;
           _lastBackPressTime = DateTime.now();
           // Hiển thị thông báo
@@ -214,38 +222,36 @@ class _BottomNavbarState extends State<BottomNavbar> {
                 ),
               ),
             ),
-            SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.lightbulb),
-              label: "Daily Word",
-            ),
-            NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
-            NavigationDestination(
-              icon: Icon(Icons.dashboard),
-              label: "Dashboard",
-            ),
-            NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
-            NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
-          ],
-          selectedIndex: _idx,
-          onDestinationSelected: (value) {
-            if (value >= _widgetOptions.length || value < 0) return;
-            if (value != _idx) {
-              setState(() {
-                _idx = value;
-              });
-            }
-          },
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          backgroundColor:
-          Theme.of(context).brightness == Brightness.dark
-              ? const Color.fromRGBO(30, 30, 30, 1)
-              : const Color.fromRGBO(255, 255, 255, 1),
-        ),
+          ),
+          SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.style), label: "Flashcard"), // Flashcard lên đầu
+          NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
+          NavigationDestination(
+            icon: Icon(Icons.dashboard),
+            label: "Dashboard",
+          ),
+          NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
+          NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
+          NavigationDestination(icon: Icon(Icons.lightbulb), label: "Daily Word"), // Word of the Day xuống cuối
+        ],
+        selectedIndex: _idx,
+        onDestinationSelected: (value) {
+          if (value >= _widgetOptions.length || value < 0) return;
+          if (value != _idx) {
+            setState(() {
+              _idx = value;
+            });
+          }
+        },
+        indicatorColor: Theme.of(context).colorScheme.primary,
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? const Color.fromRGBO(30, 30, 30, 1)
+                : const Color.fromRGBO(255, 255, 255, 1),
       ),
     );
   }
