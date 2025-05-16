@@ -10,16 +10,24 @@ class WordInfoCleanupService {
     String word = infos.first.word;
     Map<String, List<WordDefinition>> meanings = {};
     Map<String, WordPhonetic> phonetics = {};
-
+    Set<String> antonyms = {};
+    Set<String> synonyms = {};
     for (var w in infos) {
       // meaning
       for (var m in w.meanings) {
         Set<WordDefinition> definitions = {};
-        definitions.addAll(
-          m.definitions.map((v) {
-            return WordDefinition(definition: v.definition, exmaple: v.example);
-          }),
-        );
+
+        for (var d in m.definitions) {
+          definitions.add(
+            WordDefinition(definition: d.definition, exmaple: d.example),
+          );
+
+          antonyms.addAll(d.antonyms);
+          synonyms.addAll(d.synonyms);
+        }
+
+        antonyms.addAll(m.antonyms);
+        synonyms.addAll(m.synonyms);
 
         if (meanings.containsKey(m.partOfSpeech)) {
           meanings[m.partOfSpeech]!.addAll(definitions);
@@ -31,12 +39,21 @@ class WordInfoCleanupService {
       for (var p in w.phonetics) {
         if (p.text == null) continue;
 
-        phonetics[p.text!] = WordPhonetic(audio: p.audio);
+        phonetics[p.text!] = WordPhonetic(
+          audio: p.audio.isEmpty ? null : p.audio,
+          source: p.sourceUrl,
+        );
       }
     }
 
     return Result.ok(
-      WordInfoUsable(word: word, phonetics: phonetics, meanings: meanings),
+      WordInfoUsable(
+        word: word,
+        phonetics: phonetics,
+        meanings: meanings,
+        synonyms: synonyms,
+        antonyms: antonyms,
+      ),
     );
   }
 }
@@ -45,17 +62,22 @@ class WordInfoUsable {
   String word;
   Map<String, List<WordDefinition>> meanings;
   Map<String, WordPhonetic> phonetics;
+  Set<String> antonyms;
+  Set<String> synonyms;
 
   WordInfoUsable({
     required this.word,
     required this.meanings,
     required this.phonetics,
+    required this.synonyms,
+    required this.antonyms,
   });
 }
 
 class WordPhonetic {
-  String audio;
-  WordPhonetic({required this.audio});
+  String? audio;
+  String? source;
+  WordPhonetic({required this.audio, required this.source});
 }
 
 class WordDefinition {
