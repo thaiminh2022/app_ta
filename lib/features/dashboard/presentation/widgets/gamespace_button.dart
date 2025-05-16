@@ -160,32 +160,33 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                      body: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: ColorFiltered(
-                                colorFilter: ColorFilter.matrix([
-                                  1, 0, 0, 0, 0, // R
-                                  0, 1, 0, 0, 0, // G
-                                  0, 0, 1, 0, 0, // B
-                                  0, 0, 0, 1, 0, // A
-                                ]),
-                                child: Image.asset(
-                                  context.watch<AppState>().isDarkTheme
-                                      ? "assets/home_screen/dashboard_black.png"
-                                      : "assets/home_screen/dashboard.png",
-                                  gaplessPlayback: true,
+                    builder:
+                        (context) => Scaffold(
+                          body: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.matrix([
+                                      1, 0, 0, 0, 0, // R
+                                      0, 1, 0, 0, 0, // G
+                                      0, 0, 1, 0, 0, // B
+                                      0, 0, 0, 1, 0, // A
+                                    ]),
+                                    child: Image.asset(
+                                      context.watch<AppState>().isDarkTheme
+                                          ? "assets/home_screen/dashboard_black.png"
+                                          : "assets/home_screen/dashboard.png",
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Hangman(),
+                            ],
                           ),
-                          Hangman(),
-                        ],
-                      ),
-                    ),
+                        ),
                   ),
                 );
               }),
@@ -194,32 +195,33 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                      body: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: ColorFiltered(
-                                colorFilter: ColorFilter.matrix([
-                                  1, 0, 0, 0, 0, // R
-                                  0, 1, 0, 0, 0, // G
-                                  0, 0, 1, 0, 0, // B
-                                  0, 0, 0, 1, 0, // A
-                                ]),
-                                child: Image.asset(
-                                  context.watch<AppState>().isDarkTheme
-                                      ? "assets/home_screen/dashboard_black.png"
-                                      : "assets/home_screen/dashboard.png",
-                                  gaplessPlayback: true,
+                    builder:
+                        (context) => Scaffold(
+                          body: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.matrix([
+                                      1, 0, 0, 0, 0, // R
+                                      0, 1, 0, 0, 0, // G
+                                      0, 0, 1, 0, 0, // B
+                                      0, 0, 0, 1, 0, // A
+                                    ]),
+                                    child: Image.asset(
+                                      context.watch<AppState>().isDarkTheme
+                                          ? "assets/home_screen/dashboard_black.png"
+                                          : "assets/home_screen/dashboard.png",
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              const WordleView(),
+                            ],
                           ),
-                          const WordleGame(),
-                        ],
-                      ),
-                    ),
+                        ),
                   ),
                 );
               }),
@@ -243,11 +245,11 @@ class _GamespaceDialogState extends State<GamespaceDialog>
   }
 
   Widget _buildGameButton(
-      BuildContext context,
-      String label,
-      int index,
-      VoidCallback onTap,
-      ) {
+    BuildContext context,
+    String label,
+    int index,
+    VoidCallback onTap,
+  ) {
     const double radius = 100;
     final double angle = (index * 90) * pi / 180;
     final double x = radius * cos(angle);
@@ -363,9 +365,9 @@ class GamespaceCirclePainter extends CustomPainter {
         Rect.fromCircle(center: center, radius: radius),
       );
       final Paint paint =
-      Paint()
-        ..shader = shader
-        ..style = PaintingStyle.fill;
+          Paint()
+            ..shader = shader
+            ..style = PaintingStyle.fill;
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         i * sweepAngle - pi / 2,
@@ -377,10 +379,10 @@ class GamespaceCirclePainter extends CustomPainter {
 
     // Thêm hiệu ứng ánh sáng ở giữa
     final glowPaint =
-    Paint()
-      ..color = Colors.white.withAlpha(50)
-      ..style = PaintingStyle.fill
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
+        Paint()
+          ..color = Colors.white.withAlpha(50)
+          ..style = PaintingStyle.fill
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
     canvas.drawCircle(center, 50, glowPaint);
   }
 
