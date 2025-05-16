@@ -21,18 +21,16 @@ class _FlashcardGameState extends State<FlashcardGame> {
   final TextEditingController _answerController = TextEditingController();
   bool _autoAddFromLearned = true;
   final Set<String> _addedLearnedWords = {};
-  bool _isDialogShowing = false; // Thêm biến cờ
-  double _rotation = 0; // Thêm biến góc quay
-  bool _isFlipping = false; // Để tránh lật liên tục
+  bool _isDialogShowing = false;
+  double _rotation = 0;
+  bool _isFlipping = false; 
 
   @override
   void initState() {
     super.initState();
     _loadFlashcards(); // Tải flashcard khi mở app
-    // Không tự động sync ở đây nữa
   }
 
-  // Use DictionaryApi to fetch the definition for a word
   Future<String> _getDefinition(String word) async {
     try {
       final api = DictionaryApi();
@@ -113,7 +111,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
     setState(() {
       _isFlipping = true;
     });
-    final target = _showAnswer ? 0.0 : 3.141592653589793; // pi
+    final target = _showAnswer ? 0.0 : 3.141592653589793;
     // Sử dụng AnimationController thì tốt hơn, nhưng với TweenAnimationBuilder thì setState là đủ
     setState(() {
       _rotation = target;
@@ -249,7 +247,6 @@ class _FlashcardGameState extends State<FlashcardGame> {
 
   @override
   Widget build(BuildContext context) {
-    // Không tự động sync ở đây nữa
     final card = _flashcards.isNotEmpty ? _flashcards[_currentIndex] : null;
     return Scaffold(
       appBar: AppBar(
