@@ -1,4 +1,6 @@
 import 'package:app_ta/core/models/word_cerf.dart';
+import 'package:app_ta/core/widgets/page_header.dart';
+import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/games/hangman/models/hangman.dart';
 import 'package:app_ta/features/games/hangman/presentation/widgets/hangman_hint.dart';
@@ -77,16 +79,13 @@ class _HangmanGameState extends State<HangmanGame> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(Icons.person_2),
-            SizedBox(width: 10),
-            Text("Hangman"),
-          ],
-        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [ProfileMenu()],
       ),
       body: Container(
         margin: EdgeInsets.all(10),
+
         child: ListView(
           children: [
             Text("Wrong guesses: ${game.badGuesses.join("; ")}"),
