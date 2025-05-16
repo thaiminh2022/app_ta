@@ -243,7 +243,9 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                                   ),
                                 ),
                               ),
-                              const WordleGame(),
+
+                              const WordleView(),
+
                             ],
                           ),
                         ),

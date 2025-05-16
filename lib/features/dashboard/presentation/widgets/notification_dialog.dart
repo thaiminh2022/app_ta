@@ -12,19 +12,21 @@ class NotificationDialog extends StatefulWidget {
 
 class _NotificationDialogState extends State<NotificationDialog> {
   TimeOfDay _selectedTime = const TimeOfDay(hour: 8, minute: 0);
+  bool _isNotificationEnabled = false;
   final NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
     super.initState();
-    _loadSavedTime();
+    _loadConfig();
   }
 
-  Future<void> _loadSavedTime() async {
+  Future<void> _loadConfig() async {
     final config = await _notificationService.loadConfig();
     if (config != null) {
       setState(() {
         _selectedTime = TimeOfDay(hour: config.hour, minute: config.minute);
+        _isNotificationEnabled = config.isEnabled;
       });
     }
   }
@@ -35,29 +37,59 @@ class _NotificationDialogState extends State<NotificationDialog> {
       initialTime: _selectedTime,
     );
     if (time != null) {
-      setState(() => _selectedTime = time);
+      setState(() {
+        _selectedTime = time;
+      });
+      if (_isNotificationEnabled) {
+        await _saveNotification();
+      }
+      await _saveConfig();
     }
   }
 
-  Future<void> _saveSettings() async {
-    await _notificationService.flutterLocalNotificationsPlugin.cancel(0); // Hủy thông báo cũ
+  Future<void> _toggleNotification(bool value) async {
+    setState(() {
+      _isNotificationEnabled = value;
+    });
+    if (_isNotificationEnabled) {
+      await _saveNotification();
+    } else {
+      await _notificationService.cancelNotification();
+    }
+    await _saveConfig();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isNotificationEnabled
+                ? 'Notification scheduled at ${_selectedTime.format(context)}'
+                : 'Notification disabled',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _saveNotification() async {
     final config = NotificationConfig(
       hour: _selectedTime.hour,
       minute: _selectedTime.minute,
       title: 'Word of the Day',
       body: 'Tap to see today\'s word!',
+      isEnabled: _isNotificationEnabled,
     );
     await _notificationService.scheduleDailyNotification(config);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Notification scheduled at ${_selectedTime.format(context)}',
-          ),
-        ),
-      );
-      Navigator.pop(context); // Đóng dialog sau khi lưu
-    }
+  }
+
+  Future<void> _saveConfig() async {
+    final config = NotificationConfig(
+      hour: _selectedTime.hour,
+      minute: _selectedTime.minute,
+      title: 'Word of the Day',
+      body: 'Tap to see today\'s word!',
+      isEnabled: _isNotificationEnabled,
+    );
+    await _notificationService.saveConfig(config);
   }
 
   @override
@@ -65,6 +97,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
     final timeText = DateFormat.Hm().format(
       DateTime(0, 0, 0, _selectedTime.hour, _selectedTime.minute),
     );
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: Theme.of(context).cardColor,
@@ -85,24 +118,51 @@ class _NotificationDialogState extends State<NotificationDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Enable Notifications:',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
+              Switch(
+                value: _isNotificationEnabled,
+                onChanged: _toggleNotification,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text(
             'Notification Time:',
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 8),
-          Text(
-            timeText,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          GestureDetector(
+            onTap: _pickTime,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(240, 248, 255, 1),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                timeText,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: _pickTime,
-            child: const Text('Pick Time'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _saveSettings,
-            child: const Text('Save & Schedule'),
+            onPressed: () {
+              _toggleNotification(!_isNotificationEnabled);
+            },
+            child: Text(_isNotificationEnabled ? 'Disable' : 'Enable'),
           ),
         ],
       ),

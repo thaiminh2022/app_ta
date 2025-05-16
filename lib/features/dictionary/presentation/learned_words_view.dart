@@ -23,6 +23,17 @@ class LearnedWordsView extends StatelessWidget {
       appBar: AppBar(title: Text("Learned Words")),
       body: ListView(
         children: [
+          Visibility(
+            visible: learnedWords.isEmpty,
+            child: Text(
+              "Tap the heart when searching in dictionary to learn",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w100,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
           for (var word in learnedWords)
             ListTile(
               title: Row(
