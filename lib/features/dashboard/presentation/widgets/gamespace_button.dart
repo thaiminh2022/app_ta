@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/games/word_match/presentation/index.dart';
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
-import 'package:app_ta/navigators/word_match_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
@@ -83,7 +83,11 @@ class _GamespaceButtonState extends State<GamespaceButton>
                     height: 60,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error, color: Colors.red, size: 60);
+                      return const Icon(
+                        Icons.error,
+                        color: Colors.red,
+                        size: 60,
+                      );
                     },
                   ),
                 ),
@@ -181,32 +185,33 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                      body: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: ColorFiltered(
-                                colorFilter: ColorFilter.matrix([
-                                  1, 0, 0, 0, 0, // R
-                                  0, 1, 0, 0, 0, // G
-                                  0, 0, 1, 0, 0, // B
-                                  0, 0, 0, 1, 0, // A
-                                ]),
-                                child: Image.asset(
-                                  context.watch<AppState>().isDarkTheme
-                                      ? "assets/home_screen/dashboard_black.png"
-                                      : "assets/home_screen/dashboard.png",
-                                  gaplessPlayback: true,
+                    builder:
+                        (context) => Scaffold(
+                          body: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.matrix([
+                                      1, 0, 0, 0, 0, // R
+                                      0, 1, 0, 0, 0, // G
+                                      0, 0, 1, 0, 0, // B
+                                      0, 0, 0, 1, 0, // A
+                                    ]),
+                                    child: Image.asset(
+                                      context.watch<AppState>().isDarkTheme
+                                          ? "assets/home_screen/dashboard_black.png"
+                                          : "assets/home_screen/dashboard.png",
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Hangman(),
+                            ],
                           ),
-                          Hangman(),
-                        ],
-                      ),
-                    ),
+                        ),
                   ),
                 );
               }),
@@ -215,32 +220,33 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                      body: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: ColorFiltered(
-                                colorFilter: ColorFilter.matrix([
-                                  1, 0, 0, 0, 0, // R
-                                  0, 1, 0, 0, 0, // G
-                                  0, 0, 1, 0, 0, // B
-                                  0, 0, 0, 1, 0, // A
-                                ]),
-                                child: Image.asset(
-                                  context.watch<AppState>().isDarkTheme
-                                      ? "assets/home_screen/dashboard_black.png"
-                                      : "assets/home_screen/dashboard.png",
-                                  gaplessPlayback: true,
+                    builder:
+                        (context) => Scaffold(
+                          body: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.matrix([
+                                      1, 0, 0, 0, 0, // R
+                                      0, 1, 0, 0, 0, // G
+                                      0, 0, 1, 0, 0, // B
+                                      0, 0, 0, 1, 0, // A
+                                    ]),
+                                    child: Image.asset(
+                                      context.watch<AppState>().isDarkTheme
+                                          ? "assets/home_screen/dashboard_black.png"
+                                          : "assets/home_screen/dashboard.png",
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              const WordleGame(),
+                            ],
                           ),
-                          const WordleGame(),
-                        ],
-                      ),
-                    ),
+                        ),
                   ),
                 );
               }),
@@ -249,32 +255,33 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                      body: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: ColorFiltered(
-                                colorFilter: ColorFilter.matrix([
-                                  1, 0, 0, 0, 0, // R
-                                  0, 1, 0, 0, 0, // G
-                                  0, 0, 1, 0, 0, // B
-                                  0, 0, 0, 1, 0, // A
-                                ]),
-                                child: Image.asset(
-                                  context.watch<AppState>().isDarkTheme
-                                      ? "assets/home_screen/dashboard_black.png"
-                                      : "assets/home_screen/dashboard.png",
-                                  gaplessPlayback: true,
+                    builder:
+                        (context) => Scaffold(
+                          body: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.matrix([
+                                      1, 0, 0, 0, 0, // R
+                                      0, 1, 0, 0, 0, // G
+                                      0, 0, 1, 0, 0, // B
+                                      0, 0, 0, 1, 0, // A
+                                    ]),
+                                    child: Image.asset(
+                                      context.watch<AppState>().isDarkTheme
+                                          ? "assets/home_screen/dashboard_black.png"
+                                          : "assets/home_screen/dashboard.png",
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              const WordMatch(),
+                            ],
                           ),
-                          const WordMatchNavigator(),
-                        ],
-                      ),
-                    ),
+                        ),
                   ),
                 );
               }),
@@ -292,11 +299,11 @@ class _GamespaceDialogState extends State<GamespaceDialog>
   }
 
   Widget _buildGameButton(
-      BuildContext context,
-      String label,
-      int index,
-      VoidCallback onTap,
-      ) {
+    BuildContext context,
+    String label,
+    int index,
+    VoidCallback onTap,
+  ) {
     const double radius = 100;
     final double angle = (index * 90) * pi / 180;
     final double x = radius * cos(angle);
@@ -412,9 +419,9 @@ class GamespaceCirclePainter extends CustomPainter {
         Rect.fromCircle(center: center, radius: radius),
       );
       final Paint paint =
-      Paint()
-        ..shader = shader
-        ..style = PaintingStyle.fill;
+          Paint()
+            ..shader = shader
+            ..style = PaintingStyle.fill;
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         i * sweepAngle - pi / 2,
@@ -426,10 +433,10 @@ class GamespaceCirclePainter extends CustomPainter {
 
     // Thêm hiệu ứng ánh sáng ở giữa
     final glowPaint =
-    Paint()
-      ..color = Colors.white.withAlpha(50)
-      ..style = PaintingStyle.fill
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
+        Paint()
+          ..color = Colors.white.withAlpha(50)
+          ..style = PaintingStyle.fill
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
     canvas.drawCircle(center, 50, glowPaint);
   }
 

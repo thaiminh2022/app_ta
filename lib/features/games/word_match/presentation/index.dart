@@ -4,7 +4,6 @@ import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/games/word_match/presentation/word_match_screen.dart';
-import 'package:app_ta/features/games/word_match/services/word_match_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,34 +30,51 @@ class WordMatch extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FilledButton(
-                onPressed: () {
-                  var learnedWords = context.read<AppState>().learnedWords;
+                onPressed: () async {
+                  var appState = context.read<AppState>();
+                  var learnedWords = appState.learnedWords;
                   if (learnedWords.isEmpty) return;
 
                   var randIdx = Random().nextInt(learnedWords.length);
                   var randWord = learnedWords[randIdx];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WordMatchScreen(word: randWord),
-                    ),
-                  );
+                  var wordInfoRes = await appState.searchWord(randWord);
+
+                  if (wordInfoRes.isError) {
+                    return;
+                  }
+
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                WordMatchScreen(wordInfo: wordInfoRes.unwrap()),
+                      ),
+                    );
+                  }
                 },
                 child: const Text("From learned words"),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
-                  final wordService = WordMatchService();
-                  final words = await wordService.getRandomWord();
-                  if (words.isEmpty) return;
+                  var randRes =
+                      await context.read<AppState>().getRandomWordCerf();
 
-                  final randWord = words.first;
+                  if (randRes.isError) {
+                    print(randRes.error);
+                    return;
+                  }
+
+                  final randWord = randRes.unwrap();
                   if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WordMatchScreen(word: randWord),
+                        builder:
+                            (context) =>
+                                WordMatchScreen(wordInfo: randWord.wordInfo),
                       ),
                     );
                   }

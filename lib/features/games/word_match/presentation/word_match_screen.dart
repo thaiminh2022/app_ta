@@ -1,49 +1,25 @@
+import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
-import 'package:app_ta/features/games/word_match/services/word_match_service.dart';
 
 class WordMatchScreen extends StatefulWidget {
-  final String word;
+  final WordInfoUsable wordInfo;
 
-  const WordMatchScreen({super.key, required this.word});
+  const WordMatchScreen({super.key, required this.wordInfo});
 
   @override
   State<WordMatchScreen> createState() => _WordMatchScreenState();
 }
 
 class _WordMatchScreenState extends State<WordMatchScreen> {
-  final WordMatchService _service = WordMatchService();
-  List<String> synonyms = [];
-  List<String> antonyms = [];
-  bool _isLoading = false;
-  String? _errorMessage;
+  Set<String> synonyms = {};
+  Set<String> antonyms = {};
 
   @override
   void initState() {
     super.initState();
-    _fetchWordRelations();
-  }
-
-  Future<void> _fetchWordRelations() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final syn = await _service.getSynonyms(widget.word);
-      final ant = await _service.getAntonyms(widget.word);
-      setState(() {
-        synonyms = syn;
-        antonyms = ant;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = "Failed to load word data. Please try again.";
-        _isLoading = false;
-      });
-    }
+    synonyms = widget.wordInfo.synonyms;
+    antonyms = widget.wordInfo.antonyms;
   }
 
   @override
@@ -54,30 +30,7 @@ class _WordMatchScreenState extends State<WordMatchScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: const [ProfileMenu()],
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color.fromRGBO(173, 216, 230, 1), Color.fromRGBO(135, 206, 235, 1)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: const Center(
-            child: Text(
-              "Word Match",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
       ),
       body: Center(
         child: Padding(
@@ -114,46 +67,35 @@ class _WordMatchScreenState extends State<WordMatchScreen> {
                 children: [
                   const Icon(Icons.lightbulb, size: 100),
                   Text(
-                    "Word: ${widget.word}",
+                    "Word: ${widget.wordInfo.word}",
                     style: theme.primaryTextTheme.titleLarge?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (_isLoading)
-                    const CircularProgressIndicator()
-                  else if (_errorMessage != null)
-                    Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: theme.primaryTextTheme.bodyLarge?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: theme.colorScheme.error,
+
+                  Column(
+                    children: [
+                      Text(
+                        "Synonyms: ${synonyms.isNotEmpty ? synonyms.join(", ") : "None found"}",
+                        textAlign: TextAlign.center,
+                        style: theme.primaryTextTheme.bodyLarge?.copyWith(
+                          fontStyle: FontStyle.italic,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
-                    )
-                  else
-                    Column(
-                      children: [
-                        Text(
-                          "Synonyms: ${synonyms.isNotEmpty ? synonyms.join(", ") : "None found"}",
-                          textAlign: TextAlign.center,
-                          style: theme.primaryTextTheme.bodyLarge?.copyWith(
-                            fontStyle: FontStyle.italic,
-                            color: theme.colorScheme.onSurface,
-                          ),
+                      const SizedBox(height: 10),
+                      Text(
+                        "Antonyms: ${antonyms.isNotEmpty ? antonyms.join(", ") : "None found"}",
+                        textAlign: TextAlign.center,
+                        style: theme.primaryTextTheme.bodyLarge?.copyWith(
+                          fontStyle: FontStyle.italic,
+                          color: theme.colorScheme.onSurface,
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Antonyms: ${antonyms.isNotEmpty ? antonyms.join(", ") : "None found"}",
-                          textAlign: TextAlign.center,
-                          style: theme.primaryTextTheme.bodyLarge?.copyWith(
-                            fontStyle: FontStyle.italic,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
