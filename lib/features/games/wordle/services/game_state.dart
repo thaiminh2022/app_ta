@@ -1,7 +1,8 @@
 class GameState {
   final String targetWord;
   final int maxGuesses;
-  List<String> guesses = [];
+  final List<String> _guesses = [];
+  List<String> get guesses => _guesses;
   String currentGuess = '';
 
   GameState({required this.targetWord, required this.maxGuesses});
@@ -26,19 +27,20 @@ class GameState {
     if (canSubmitGuess()) {
       var word = targetWord.toUpperCase();
       if (currentGuess.length > word.length) {
-        guesses.add(currentGuess.substring(0, word.length));
+        _guesses.add(currentGuess.substring(0, word.length));
       } else {
-        guesses.add(currentGuess);
+        _guesses.add(currentGuess);
       }
       currentGuess = '';
     }
   }
 
   bool hasWon() {
-    return guesses.isNotEmpty && guesses.last == targetWord;
+    return _guesses.isNotEmpty &&
+        _guesses.last.toUpperCase() == targetWord.toUpperCase();
   }
 
   bool hasLost() {
-    return guesses.length >= maxGuesses && !hasWon();
+    return _guesses.length >= maxGuesses && !hasWon();
   }
 }

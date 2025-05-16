@@ -1,20 +1,16 @@
-import 'dart:io';
-
-import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/word_of_the_day/models/notification_config.dart';
 import 'package:app_ta/features/word_of_the_day/services/notification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-class SettingsDialog extends StatefulWidget {
-  const SettingsDialog({super.key});
+class NotificationDialog extends StatefulWidget {
+  const NotificationDialog({super.key});
 
   @override
-  State<SettingsDialog> createState() => _SettingsDialogState();
+  State<NotificationDialog> createState() => _NotificationDialogState();
 }
 
-class _SettingsDialogState extends State<SettingsDialog> {
+class _NotificationDialogState extends State<NotificationDialog> {
   TimeOfDay _selectedTime = const TimeOfDay(hour: 8, minute: 0);
   bool _isNotificationEnabled = false;
   final NotificationService _notificationService = NotificationService();
@@ -44,7 +40,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
       setState(() {
         _selectedTime = time;
       });
-      if (_isNotificationEnabled && !Platform.isWindows) {
+      if (_isNotificationEnabled) {
         await _saveNotification();
       }
       await _saveConfig();
@@ -55,9 +51,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
     setState(() {
       _isNotificationEnabled = value;
     });
-    if (_isNotificationEnabled && !Platform.isWindows) {
+    if (_isNotificationEnabled) {
       await _saveNotification();
-    } else if (!Platform.isWindows) {
+    } else {
       await _notificationService.cancelNotification();
     }
     await _saveConfig();
@@ -66,7 +62,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
         SnackBar(
           content: Text(
             _isNotificationEnabled
-                ? 'Notification enabled at ${_selectedTime.format(context)}'
+                ? 'Notification scheduled at ${_selectedTime.format(context)}'
                 : 'Notification disabled',
           ),
         ),
@@ -98,7 +94,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
     final timeText = DateFormat.Hm().format(
       DateTime(0, 0, 0, _selectedTime.hour, _selectedTime.minute),
     );
@@ -108,10 +103,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
       backgroundColor: Theme.of(context).cardColor,
       title: Row(
         children: [
-          Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
+          Icon(Icons.notifications, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
           Text(
-            'Settings',
+            'Notification Settings',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onSurface,
@@ -126,39 +121,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Theme:"),
-              Switch(
-                thumbIcon: WidgetStatePropertyAll(
-                  Icon(
-                    appState.isDarkTheme ? Icons.dark_mode : Icons.light_mode,
-                    size: 20,
-                  ),
-                ),
-                value: !appState.isDarkTheme,
-                onChanged: (value) async {
-                  await appState.toggleTheme(); // Gọi toggleTheme trực tiếp
-                },
+              Text(
+                'Enable Notifications:',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("Notification:"),
               Switch(
-                thumbIcon: WidgetStatePropertyAll(
-                  Icon(
-                    _isNotificationEnabled
-                        ? Icons.notifications
-                        : Icons.notifications_off,
-                    size: 20,
-                  ),
-                ),
                 value: _isNotificationEnabled,
                 onChanged: _toggleNotification,
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Notification Time:',
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 8),
           GestureDetector(
@@ -180,6 +156,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              _toggleNotification(!_isNotificationEnabled);
+            },
+            child: Text(_isNotificationEnabled ? 'Disable' : 'Enable'),
           ),
         ],
       ),

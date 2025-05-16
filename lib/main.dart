@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
-import 'package:app_ta/features/dashboard/presentation/index.dart';
 import 'package:app_ta/navigators/dashboard_navigator.dart';
 import 'package:app_ta/navigators/dictionary_navigator.dart';
 import 'package:app_ta/navigators/hangman_navigator.dart';
 import 'package:app_ta/navigators/word_of_the_day_navigator.dart';
+import 'package:app_ta/navigators/wordle_navigator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,6 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter/services.dart'; // Thêm để sử dụng SystemNavigator
+
 
 // 👇 Đã chỉnh lại đường dẫn cho GameScreen
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
@@ -77,7 +79,8 @@ class _MyAppState extends State<MyApp> {
 
     await flutterLocalNotificationsPlugin.initialize(initSettings);
 
-    // Không cần yêu cầu quyền nữa, vì Android tự động xử lý quyền thông báo
+    // Add thêm chức năng notifications:
+
     // notification not implemented for windows
     if (!Platform.isWindows) await _scheduleDailyWordNotification();
   }
@@ -128,7 +131,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromRGBO(173, 216, 230, 1),
         ),
-        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 250, 1),
         cardColor: const Color.fromRGBO(255, 255, 255, 1),
       ),
       darkTheme: ThemeData(
@@ -153,37 +156,69 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 2;
+  int _backPressCount = 0; // Biến đếm số lần nhấn back
+  DateTime? _lastBackPressTime; // Biến lưu thời gian nhấn back cuối cùng
 
   final List<Widget> _widgetOptions = <Widget>[
     FlashcardGame(), // Flashcard lên đầu
     DictionaryNavigator(),
     DashboardNavigator(),
     HangmanNavigator(),
-    WordleGame(),
+
     WordOfTheDayNavigator(), // Word of the Day xuống cuối
+    WordleNavigator(),
+
   ];
 
   @override
   Widget build(BuildContext context) {
     var darkTheme = context.watch<AppState>().isDarkTheme;
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix([
-                  1, 0, 0, 0, 0, // R
-                  0, 1, 0, 0, 0, // G
-                  0, 0, 1, 0, 0, // B
-                  0, 0, 0, 1, 0, // A
-                ]),
-                child: Image.asset(
-                  darkTheme
-                      ? "assets/home_screen/dashboard_black.png"
-                      : "assets/home_screen/dashboard.png",
-                  gaplessPlayback: true,
+    return PopScope(
+      canPop: false, // Không cho phép pop tự động
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return; // Nếu đã pop, không làm gì thêm
+        // Kiểm tra thời gian giữa 2 lần nhấn back (2 giây)
+        if (_lastBackPressTime == null ||
+            DateTime.now().difference(_lastBackPressTime!) >
+                const Duration(seconds: 2)) {
+          _backPressCount = 1;
+          _lastBackPressTime = DateTime.now();
+          // Hiển thị thông báo
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          _backPressCount++;
+          if (_backPressCount >= 2) {
+            // Thoát ứng dụng
+            if (Platform.isAndroid || Platform.isIOS) {
+              SystemNavigator.pop(); // Thoát hoàn toàn ứng dụng
+            }
+          }
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.matrix([
+                    1, 0, 0, 0, 0, // R
+                    0, 1, 0, 0, 0, // G
+                    0, 0, 1, 0, 0, // B
+                    0, 0, 0, 1, 0, // A
+                  ]),
+                  child: Image.asset(
+                    darkTheme
+                        ? "assets/home_screen/dashboard_black.png"
+                        : "assets/home_screen/dashboard.png",
+                    gaplessPlayback: true,
+                  ),
                 ),
               ),
             ),

@@ -1,4 +1,6 @@
-import 'dart:math';
+import 'dart:developer';
+
+import 'package:app_ta/core/services/random_word_service.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/core/models/result.dart';
@@ -14,6 +16,7 @@ class AppState extends ChangeNotifier {
   final _db = Database();
   final _cerfReader = CerfReader();
   final _wordInfoCleanupService = WordInfoCleanupService();
+  final _randomWordService = RandomWordService();
 
   var learnedWords = <String>[];
   var _themeMode = ThemeMode.light; // Default to light theme
@@ -86,13 +89,34 @@ class AppState extends ChangeNotifier {
     await prefs.setString("last_study_date", _lastStudyDate!.toIso8601String());
   }
 
-  Future<WordCerfResult> getRandomWordCerf() async {
-    await _cerfReader.cacheWordCerf();
-    var wordList = _cerfReader.cacheWordCerfModel;
-    var randWord = wordList[Random().nextInt(wordList.length)].word;
-    var cerfRes = await _cerfReader.getWordCerf(randWord);
+  Future<Result<WordCerfResult, String>> getRandomWordCerf({
+    RandomWordType t = RandomWordType.vocabulary,
+  }) async {
+    var res = await _randomWordService.getRandom(t: t);
+    if (res.isError) {
+      return Result.err(res.unwrapError());
+    } else {
+      // try until find a word that have definition
+      late Result<WordInfoUsable, String> searchRes;
+      // max 10 attemps;
+      int attemps;
+      for (attemps = 0; attemps < 10; attemps++) {
+        searchRes = await searchWord(res.unwrap().word.toLowerCase());
+        if (searchRes.isSuccess) break;
+        res = await _randomWordService.getRandom();
+      }
+      log("Total attemps at this word: $attemps");
 
-    return WordCerfResult(word: randWord, cerf: cerfRes);
+      if (searchRes.isError) {
+        return Result.err(
+          "cannot search for word definition, please retry or add more attempts in dev pharses",
+        );
+      }
+
+      final val = searchRes.unwrap();
+      var cerf = await getWordCerf(val.word);
+      return Result.ok(WordCerfResult(wordInfo: val, cerf: cerf));
+    }
   }
 
   Future<WordCerf> getWordCerf(String word) async {
