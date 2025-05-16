@@ -6,6 +6,7 @@ import 'package:app_ta/navigators/dashboard_navigator.dart';
 import 'package:app_ta/navigators/dictionary_navigator.dart';
 import 'package:app_ta/navigators/hangman_navigator.dart';
 import 'package:app_ta/navigators/word_of_the_day_navigator.dart';
+import 'package:app_ta/navigators/wordle_navigator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,10 +17,8 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/services.dart'; // Thêm để sử dụng SystemNavigator
 
 // Đã chỉnh lại đường dẫn cho GameScreen
-import 'package:app_ta/features/games/wordle/presentation/index.dart';
-
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -37,7 +36,7 @@ Future<void> main() async {
 
 Future<void> _initializeNotifications() async {
   const AndroidInitializationSettings androidInitializationSettings =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   final InitializationSettings initializationSettings = InitializationSettings(
     android: androidInitializationSettings,
   );
@@ -68,7 +67,7 @@ class _MyAppState extends State<MyApp> {
     tz.initializeTimeZones(); // Quan trọng
 
     const AndroidInitializationSettings androidInit =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initSettings = InitializationSettings(
       android: androidInit,
     );
@@ -98,7 +97,7 @@ class _MyAppState extends State<MyApp> {
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Mỗi ngày
     );
   }
@@ -160,7 +159,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     DictionaryNavigator(),
     DashboardNavigator(),
     HangmanNavigator(),
-    WordleGame(),
+    WordleNavigator(),
   ];
 
   @override
@@ -172,7 +171,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
         if (didPop) return; // Nếu đã pop, không làm gì thêm
         // Kiểm tra thời gian giữa 2 lần nhấn back (2 giây)
         if (_lastBackPressTime == null ||
-            DateTime.now().difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+            DateTime.now().difference(_lastBackPressTime!) >
+                const Duration(seconds: 2)) {
           _backPressCount = 1;
           _lastBackPressTime = DateTime.now();
           // Hiển thị thông báo
@@ -214,7 +214,9 @@ class _BottomNavbarState extends State<BottomNavbar> {
                 ),
               ),
             ),
-            SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
+            SafeArea(
+              child: IndexedStack(index: _idx, children: _widgetOptions),
+            ),
           ],
         ),
         bottomNavigationBar: NavigationBar(
@@ -242,9 +244,9 @@ class _BottomNavbarState extends State<BottomNavbar> {
           },
           indicatorColor: Theme.of(context).colorScheme.primary,
           backgroundColor:
-          Theme.of(context).brightness == Brightness.dark
-              ? const Color.fromRGBO(30, 30, 30, 1)
-              : const Color.fromRGBO(255, 255, 255, 1),
+              Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromRGBO(30, 30, 30, 1)
+                  : const Color.fromRGBO(255, 255, 255, 1),
         ),
       ),
     );

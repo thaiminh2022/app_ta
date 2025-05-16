@@ -69,7 +69,7 @@ class QuickActionCard extends StatelessWidget {
                       MenuActionButton(
                         icon: Icons.grid_on,
                         label: 'Wordle',
-                        route: const WordleGame(),
+                        route: const WordleView(),
                       ),
                     ],
                   ),

@@ -1,160 +1,17 @@
+import 'dart:math';
+
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
-import 'package:app_ta/features/games/wordle/presentation/widgets/guess_grid.dart';
-import 'package:app_ta/features/games/wordle/presentation/widgets/hint_btn.dart';
+import 'package:app_ta/features/games/wordle/presentation/wordle_game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../services/game_state.dart';
-import 'widgets/result_dialog.dart';
 
-class WordleGame extends StatefulWidget {
-  const WordleGame({super.key});
-
-  @override
-  WordleGameState createState() => WordleGameState();
-}
-
-class WordleGameState extends State<WordleGame> {
-  late GameState gameState;
-  final _submitController = TextEditingController();
-  bool _isLoading = false;
-  bool _canPlay = true;
-
-  Future<void> startNewGame() async {
-    _isLoading = true;
-    final wordRes = await context.read<AppState>().getRandomWordCerf();
-
-    if (wordRes.isError) {
-      _canPlay = false;
-      return;
-    }
-
-    final wordData = wordRes.unwrap();
-
-    setState(() {
-      gameState = GameState(
-        targetWord: wordData.wordInfo.word.toUpperCase(),
-        maxGuesses: wordData.wordInfo.word.length >= 7 ? 8 : 6,
-      );
-    });
-    _isLoading = false;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    startNewGame();
-  }
-
-  void onInputChanged(String newInput) {
-    setState(() {
-      if (newInput.length <= gameState.targetWord.length) {
-        gameState.currentGuess = newInput;
-      }
-    });
-  }
-
-  void onSubmited() {
-    if (gameState.canSubmitGuess()) {
-      gameState.submitGuess();
-      setState(() {});
-    }
-    if (gameState.hasWon() || gameState.hasLost()) {
-      showResultDialog();
-    }
-    _submitController.text = ' ';
-  }
-
-  void showResultDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => ResultDialog(
-            hasWon: gameState.hasWon(),
-            targetWord: gameState.targetWord,
-            onPlayAgain: () {
-              Navigator.pop(context);
-              startNewGame();
-            },
-            onExit: () => Navigator.pop(context),
-          ),
-    );
-  }
+class WordleView extends StatelessWidget {
+  const WordleView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    Widget buildBody() {
-      if (_isLoading) {
-        return Center(child: CircularProgressIndicator());
-      } else {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Lưới đoán từ
-              Expanded(child: Center(child: GuessGrid(gameState: gameState))),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Container(
-                  padding: const EdgeInsets.all(
-                    4,
-                  ), // Padding for the gradient border
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color.fromRGBO(173, 216, 230, 1),
-                        Color.fromRGBO(135, 206, 235, 1),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromRGBO(0, 0, 0, 0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TextField(
-                      controller: _submitController,
-                      onChanged: onInputChanged,
-                      decoration: InputDecoration(label: Text("Guess a word")),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'^[a-zA-Z]+$'),
-                        ),
-                      ],
-                      textCapitalization: TextCapitalization.characters,
-                      onSubmitted: (_) => onSubmited(),
-                    ),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  HintBtn(targetWord: gameState.targetWord),
-                  FilledButton(onPressed: onSubmited, child: Text("Submit")),
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    }
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -163,16 +20,63 @@ class WordleGameState extends State<WordleGame> {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body:
-          !_canPlay
-              ? Center(
-                child: Card(
-                  child: Column(
-                    children: [Text("Wordle not available, try again later")],
-                  ),
-                ),
-              )
-              : buildBody(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.abc, size: 150),
+            FilledButton(
+              onPressed: () async {
+                var appState = context.read<AppState>();
+                var learned = appState.learnedWords;
+
+                if (learned.isEmpty) return;
+
+                if (context.mounted) {
+                  final rand = learned[Random().nextInt(learned.length)];
+                  final wordInfoRes = await appState.searchWord(rand);
+
+                  if (wordInfoRes.isError) {
+                    return;
+                  }
+                  final wordInfo = wordInfoRes.unwrap();
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => WordleGame(wordInfo: wordInfo),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Text("From learned word"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () async {
+                var appState = context.read<AppState>();
+                var randRes = await appState.getRandomWordCerf();
+
+                if (randRes.isError) {
+                  return;
+                }
+
+                if (context.mounted) {
+                  final rand = randRes.unwrap();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => WordleGame(wordInfo: rand.wordInfo),
+                    ),
+                  );
+                }
+              },
+              child: Text("From random word"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
