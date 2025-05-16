@@ -1,4 +1,6 @@
 export 'flashcard_game.dart';
+import 'package:app_ta/core/widgets/page_header.dart';
+import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
@@ -23,7 +25,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
   final Set<String> _addedLearnedWords = {};
   bool _isDialogShowing = false;
   double _rotation = 0;
-  bool _isFlipping = false; 
+  bool _isFlipping = false;
 
   @override
   void initState() {
@@ -35,9 +37,12 @@ class _FlashcardGameState extends State<FlashcardGame> {
     try {
       final api = DictionaryApi();
       final result = await api.searchWord(word);
-      if (result.isSuccess && result.value != null && result.value!.isNotEmpty) {
+      if (result.isSuccess &&
+          result.value != null &&
+          result.value!.isNotEmpty) {
         final wordInfo = result.value!.first;
-        if (wordInfo.meanings.isNotEmpty && wordInfo.meanings.first.definitions.isNotEmpty) {
+        if (wordInfo.meanings.isNotEmpty &&
+            wordInfo.meanings.first.definitions.isNotEmpty) {
           return wordInfo.meanings.first.definitions.first.definition;
         }
       }
@@ -50,7 +55,8 @@ class _FlashcardGameState extends State<FlashcardGame> {
   void _syncWithLearnedWords() async {
     if (_isDialogShowing) return; // Đảm bảo chỉ hiện 1 popup
     final learnedWords = context.read<AppState>().learnedWords;
-    final newWords = learnedWords.where((w) => !_addedLearnedWords.contains(w)).toList();
+    final newWords =
+        learnedWords.where((w) => !_addedLearnedWords.contains(w)).toList();
     if (_autoAddFromLearned && newWords.isNotEmpty) {
       for (var word in newWords) {
         final definition = await _getDefinition(word);
@@ -63,34 +69,40 @@ class _FlashcardGameState extends State<FlashcardGame> {
       _isDialogShowing = true;
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Thêm flashcard cho từ đã học?'),
-          content: Text('Bạn có muốn thêm flashcard cho các từ vừa học không?\n\n${newWords.join(", ")}'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _isDialogShowing = false;
-              },
-              child: const Text('Không'),
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Thêm flashcard cho từ đã học?'),
+              content: Text(
+                'Bạn có muốn thêm flashcard cho các từ vừa học không?\n\n${newWords.join(", ")}',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _isDialogShowing = false;
+                  },
+                  child: const Text('Không'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    for (var word in newWords) {
+                      final definition = await _getDefinition(word);
+                      setState(() {
+                        _flashcards.add({
+                          'question': word,
+                          'answer': definition,
+                        });
+                        _addedLearnedWords.add(word);
+                      });
+                    }
+                    if (!mounted) return;
+                    Navigator.of(this.context).pop();
+                    _isDialogShowing = false;
+                  },
+                  child: const Text('Thêm'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () async {
-                for (var word in newWords) {
-                  final definition = await _getDefinition(word);
-                  setState(() {
-                    _flashcards.add({'question': word, 'answer': definition});
-                    _addedLearnedWords.add(word);
-                  });
-                }
-                if (!mounted) return;
-                Navigator.of(this.context).pop();
-                _isDialogShowing = false;
-              },
-              child: const Text('Thêm'),
-            ),
-          ],
-        ),
       ).then((_) {
         _isDialogShowing = false;
       });
@@ -151,79 +163,88 @@ class _FlashcardGameState extends State<FlashcardGame> {
   void _showAddFlashcardDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Flashcard'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _questionController,
-              decoration: const InputDecoration(labelText: 'Question'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Add Flashcard'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _questionController,
+                  decoration: const InputDecoration(labelText: 'Question'),
+                ),
+                TextField(
+                  controller: _answerController,
+                  decoration: const InputDecoration(labelText: 'Answer'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _answerController,
-              decoration: const InputDecoration(labelText: 'Answer'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: _addFlashcard,
+                child: const Text('Add'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: _addFlashcard,
-            child: const Text('Add'),
-          ),
-        ],
-      ),
     );
   }
 
   void _showEditFlashcardDialog(int index) {
     final card = _flashcards[index];
-    final TextEditingController editQuestionController = TextEditingController(text: card['question']);
-    final TextEditingController editAnswerController = TextEditingController(text: card['answer']);
+    final TextEditingController editQuestionController = TextEditingController(
+      text: card['question'],
+    );
+    final TextEditingController editAnswerController = TextEditingController(
+      text: card['answer'],
+    );
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Flashcard'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: editQuestionController,
-              decoration: const InputDecoration(labelText: 'Question'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Edit Flashcard'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: editQuestionController,
+                  decoration: const InputDecoration(labelText: 'Question'),
+                ),
+                TextField(
+                  controller: editAnswerController,
+                  decoration: const InputDecoration(labelText: 'Answer'),
+                ),
+              ],
             ),
-            TextField(
-              controller: editAnswerController,
-              decoration: const InputDecoration(labelText: 'Answer'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final newQuestion = editQuestionController.text.trim();
+                  final newAnswer = editAnswerController.text.trim();
+                  if (newQuestion.isNotEmpty && newAnswer.isNotEmpty) {
+                    setState(() {
+                      _flashcards[index] = {
+                        'question': newQuestion,
+                        'answer': newAnswer,
+                      };
+                      _addedLearnedWords.remove(card['question']);
+                      _addedLearnedWords.add(newQuestion);
+                    });
+                    _saveFlashcards(); // Lưu lại sau khi sửa
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              final newQuestion = editQuestionController.text.trim();
-              final newAnswer = editAnswerController.text.trim();
-              if (newQuestion.isNotEmpty && newAnswer.isNotEmpty) {
-                setState(() {
-                  _flashcards[index] = {'question': newQuestion, 'answer': newAnswer};
-                  _addedLearnedWords.remove(card['question']);
-                  _addedLearnedWords.add(newQuestion);
-                });
-                _saveFlashcards(); // Lưu lại sau khi sửa
-                Navigator.of(context).pop();
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -250,7 +271,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
     final card = _flashcards.isNotEmpty ? _flashcards[_currentIndex] : null;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flashcard Game'),
+        title: PageHeader("Flashcard"),
         actions: [
           Row(
             children: [
@@ -266,83 +287,90 @@ class _FlashcardGameState extends State<FlashcardGame> {
               ),
             ],
           ),
+          ProfileMenu(),
         ],
       ),
       body: Center(
-        child: _flashcards.isEmpty
-            ? const Text('Chưa có flashcard nào.')
-            : GestureDetector(
-                onTap: () {
-                  _syncWithLearnedWords();
-                  _flipCard();
-                },
-                child: SizedBox(
-                  width: 300,
-                  height: 200,
-                  child: Stack(
-                    children: [
-                      TweenAnimationBuilder<double>(
-                        tween: Tween<double>(begin: 0, end: _rotation),
-                        duration: const Duration(milliseconds: 500),
-                        onEnd: () {
-                          setState(() {
-                            if (_rotation == 3.141592653589793) {
-                              _showAnswer = true;
-                            } else {
-                              _showAnswer = false;
-                            }
-                            _isFlipping = false;
-                          });
-                        },
-                        builder: (context, value, child) {
-                          final isFront = value < 3.141592653589793 / 2;
-                          final displayText = isFront ? card!['question']! : card!['answer']!;
-                          return Transform(
-                            alignment: Alignment.center,
-                            transform: Matrix4.identity()
-                              ..setEntry(3, 2, 0.001)
-                              ..rotateY(value),
-                            child: Card(
-                              elevation: 8,
-                              margin: const EdgeInsets.all(0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                width: 300,
-                                height: 200,
-                                child: Transform(
+        child:
+            _flashcards.isEmpty
+                ? const Text('Chưa có flashcard nào.')
+                : GestureDetector(
+                  onTap: () {
+                    _syncWithLearnedWords();
+                    _flipCard();
+                  },
+                  child: SizedBox(
+                    width: 300,
+                    height: 200,
+                    child: Stack(
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: _rotation),
+                          duration: const Duration(milliseconds: 500),
+                          onEnd: () {
+                            setState(() {
+                              if (_rotation == 3.141592653589793) {
+                                _showAnswer = true;
+                              } else {
+                                _showAnswer = false;
+                              }
+                              _isFlipping = false;
+                            });
+                          },
+                          builder: (context, value, child) {
+                            final isFront = value < 3.141592653589793 / 2;
+                            final displayText =
+                                isFront ? card!['question']! : card!['answer']!;
+                            return Transform(
+                              alignment: Alignment.center,
+                              transform:
+                                  Matrix4.identity()
+                                    ..setEntry(3, 2, 0.001)
+                                    ..rotateY(value),
+                              child: Card(
+                                elevation: 8,
+                                margin: const EdgeInsets.all(0),
+                                child: Container(
                                   alignment: Alignment.center,
-                                  transform: Matrix4.rotationY(isFront ? 0 : 3.141592653589793),
-                                  child: Text(
-                                    displayText,
-                                    style: const TextStyle(fontSize: 24),
-                                    textAlign: TextAlign.center,
+                                  width: 300,
+                                  height: 200,
+                                  child: Transform(
+                                    alignment: Alignment.center,
+                                    transform: Matrix4.rotationY(
+                                      isFront ? 0 : 3.141592653589793,
+                                    ),
+                                    child: Text(
+                                      displayText,
+                                      style: const TextStyle(fontSize: 24),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                      Positioned(
-                        right: 48, // Move edit button to the left of delete
-                        top: 8,
-                        child: IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => _showEditFlashcardDialog(_currentIndex),
+                            );
+                          },
                         ),
-                      ),
-                      Positioned(
-                        right: 8,
-                        top: 8,
-                        child: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteFlashcard(_currentIndex),
+                        Positioned(
+                          right: 48, // Move edit button to the left of delete
+                          top: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed:
+                                () => _showEditFlashcardDialog(_currentIndex),
+                          ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteFlashcard(_currentIndex),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
       ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
