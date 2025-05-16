@@ -17,6 +17,8 @@ import 'package:timezone/timezone.dart' as tz;
 
 // 👇 Đã chỉnh lại đường dẫn cho GameScreen
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
+// Thêm import cho FlashcardGame
+import 'package:app_ta/features/flashcard/presentation/flashcard_game.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -153,11 +155,12 @@ class _BottomNavbarState extends State<BottomNavbar> {
   var _idx = 2;
 
   final List<Widget> _widgetOptions = <Widget>[
-    WordOfTheDayNavigator(),
+    FlashcardGame(), // Flashcard lên đầu
     DictionaryNavigator(),
     DashboardNavigator(),
     HangmanNavigator(),
-    WordleGame(), // 👈 Wordle tab
+    WordleGame(),
+    WordOfTheDayNavigator(), // Word of the Day xuống cuối
   ];
 
   @override
@@ -190,10 +193,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
       ),
       bottomNavigationBar: NavigationBar(
         destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.lightbulb),
-            label: "Daily Word",
-          ),
+          NavigationDestination(icon: Icon(Icons.style), label: "Flashcard"), // Flashcard lên đầu
           NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
           NavigationDestination(
             icon: Icon(Icons.dashboard),
@@ -201,6 +201,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
           ),
           NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
           NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
+          NavigationDestination(icon: Icon(Icons.lightbulb), label: "Daily Word"), // Word of the Day xuống cuối
         ],
         selectedIndex: _idx,
         onDestinationSelected: (value) {
