@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/core/utils/error_calls.dart';
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/games/wordle/presentation/wordle_game.dart';
@@ -30,13 +31,19 @@ class WordleView extends StatelessWidget {
                 var appState = context.read<AppState>();
                 var learned = appState.learnedWords;
 
-                if (learned.isEmpty) return;
+                if (learned.isEmpty) {
+                  showSnackError(context, "You haven't learn any words");
+                  return;
+                }
 
                 if (context.mounted) {
                   final rand = learned[Random().nextInt(learned.length)];
                   final wordInfoRes = await appState.searchWord(rand);
 
                   if (wordInfoRes.isError) {
+                    if (context.mounted) {
+                      showSnackError(context, wordInfoRes.unwrapError());
+                    }
                     return;
                   }
                   final wordInfo = wordInfoRes.unwrap();
