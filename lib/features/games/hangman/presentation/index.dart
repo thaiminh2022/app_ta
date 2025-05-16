@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/core/widgets/page_header.dart';
+import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/games/hangman/presentation/hangman_game.dart';
 import 'package:app_ta/features/games/hangman/presentation/widgets/the_hangman_visual.dart';
 import 'package:flutter/material.dart';
@@ -15,63 +17,10 @@ class Hangman extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
+        title: PageHeader("Hangman"),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color.fromRGBO(173, 216, 230, 1),
-                        Color.fromRGBO(135, 206, 235, 1),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromRGBO(0, 0, 0, 0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'Hangman',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        shadows: [
-                          Shadow(
-                            color: const Color.fromRGBO(0, 0, 0, 0.3),
-                            offset: Offset(1, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        actions: [ProfileMenu()],
       ),
       body: Center(
         child: Padding(
