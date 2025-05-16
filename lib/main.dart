@@ -16,9 +16,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/services.dart'; // Thêm để sử dụng SystemNavigator
 
-
-// 👇 Đã chỉnh lại đường dẫn cho GameScreen
-import 'package:app_ta/features/games/wordle/presentation/index.dart';
 // Thêm import cho FlashcardGame
 import 'package:app_ta/features/flashcard/presentation/flashcard_game.dart';
 
@@ -160,14 +157,12 @@ class _BottomNavbarState extends State<BottomNavbar> {
   DateTime? _lastBackPressTime; // Biến lưu thời gian nhấn back cuối cùng
 
   final List<Widget> _widgetOptions = <Widget>[
-    FlashcardGame(), // Flashcard lên đầu
+    FlashcardGame(),
     DictionaryNavigator(),
     DashboardNavigator(),
     HangmanNavigator(),
-
-    WordOfTheDayNavigator(), // Word of the Day xuống cuối
+    WordOfTheDayNavigator(),
     WordleNavigator(),
-
   ];
 
   @override
@@ -222,36 +217,45 @@ class _BottomNavbarState extends State<BottomNavbar> {
                 ),
               ),
             ),
-          ),
-          SafeArea(child: IndexedStack(index: _idx, children: _widgetOptions)),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.style), label: "Flashcard"), // Flashcard lên đầu
-          NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
-          NavigationDestination(
-            icon: Icon(Icons.dashboard),
-            label: "Dashboard",
-          ),
-          NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
-          NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
-          NavigationDestination(icon: Icon(Icons.lightbulb), label: "Daily Word"), // Word of the Day xuống cuối
-        ],
-        selectedIndex: _idx,
-        onDestinationSelected: (value) {
-          if (value >= _widgetOptions.length || value < 0) return;
-          if (value != _idx) {
-            setState(() {
-              _idx = value;
-            });
-          }
-        },
-        indicatorColor: Theme.of(context).colorScheme.primary,
-        backgroundColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? const Color.fromRGBO(30, 30, 30, 1)
-                : const Color.fromRGBO(255, 255, 255, 1),
+
+            SafeArea(
+              child: IndexedStack(index: _idx, children: _widgetOptions),
+            ),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.style),
+              label: "Flashcard",
+            ), // Flashcard lên đầu
+            NavigationDestination(icon: Icon(Icons.book), label: "Dictionary"),
+            NavigationDestination(
+              icon: Icon(Icons.dashboard),
+              label: "Dashboard",
+            ),
+            NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
+            NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
+            NavigationDestination(
+              icon: Icon(Icons.lightbulb),
+              label: "Daily Word",
+            ), // Word of the Day xuống cuối
+          ],
+          selectedIndex: _idx,
+          onDestinationSelected: (value) {
+            if (value >= _widgetOptions.length || value < 0) return;
+            if (value != _idx) {
+              setState(() {
+                _idx = value;
+              });
+            }
+          },
+          indicatorColor: Theme.of(context).colorScheme.primary,
+          backgroundColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromRGBO(30, 30, 30, 1)
+                  : const Color.fromRGBO(255, 255, 255, 1),
+        ),
       ),
     );
   }
