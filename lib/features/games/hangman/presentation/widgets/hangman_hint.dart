@@ -33,27 +33,24 @@ class _HangmanHintState extends State<HangmanHint> {
               }
 
               var data = dataRes.unwrap();
-              var examples = <String>[];
+              var hints = <String>[];
               outer:
               for (var m in data.meanings.values) {
                 for (var def in m) {
-                  if (def.exmaple != null && def.exmaple!.isNotEmpty) {
-                    if (def.exmaple!.contains(widget.word)) {
-                      examples.add(def.exmaple!);
-                    }
+                  if (def.definition.isNotEmpty) {
+                    hints.add(def.definition);
                   }
-
-                  if (examples.length >= 3) break outer;
+                  if (hints.length >= 3) break outer;
                 }
               }
 
-              if (examples.isEmpty) {
+              if (hints.isEmpty) {
                 log("cannot find hints in word: ${widget.word}");
                 return Text("There are no hints");
               }
 
               var examplesData =
-                  examples.map((e) => e.replaceAll(widget.word, "_")).toList();
+                  hints.map((e) => e.replaceAll(widget.word, "_")).toList();
 
               return Column(
                 children:
