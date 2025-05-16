@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
+import 'package:app_ta/navigators/word_match_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
@@ -243,10 +244,38 @@ class _GamespaceDialogState extends State<GamespaceDialog>
                   ),
                 );
               }),
-              _buildGameButton(context, 'Puzzle', 2, () {
+              _buildGameButton(context, 'Word Match', 2, () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Puzzle coming soon!')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      body: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: ColorFiltered(
+                                colorFilter: ColorFilter.matrix([
+                                  1, 0, 0, 0, 0, // R
+                                  0, 1, 0, 0, 0, // G
+                                  0, 0, 1, 0, 0, // B
+                                  0, 0, 0, 1, 0, // A
+                                ]),
+                                child: Image.asset(
+                                  context.watch<AppState>().isDarkTheme
+                                      ? "assets/home_screen/dashboard_black.png"
+                                      : "assets/home_screen/dashboard.png",
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const WordMatchNavigator(),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               }),
               _buildGameButton(context, 'Quiz', 3, () {
