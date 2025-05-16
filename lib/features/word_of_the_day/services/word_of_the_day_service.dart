@@ -4,8 +4,9 @@ import 'package:app_ta/features/word_of_the_day/models/word_of_the_day_model.dar
 
 class WordOfTheDayService {
   Future<Result<WordOfTheDayModel, String>> getWordOfTheDay(
-    AppState appState,
-  ) async {
+      AppState appState, [
+        bool refresh = false,
+      ]) async {
     final randomWordRes = await appState.getRandomWordCerf();
     if (randomWordRes.isError) {
       return Result.err(randomWordRes.unwrapError());

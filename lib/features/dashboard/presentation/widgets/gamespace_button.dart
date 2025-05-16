@@ -57,15 +57,35 @@ class _GamespaceButtonState extends State<GamespaceButton>
         builder: (context, child) {
           return Transform.scale(
             scale: _scaleAnimation.value,
-            child: ClipOval(
-              child: Image.asset(
-                'assets/icon/gamespace_icon.png',
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.error, color: Colors.red, size: 60);
-                },
+            child: Container(
+              padding: const EdgeInsets.all(4), // Add gradient border
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [
+                    Color.fromRGBO(173, 216, 230, 1),
+                    Color.fromRGBO(135, 206, 235, 1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white, // Inner background color
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/icon/gamespace_icon.png',
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.error, color: Colors.red, size: 60);
+                    },
+                  ),
+                ),
               ),
             ),
           );
