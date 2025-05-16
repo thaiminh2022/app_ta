@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/services/dictionary_api.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FlashcardGame extends StatefulWidget {
   const FlashcardGame({super.key});
@@ -17,13 +19,16 @@ class _FlashcardGameState extends State<FlashcardGame> {
   bool _showAnswer = false;
   final TextEditingController _questionController = TextEditingController();
   final TextEditingController _answerController = TextEditingController();
-  bool _autoAddFromLearned = false;
+  bool _autoAddFromLearned = true;
   final Set<String> _addedLearnedWords = {};
   bool _isDialogShowing = false; // Thêm biến cờ
+  double _rotation = 0; // Thêm biến góc quay
+  bool _isFlipping = false; // Để tránh lật liên tục
 
   @override
   void initState() {
     super.initState();
+    _loadFlashcards(); // Tải flashcard khi mở app
     // Không tự động sync ở đây nữa
   }
 
@@ -104,8 +109,14 @@ class _FlashcardGameState extends State<FlashcardGame> {
   }
 
   void _flipCard() {
+    if (_isFlipping) return;
     setState(() {
-      _showAnswer = !_showAnswer;
+      _isFlipping = true;
+    });
+    final target = _showAnswer ? 0.0 : 3.141592653589793; // pi
+    // Sử dụng AnimationController thì tốt hơn, nhưng với TweenAnimationBuilder thì setState là đủ
+    setState(() {
+      _rotation = target;
     });
   }
 
@@ -119,6 +130,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
         _showAnswer = false;
         _addedLearnedWords.add(question);
       });
+      _saveFlashcards(); // Lưu lại sau khi thêm
       _questionController.clear();
       _answerController.clear();
       Navigator.of(context).pop();
@@ -135,6 +147,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
         }
       }
     });
+    _saveFlashcards(); // Lưu lại sau khi xóa
   }
 
   void _showAddFlashcardDialog() {
@@ -205,6 +218,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
                   _addedLearnedWords.remove(card['question']);
                   _addedLearnedWords.add(newQuestion);
                 });
+                _saveFlashcards(); // Lưu lại sau khi sửa
                 Navigator.of(context).pop();
               }
             },
@@ -213,6 +227,24 @@ class _FlashcardGameState extends State<FlashcardGame> {
         ],
       ),
     );
+  }
+
+  Future<void> _saveFlashcards() async {
+    final prefs = await SharedPreferences.getInstance();
+    final flashcardsJson = jsonEncode(_flashcards);
+    await prefs.setString('flashcards', flashcardsJson);
+  }
+
+  Future<void> _loadFlashcards() async {
+    final prefs = await SharedPreferences.getInstance();
+    final flashcardsJson = prefs.getString('flashcards');
+    if (flashcardsJson != null) {
+      final List<dynamic> decoded = jsonDecode(flashcardsJson);
+      setState(() {
+        _flashcards.clear();
+        _flashcards.addAll(decoded.map((e) => Map<String, String>.from(e)));
+      });
+    }
   }
 
   @override
@@ -247,40 +279,70 @@ class _FlashcardGameState extends State<FlashcardGame> {
                   _syncWithLearnedWords();
                   _flipCard();
                 },
-                child: Card(
-                  elevation: 8,
-                  margin: const EdgeInsets.all(24),
-                  child: Container(
-                    width: 300,
-                    height: 200,
-                    alignment: Alignment.center,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Text(
-                            _showAnswer ? card!['answer']! : card!['question']!,
-                            style: const TextStyle(fontSize: 24),
-                            textAlign: TextAlign.center,
-                          ),
+                child: SizedBox(
+                  width: 300,
+                  height: 200,
+                  child: Stack(
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        tween: Tween<double>(begin: 0, end: _rotation),
+                        duration: const Duration(milliseconds: 500),
+                        onEnd: () {
+                          setState(() {
+                            if (_rotation == 3.141592653589793) {
+                              _showAnswer = true;
+                            } else {
+                              _showAnswer = false;
+                            }
+                            _isFlipping = false;
+                          });
+                        },
+                        builder: (context, value, child) {
+                          final isFront = value < 3.141592653589793 / 2;
+                          final displayText = isFront ? card!['question']! : card!['answer']!;
+                          return Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.identity()
+                              ..setEntry(3, 2, 0.001)
+                              ..rotateY(value),
+                            child: Card(
+                              elevation: 8,
+                              margin: const EdgeInsets.all(0),
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: 300,
+                                height: 200,
+                                child: Transform(
+                                  alignment: Alignment.center,
+                                  transform: Matrix4.rotationY(isFront ? 0 : 3.141592653589793),
+                                  child: Text(
+                                    displayText,
+                                    style: const TextStyle(fontSize: 24),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Positioned(
+                        right: 48, // Move edit button to the left of delete
+                        top: 8,
+                        child: IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () => _showEditFlashcardDialog(_currentIndex),
                         ),
-                        Positioned(
-                          right: 48, // Move edit button to the left of delete
-                          top: 8,
-                          child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => _showEditFlashcardDialog(_currentIndex),
-                          ),
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteFlashcard(_currentIndex),
                         ),
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _deleteFlashcard(_currentIndex),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
