@@ -50,15 +50,32 @@ class WordInfoDisplay extends StatelessWidget {
           builder: (ctx, snapshot) {
             if (snapshot.hasData) {
               var cerf = snapshot.requireData;
+              if (cerf == WordCerf.unknown) {
+                return Text(wordInfo.word, style: textStyle);
+              }
 
-              return Text(cerf.name.toUpperCase());
+              return Badge(
+                backgroundColor: Theme.of(context).badgeTheme.backgroundColor,
+                padding: EdgeInsets.symmetric(horizontal: 7),
+                offset: Offset(10, -5),
+                label: Text(cerf.name.toUpperCase()),
+                child: Text(wordInfo.word, style: textStyle),
+              );
             }
-            return SizedBox.shrink();
+            return Text(wordInfo.word, style: textStyle);
           },
         );
       }
-
-      return Text(cerf!.name.toUpperCase());
+      if (cerf == WordCerf.unknown) {
+        return Text(wordInfo.word, style: textStyle);
+      }
+      return Badge(
+        backgroundColor: Theme.of(context).badgeTheme.backgroundColor,
+        padding: EdgeInsets.symmetric(horizontal: 7),
+        offset: Offset(10, -5),
+        label: Text(cerf!.name.toUpperCase()),
+        child: Text(wordInfo.word, style: textStyle),
+      );
     }
 
     return Column(
@@ -69,16 +86,7 @@ class WordInfoDisplay extends StatelessWidget {
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Badge(
-                    backgroundColor:
-                        Theme.of(context).badgeTheme.backgroundColor,
-                    padding: EdgeInsets.symmetric(horizontal: 7),
-                    offset: Offset(10, -5),
-                    label: buildCerf(),
-                    child: Text(wordInfo.word, style: textStyle),
-                  ),
-                ],
+                children: [buildCerf()],
               ),
             ),
             LearnedButton(word: wordInfo.word),

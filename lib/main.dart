@@ -4,9 +4,8 @@ import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/features/custom_splash_screen.dart';
 import 'package:app_ta/navigators/dashboard_navigator.dart';
 import 'package:app_ta/navigators/dictionary_navigator.dart';
-import 'package:app_ta/navigators/hangman_navigator.dart';
+import 'package:app_ta/navigators/gamespace_navigator.dart';
 import 'package:app_ta/navigators/word_of_the_day_navigator.dart';
-import 'package:app_ta/navigators/wordle_navigator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -160,9 +159,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
     FlashcardGame(),
     DictionaryNavigator(),
     DashboardNavigator(),
-    HangmanNavigator(),
+    GameSpaceNavigator(),
     WordOfTheDayNavigator(),
-    WordleNavigator(),
   ];
 
   @override
@@ -234,8 +232,10 @@ class _BottomNavbarState extends State<BottomNavbar> {
               icon: Icon(Icons.dashboard),
               label: "Dashboard",
             ),
-            NavigationDestination(icon: Icon(Icons.gamepad), label: "Hangman"),
-            NavigationDestination(icon: Icon(Icons.grid_on), label: "Wordle"),
+            NavigationDestination(
+              icon: Icon(Icons.gamepad),
+              label: "Gamespace",
+            ),
             NavigationDestination(
               icon: Icon(Icons.lightbulb),
               label: "Daily Word",
