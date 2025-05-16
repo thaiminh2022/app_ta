@@ -15,34 +15,24 @@ class SettingsDialog extends StatefulWidget {
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
-  TimeOfDay _selectedTime = const TimeOfDay(
-    hour: 00,
-    minute: 00,
-  ); // Mặc định là 00:00
+  TimeOfDay _selectedTime = const TimeOfDay(hour: 8, minute: 0);
+  bool _isNotificationEnabled = false;
   final NotificationService _notificationService = NotificationService();
-  bool _isNotificationEnabled = true; // Trạng thái bật/tắt thông báo
 
   @override
   void initState() {
     super.initState();
-    _loadSavedTime();
-    _checkNotificationStatus();
+    _loadConfig();
   }
 
-  Future<void> _loadSavedTime() async {
+  Future<void> _loadConfig() async {
     final config = await _notificationService.loadConfig();
     if (config != null) {
       setState(() {
         _selectedTime = TimeOfDay(hour: config.hour, minute: config.minute);
+        _isNotificationEnabled = config.isEnabled;
       });
     }
-  }
-
-  Future<void> _checkNotificationStatus() async {
-    final config = await _notificationService.loadConfig();
-    setState(() {
-      _isNotificationEnabled = config != null;
-    });
   }
 
   Future<void> _pickTime() async {
@@ -54,40 +44,23 @@ class _SettingsDialogState extends State<SettingsDialog> {
       setState(() {
         _selectedTime = time;
       });
-      // Nếu thông báo đang bật, lưu lại thời gian mới và hiển thị thông báo
-      if (_isNotificationEnabled) {
+      if (_isNotificationEnabled && !Platform.isWindows) {
         await _saveNotification();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Notification changed to ${_selectedTime.format(context)}',
-              ),
-            ),
-          );
-        }
       }
+      await _saveConfig();
     }
   }
 
-  Future<void> _toggleNotification() async {
-    if (_isNotificationEnabled) {
-      // Tắt thông báo
-      if (!Platform.isWindows) {
-        await _notificationService.flutterLocalNotificationsPlugin.cancel(0);
-      }
-      setState(() {
-        _isNotificationEnabled = false;
-      });
-    } else {
-      // Bật thông báo với thời gian hiện tại
-      if (!Platform.isWindows) {
-        await _saveNotification();
-      }
-      setState(() {
-        _isNotificationEnabled = true;
-      });
+  Future<void> _toggleNotification(bool value) async {
+    setState(() {
+      _isNotificationEnabled = value;
+    });
+    if (_isNotificationEnabled && !Platform.isWindows) {
+      await _saveNotification();
+    } else if (!Platform.isWindows) {
+      await _notificationService.cancelNotification();
     }
+    await _saveConfig();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -107,8 +80,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
       minute: _selectedTime.minute,
       title: 'Word of the Day',
       body: 'Tap to see today\'s word!',
+      isEnabled: _isNotificationEnabled,
     );
     await _notificationService.scheduleDailyNotification(config);
+  }
+
+  Future<void> _saveConfig() async {
+    final config = NotificationConfig(
+      hour: _selectedTime.hour,
+      minute: _selectedTime.minute,
+      title: 'Word of the Day',
+      body: 'Tap to see today\'s word!',
+      isEnabled: _isNotificationEnabled,
+    );
+    await _notificationService.saveConfig(config);
   }
 
   @override
@@ -138,7 +123,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Theme Switch
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -152,15 +136,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 ),
                 value: !appState.isDarkTheme,
                 onChanged: (value) async {
-                  if (appState.isDarkTheme == value) {
-                    await appState.toggleTheme();
-                  }
+                  await appState.toggleTheme(); // Gọi toggleTheme trực tiếp
                 },
               ),
             ],
           ),
           const SizedBox(height: 16),
-          // Notification Switch
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -175,14 +156,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   ),
                 ),
                 value: _isNotificationEnabled,
-                onChanged: (value) => _toggleNotification(),
+                onChanged: _toggleNotification,
               ),
             ],
           ),
           const SizedBox(height: 8),
-          // Time Box
           GestureDetector(
-            onTap: _pickTime, // Chỉ mở time picker khi nhấn vào box
+            onTap: _pickTime,
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               decoration: BoxDecoration(
