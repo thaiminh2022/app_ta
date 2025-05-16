@@ -9,7 +9,7 @@ import 'dart:convert';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
     tz.initializeTimeZones();
@@ -23,15 +23,15 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (details) {
-        // xử lý khi user bấm vào thông báo
+        // Xử lý khi user bấm vào thông báo
       },
     );
   }
 
   Future<void> scheduleDailyNotification(NotificationConfig config) async {
-    final scheduledTime = _nextInstanceOfTime(config.hour, config.minute);
+    if (!config.isEnabled || Platform.isWindows) return;
 
-    if (Platform.isWindows) return;
+    final scheduledTime = _nextInstanceOfTime(config.hour, config.minute);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
@@ -50,10 +50,10 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.wallClockTime,
+      UILocalNotificationDateInterpretation.wallClockTime,
     );
 
-    await _saveConfig(config);
+    await saveConfig(config); // Sử dụng saveConfig thay vì _saveConfig
   }
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
@@ -67,12 +67,12 @@ class NotificationService {
       minute,
     );
     if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(Duration(days: 1));
+      scheduled = scheduled.add(const Duration(days: 1));
     }
     return scheduled;
   }
 
-  Future<void> _saveConfig(NotificationConfig config) async {
+  Future<void> saveConfig(NotificationConfig config) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('notification_config', jsonEncode(config.toJson()));
   }
@@ -83,5 +83,11 @@ class NotificationService {
     if (jsonStr == null) return null;
     final json = jsonDecode(jsonStr);
     return NotificationConfig.fromJson(json);
+  }
+
+  Future<void> cancelNotification() async {
+    if (!Platform.isWindows) {
+      await flutterLocalNotificationsPlugin.cancel(0);
+    }
   }
 }

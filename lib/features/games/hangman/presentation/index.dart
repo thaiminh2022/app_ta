@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:app_ta/core/providers/app_state.dart';
+import 'package:app_ta/core/utils/error_calls.dart';
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/games/hangman/presentation/hangman_game.dart';
@@ -32,7 +33,10 @@ class Hangman extends StatelessWidget {
               FilledButton(
                 onPressed: () {
                   var learnedWord = context.read<AppState>().learnedWords;
-                  if (learnedWord.isEmpty) return;
+                  if (learnedWord.isEmpty) {
+                    showSnackError(context, "You haven't learn any words");
+                    return;
+                  }
 
                   var randIdx = Random().nextInt(learnedWord.length);
                   var randWord = learnedWord[randIdx];
@@ -52,6 +56,10 @@ class Hangman extends StatelessWidget {
                       await context.read<AppState>().getRandomWordCerf();
 
                   if (wordRes.isError) {
+                    if (context.mounted) {
+                      showSnackError(context, wordRes.unwrapError());
+                    }
+
                     return;
                   }
                   final wordData = wordRes.unwrap();
