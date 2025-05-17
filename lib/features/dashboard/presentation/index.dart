@@ -5,6 +5,7 @@ import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/gamespace_button.dart';
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
+import 'package:app_ta/features/dashboard/presentation/widgets/level_button.dart';
 import 'package:app_ta/features/leveling/presentation/index.dart';
 import 'package:flutter/material.dart';
 
@@ -46,18 +47,7 @@ class _DashboardState extends State<Dashboard>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: PageHeader("DailyE Dashboard"),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (ctx) => LevelingView()),
-              );
-            },
-            child: Text("To leveling"),
-          ),
-          ProfileMenu(),
-        ],
+        actions: [CheckLevelButton(), ProfileMenu()],
       ),
       body: SafeArea(
         child: ListView(
