@@ -17,10 +17,10 @@ class GameSpace extends StatelessWidget {
 
   final _datas = <GameData>[
     GameData(Hangman(), 'assets/gamespace_icon/hangman.png', "Hangman"),
-    GameData(WordleView(), 'assets/gamespace_icon/wordle.png', "Wordle"),
-    GameData(
-      Placeholder(),
-      'assets/gamespace_icon/wordmatch.png',
+  GameData(WordleView(), 'assets/gamespace_icon/wordle.png', "Wordle"),
+  GameData(
+    WordMatch(),
+    'assets/gamespace_icon/wordmatch.png',
       "Match word",
     ),
   ];
