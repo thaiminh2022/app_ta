@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard>
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: PageHeader("DailyE Dashboard"),
+        title: PageHeader("DailyE"),
         actions: [CheckLevelButton(), ProfileMenu()],
       ),
       body: SafeArea(

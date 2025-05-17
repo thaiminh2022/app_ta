@@ -62,7 +62,7 @@ class AppState extends ChangeNotifier {
     _themeMode = isDarkTheme ? ThemeMode.light : ThemeMode.dark;
     prefs.setString("theme_mode", _themeMode.name);
 
-    notifyListeners(); // Notify listeners to rebuild the UI
+    notifyListeners();
   }
 
   Future<void> loadStreak() async {
@@ -122,7 +122,6 @@ class AppState extends ChangeNotifier {
 
   void addExp(int amount) {
     _levelService.addExp(amount);
-
     notifyListeners();
   }
 
@@ -140,13 +139,22 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  // New method to set the level
+  void setLevel(String levelName) {
+    _levelService.setLevel(WordCerf.values.firstWhere(
+          (e) => e.toString().split('.').last == levelName,
+      orElse: () => _levelService.level, // Fallback to current level
+    ));
+    notifyListeners();
+  }
+
   Future<Result<WordCerfResult, String>> getRandomWordCerf() async {
     return await getRandomWordByCerf(level);
   }
 
   Future<Result<WordCerfResult, String>> getRandomWordByCerf(
-    WordCerf cerf,
-  ) async {
+      WordCerf cerf,
+      ) async {
     var wordRes = await _cerfReader.getRandomWordByCerf(cerf);
     if (wordRes.isError) {
       return Result.err(wordRes.unwrapError());
@@ -159,14 +167,13 @@ class AppState extends ChangeNotifier {
     }
 
     var info = res.unwrap();
-
     return Result.ok(WordCerfResult(wordInfo: info, cerf: cerf));
   }
 
   Future<Result<List<WordCerfResult>, String>> getRandomWordsByCerf(
-    int amount,
-    WordCerf cerf,
-  ) async {
+      int amount,
+      WordCerf cerf,
+      ) async {
     var listRes = await _cerfReader.getRandomWordsByCerf(amount, cerf);
     if (listRes.isError) {
       return Result.err(listRes.unwrapError());
@@ -194,7 +201,7 @@ class AppState extends ChangeNotifier {
       var wordDatas = await _dictApi.searchWord(word);
       if (wordDatas.isError) {
         return Result.err(
-          "Cannot fetch word nor get cache, error: ${wordDatas.error} and ${res.error}",
+          "Cannot fetch word nor getami cache, error: ${wordDatas.error} and ${res.error}",
         );
       }
       var info = wordDatas.unwrap();
@@ -211,7 +218,7 @@ class AppState extends ChangeNotifier {
     } else {
       learnedWords = res.unwrap();
     }
-    _checkAndUpdateStreak(); // Update streak when loading learned words
+    _checkAndUpdateStreak();
     notifyListeners();
   }
 
@@ -219,7 +226,7 @@ class AppState extends ChangeNotifier {
     word = word.trim();
     if (!learnedWords.contains(word)) {
       learnedWords.add(word);
-      _checkAndUpdateStreak(); // Update streak when adding a new word
+      _checkAndUpdateStreak();
       notifyListeners();
     }
     await saveLearnedWords();
