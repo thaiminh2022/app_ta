@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
@@ -51,6 +53,7 @@ class WordInfoDisplay extends StatelessWidget {
             if (snapshot.hasData) {
               var cerf = snapshot.requireData;
               if (cerf == WordCerf.unknown) {
+                log("Word cerf is unknown");
                 return Text(wordInfo.word, style: textStyle);
               }
 

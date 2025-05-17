@@ -1,4 +1,3 @@
-a/an
 about
 above
 across
@@ -80,7 +79,8 @@ big
 bike
 bill
 bird
-birthday	black
+birthday	
+black
 blog
 blonde
 blue
@@ -287,7 +287,8 @@ find
 fine
 finish
 fire
-first	fish
+first	
+fish
 five
 flat
 flight
@@ -434,9 +435,9 @@ let
 letter
 library
 lie
-life	light (from the sun/a lamp)
-like (similar)
-like (find sb/sth pleasant)
+life	
+light
+like
 line
 lion
 list

@@ -15,14 +15,14 @@ class CerfReader {
   };
 
   Future<void> _loadCerf() async {
-    final a1 = await rootBundle.loadString("a1.txt");
-    final a2 = await rootBundle.loadString("a2.txt");
+    final a1 = await rootBundle.loadString("assets/word_cerf/a1.txt");
+    final a2 = await rootBundle.loadString("assets/word_cerf/a2.txt");
 
-    final b1 = await rootBundle.loadString("b1.txt");
-    final b2 = await rootBundle.loadString("b2.txt");
+    final b1 = await rootBundle.loadString("assets/word_cerf/b1.txt");
+    final b2 = await rootBundle.loadString("assets/word_cerf/b2.txt");
 
-    final c1 = await rootBundle.loadString("c1.txt");
-    final c2 = await rootBundle.loadString("c2.txt");
+    final c1 = await rootBundle.loadString("assets/word_cerf/c1.txt");
+    final c2 = await rootBundle.loadString("assets/word_cerf/c2.txt");
 
     _cacheCerf[WordCerf.a1]?.addAll(a1.split("\n"));
     _cacheCerf[WordCerf.a2]?.addAll(a2.split("\n"));
@@ -42,11 +42,12 @@ class CerfReader {
       var value = p.value;
 
       for (var val in value) {
-        if (val == word) {
+        if (val.trim() == word.trim()) {
           return key;
         }
       }
     }
+    print("Did not find the word: $word");
     return WordCerf.unknown;
   }
 
