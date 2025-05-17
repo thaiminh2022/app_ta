@@ -60,6 +60,8 @@ class _MyAppState extends State<MyApp> {
       context.read<AppState>().loadLearnedWords();
       context.read<AppState>().loadTheme();
       context.read<AppState>().loadStreak();
+      context.read<AppState>().loadLevelData();
+
       _initNotifications();
     });
   }

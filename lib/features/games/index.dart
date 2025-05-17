@@ -18,7 +18,12 @@ class GameSpace extends StatelessWidget {
   final _datas = <GameData>[
     GameData(Hangman(), Icons.man, "Hangman"),
     GameData(WordleView(), Icons.abc, "Wordle"),
-    GameData(Placeholder(), Icons.dataset_linked_sharp, "Match word"),
+    GameData(
+      // Placeholder
+      Scaffold(appBar: AppBar()),
+      Icons.dataset_linked_sharp,
+      "Match word",
+    ),
   ];
 
   @override

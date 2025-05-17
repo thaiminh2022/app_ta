@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:app_ta/core/models/level_model.dart';
+import 'package:app_ta/core/services/level.dart';
 import 'package:app_ta/core/services/random_word_service.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +20,10 @@ class AppState extends ChangeNotifier {
   final _cerfReader = CerfReader();
   final _wordInfoCleanupService = WordInfoCleanupService();
   final _randomWordService = RandomWordService();
+  var _levelService = LevelService(levelData: LevelModel());
+
+  WordCerf get level => _levelService.level;
+  int get exp => _levelService.exp;
 
   var learnedWords = <String>[];
   var _themeMode = ThemeMode.light; // Default to light theme
@@ -67,6 +74,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearAllSavedData() {
+    log("Oh no not implemented");
+  }
+
   void _checkAndUpdateStreak() {
     final now = DateTime.now();
     if (_lastStudyDate == null) {
@@ -87,6 +98,38 @@ class AppState extends ChangeNotifier {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setInt("streak_days", _streakDays);
     await prefs.setString("last_study_date", _lastStudyDate!.toIso8601String());
+  }
+
+  Future<void> loadLevelData() async {
+    var prefs = await SharedPreferences.getInstance();
+    var s = prefs.getString("level_data");
+
+    if (s == null || s.isEmpty) {
+      saveLevelData();
+      return;
+    }
+    var levelModel = LevelModel.fromJson(jsonDecode(s));
+    _levelService = LevelService(levelData: levelModel);
+
+    notifyListeners();
+  }
+
+  Future<void> saveLevelData() async {
+    var prefs = await SharedPreferences.getInstance();
+    var json = _levelService.levelData.toJson();
+    await prefs.setString("level_data", jsonEncode(json));
+  }
+
+  void addExp(int amount) {
+    _levelService.addExp(amount);
+
+    if (_levelService.canLevelUp()) _levelService.levelUp();
+    notifyListeners();
+  }
+
+  void resetLevel() {
+    _levelService.reset();
+    notifyListeners();
   }
 
   Future<Result<WordCerfResult, String>> getRandomWordCerf({
