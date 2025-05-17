@@ -74,7 +74,7 @@ arbitrary
 architectural
 archive
 arena
-arm (v)
+arm
 array
 articulate
 ash
@@ -296,7 +296,7 @@ costly
 councillor
 counselling
 counsellor
-counter (argue)
+counter
 counterpart
 countless
 coup
@@ -546,8 +546,8 @@ glory
 governance
 grace
 grasp
-grave (cemetery)
-grave (serious)
+grave
+grave
 gravity
 grid
 grief
@@ -1137,11 +1137,11 @@ straightforward
 strain
 strand
 strategic
-strip (narrow piece)
+strip
 strive
 structural
 stumble
-stun v.
+stun
 submission
 subscriber
 subscription

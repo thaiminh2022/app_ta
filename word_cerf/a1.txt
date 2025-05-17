@@ -1,4 +1,5 @@
-a/an
+a
+an
 about
 above
 across
@@ -22,7 +23,8 @@ airport
 all
 also
 always
-amazing	and
+amazing
+and
 angry
 animal
 another
@@ -47,7 +49,6 @@ August
 aunt
 autumn
 away
-B	
 baby
 back
 bad
@@ -55,7 +56,7 @@ bag
 ball
 banana
 band
-bank (money)
+bank
 bath
 bathroom
 be
@@ -80,7 +81,8 @@ big
 bike
 bill
 bird
-birthday	black
+birthday
+black
 blog
 blonde
 blue
@@ -112,7 +114,6 @@ butter
 buy
 by
 bye
-C	
 cafe
 cake
 call
@@ -145,7 +146,8 @@ city
 class
 classroom
 clean
-climb	clock
+climb
+clock
 close
 clothes
 club
@@ -178,7 +180,6 @@ culture
 cup
 customer
 cut
-D	
 dad
 dance
 dancer
@@ -200,7 +201,8 @@ detail
 dialogue
 dictionary
 die
-diet	difference
+diet
+difference
 different
 difficult
 dinner
@@ -221,7 +223,6 @@ drive
 driver
 during
 DVD
-E	
 each
 ear
 early
@@ -239,7 +240,7 @@ email
 end
 enjoy
 enough
-euro	
+euro
 even
 evening
 event
@@ -257,7 +258,6 @@ expensive
 explain
 extra
 eye
-F	
 face
 fact
 fall
@@ -287,7 +287,8 @@ find
 fine
 finish
 fire
-first	fish
+first
+fish
 five
 flat
 flight
@@ -316,7 +317,6 @@ full
 fun
 funny
 future
-G	
 game
 garden
 geography
@@ -327,7 +327,8 @@ give
 glass
 go
 good
-goodbye	grandfather
+goodbye
+grandfather
 grandmother
 grandparent
 great
@@ -338,7 +339,6 @@ grow
 guess
 guitar
 gym
-H	
 hair
 half
 hand
@@ -348,7 +348,6 @@ hard
 hat
 hate
 have
-have to
 he
 head
 health
@@ -359,7 +358,8 @@ help
 her
 here
 hey
-hi	high
+hi
+high
 him
 his
 history
@@ -379,10 +379,9 @@ however
 hundred
 hungry
 husband
-I	
 I
 ice
-ice cream
+ice
 idea
 if
 imagine
@@ -390,7 +389,8 @@ important
 improve
 in
 include
-information	interest
+information
+interest
 interested
 interesting
 internet
@@ -400,28 +400,26 @@ introduce
 island
 it
 its
-J	
 jacket
 January
 jeans
 job
-join	journey
+join
+journey
 juice
 July
 June
 just
-K	
 keep
 key
 kilometre
-kind (type)
+kind
 kitchen
 know
-L	
 land
 language
 large
-last (final)
+last
 late
 later
 laugh
@@ -434,9 +432,9 @@ let
 letter
 library
 lie
-life	light (from the sun/a lamp)
-like (similar)
-like (find sb/sth pleasant)
+life
+light
+like
 line
 lion
 list
@@ -450,7 +448,6 @@ lose
 lot
 love
 lunch
-M	
 machine
 magazine
 main
@@ -461,7 +458,7 @@ map
 March
 market
 married
-match (contest)
+match
 May
 maybe
 me
@@ -476,7 +473,8 @@ menu
 message
 metre
 midnight
-mile	milk
+mile
+milk
 million
 minute
 miss
@@ -502,7 +500,6 @@ museum
 music
 must
 my
-N	
 name
 natural
 near
@@ -514,13 +511,13 @@ new
 news
 newspaper
 next
-next to
 nice
 night
-nine	nineteen
+nine
+nineteen
 ninety
 no
-no one
+no
 nobody
 north
 nose
@@ -531,7 +528,6 @@ November
 now
 number
 nurse
-O	
 object
 o'clock
 October
@@ -545,7 +541,8 @@ old
 on
 once
 one
-onion	online
+onion
+online
 only
 open
 opinion
@@ -559,7 +556,6 @@ out
 outside
 over
 own
-P	
 page
 paint
 painting
@@ -591,7 +587,8 @@ picture
 piece
 pig
 pink
-place	plan
+place
+plan
 plane
 plant
 play
@@ -622,13 +619,12 @@ programme
 project
 purple
 put
-Q	
 quarter
 question
-quick	quickly
+quick
+quickly
 quiet
 quite
-R	
 radio
 rain
 read
@@ -642,7 +638,8 @@ red
 relax
 remember
 repeat
-report	restaurant
+report
+restaurant
 result
 return
 rice
@@ -655,7 +652,6 @@ room
 routine
 rule
 run
-S	
 sad
 salad
 salt
@@ -703,7 +699,8 @@ skirt
 sleep
 slow
 small
-snake	snow
+snake
+snow
 so
 some
 somebody
@@ -750,7 +747,6 @@ sure
 sweater
 swim
 swimming
-T	
 table
 take
 talk
@@ -787,7 +783,8 @@ thirsty
 thirteen
 thirty
 this
-thousand	three
+thousand
+three
 through
 Thursday
 ticket
@@ -823,26 +820,25 @@ twenty
 twice
 two
 type
-U	
 umbrella
 uncle
 under
 understand
 university
-until	up
+until
+up
 upstairs
 us
 use
 useful
 usually
-V	
 vacation
 vegetable
 very
-video	village
+video
+village
 visit
 visitor
-W	
 wait
 waiter
 wake
@@ -866,7 +862,8 @@ well
 west
 what
 when
-where	which
+where
+which
 white
 who
 why
@@ -889,12 +886,12 @@ write
 writer
 writing
 wrong
-X Y Z	
 yeah
 year
 yellow
 yes
-yesterday	you
+yesterday
+you
 young
 your
 yourself

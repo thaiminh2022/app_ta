@@ -1,4 +1,4 @@
-A	
+A
 abandon
 absolute
 absorb
@@ -46,7 +46,7 @@ AIDS
 aircraft
 alarm
 alien
-alongside prep
+alongside
 alter
 altogether
 ambitious
@@ -101,7 +101,7 @@ attempt
 audio
 awareness
 awkward
-B	
+B
 back
 bacteria
 badge
@@ -117,14 +117,14 @@ basically
 basket
 bat
 battle
-bear (deal with)
+bear
 beat
 beg
 being
 beneficial
 bent
-beside prep
-besides prep
+beside
+besides
 bet
 beyond
 bias
@@ -157,8 +157,8 @@ bullet
 bunch
 burn
 bush
-but (prep)
-C	
+but
+C
 cabin
 cable
 calculate
@@ -280,7 +280,7 @@ corporate
 corporation
 corridor
 council
-counter (flat surface)
+counter
 county
 courage
 coverage
@@ -311,7 +311,7 @@ curriculum
 curve
 curved
 cute
-D	
+D
 dairy
 dare
 darkness
@@ -338,7 +338,6 @@ delete
 deliberate
 deliberately
 delight
-delighted
 delighted
 delivery
 demand
@@ -413,7 +412,7 @@ dull
 dump
 duration
 dynamic
-E	
+E
 eager
 economics
 economist
@@ -498,7 +497,7 @@ external
 extract
 extraordinary
 extreme
-F	
+F
 fabric
 fabulous
 facility
@@ -573,7 +572,7 @@ fundamentally
 funding
 furious
 furthermore
-G	
+G
 gain
 gallon
 gaming
@@ -605,7 +604,7 @@ greatly
 greenhouse
 guarantee
 guideline
-H	
+H
 habitat
 handle
 harbour
@@ -648,7 +647,7 @@ hunt
 hunting
 hurt
 hypothesis
-I	
+I
 icon
 ID
 ideal
@@ -727,7 +726,7 @@ investor
 isolate
 isolated
 issue
-J	
+J
 jail
 jet
 joint
@@ -738,10 +737,10 @@ junior
 jury
 justice
 justify
-K	
+K
 kindergarten
 kit
-L	
+L
 labour
 ladder
 landing
@@ -782,7 +781,7 @@ lower
 loyal
 lung
 lyric
-M	
+M
 magnificent
 maintain
 majority
@@ -849,7 +848,7 @@ multiple
 multiply
 mysterious
 myth
-N	
+N
 naked
 narrow
 nasty
@@ -875,7 +874,7 @@ nowadays
 numerous
 nursing
 nutrition
-O	
+O
 obesity
 obey
 object
@@ -922,7 +921,7 @@ overnight
 owe
 ownership
 oxygen
-P	
+P
 pace
 package
 packet
@@ -1037,9 +1036,9 @@ purely
 pursue
 pursuit
 puzzle
-Q	
+Q
 questionnaire
-R	
+R
 racial
 racism
 racist
@@ -1130,7 +1129,7 @@ rubber
 ruin
 rural
 rush
-S	
+S
 sample
 satellite
 satisfaction
@@ -1290,7 +1289,7 @@ sweep
 switch
 sympathetic
 sympathy
-T	
+T
 tag
 tale
 tank
@@ -1358,7 +1357,7 @@ try
 tsunami
 tune
 tunnel
-U	
+U
 ultimate
 ultimately
 unacceptable
@@ -1382,7 +1381,7 @@ urge
 urgent
 usage
 useless
-V	
+V
 valid
 value
 variation
@@ -1405,7 +1404,7 @@ vitamin
 volume
 voluntary
 voting
-W	
+W
 wage
 wander
 warming
@@ -1444,6 +1443,6 @@ wound
 wrap
 wrist
 wrong
-X Y Z	
+X Y Z
 yet
 zone

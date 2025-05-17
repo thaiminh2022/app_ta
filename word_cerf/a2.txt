@@ -1,4 +1,4 @@
-A	
+A
 ability
 able
 abroad
@@ -65,7 +65,7 @@ average
 avoid
 award
 awful
-B	
+B
 back
 background
 badly
@@ -74,7 +74,7 @@ baseball
 based
 basketball
 bean
-bear (animal)
+bear
 beat
 beef
 before
@@ -112,7 +112,7 @@ brush
 burn
 businessman
 button
-C	
+C
 camp
 camping
 can
@@ -196,7 +196,7 @@ cry
 cupboard
 curly
 cycle
-D	
+D
 daily
 danger
 dark
@@ -245,7 +245,7 @@ driving
 drop
 drug
 dry
-E	
+E
 earn
 earth
 easily
@@ -288,7 +288,7 @@ express
 expression
 extreme
 extremely
-F	
+F
 factor
 factory
 fail
@@ -338,7 +338,7 @@ fun
 furniture
 further
 future
-G	
+G
 gallery
 gap
 gas
@@ -358,7 +358,7 @@ guest
 guide
 gun
 guy
-H	
+H
 habit
 half
 hall
@@ -387,7 +387,7 @@ hope
 huge
 human
 hurt
-I	
+I
 ideal
 identify
 ill
@@ -420,14 +420,14 @@ invite
 involve
 item
 itself
-J	
+J
 jam
 jazz
 jewellery
 joke
 journalist
 jump
-K	
+K
 kid
 kill
 king
@@ -435,7 +435,7 @@ knee
 knife
 knock
 knowledge
-L	
+L
 lab
 lady
 lake
@@ -459,8 +459,7 @@ less
 level
 lifestyle
 lift
-light (a lamp)
-light (not heavy)
+light
 likely
 link
 listener
@@ -475,7 +474,7 @@ lovely
 low
 luck
 lucky
-M	
+M
 mail
 major
 male
@@ -488,7 +487,7 @@ material
 mathematics
 maths
 matter
-may modal
+may
 media
 medical
 medicine
@@ -499,7 +498,7 @@ method
 middle
 might
 mind
-mine (belongs to me)
+mine
 mirror
 missing
 mobile
@@ -511,7 +510,7 @@ movement
 musical
 musician
 myself
-N	
+N
 narrow
 national
 nature
@@ -532,7 +531,7 @@ novel
 nowhere
 number
 nut
-O	
+O
 ocean
 offer
 officer
@@ -549,7 +548,7 @@ outside
 oven
 own
 owner
-P	
+P
 pack
 pain
 painter
@@ -566,7 +565,7 @@ pay
 peace
 penny
 per
-per cent
+percent
 perform
 perhaps
 permission
@@ -620,14 +619,14 @@ publish
 pull
 purpose
 push
-Q	
+Q
 quality
 quantity
 queen
 question
 quietly
-R	
-race (run)
+R
+race
 railway
 raise
 rate
@@ -666,7 +665,6 @@ rest
 review
 ride
 ring
-ring
 rise
 rock
 role
@@ -678,7 +676,7 @@ rude
 run
 runner
 running
-S	
+S
 sadly
 safe
 sail
@@ -696,7 +694,7 @@ screen
 search
 season
 seat
-second (next)
+second
 secondly
 secret
 secretary
@@ -792,7 +790,7 @@ survey
 sweet
 symbol
 system
-T	
+T
 tablet
 talk
 target
@@ -836,7 +834,6 @@ trouble
 truck
 twin
 typical
-U	
 underground
 understanding
 unfortunately
@@ -847,10 +844,9 @@ united
 unusual
 upstairs
 use
-used to
+used
 user
 usual
-V	
 valley
 van
 variety
@@ -858,7 +854,6 @@ vehicle
 view
 virus
 voice
-W	
 wait
 war
 wash
@@ -887,7 +882,6 @@ worry
 worse
 worst
 wow
-X Y Z	
 yet
 yours
 zero

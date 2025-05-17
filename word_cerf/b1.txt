@@ -58,7 +58,6 @@ backwards
 bake
 balance
 ban
-bank (river)
 base
 basic
 basis
@@ -395,7 +394,7 @@ key
 keyboard
 kick
 killing
-kind (caring)
+kind
 kiss
 knock
 L	
@@ -413,7 +412,7 @@ legal
 leisure
 length
 level
-lie (tell a lie)
+lie
 limit
 lip
 liquid
@@ -443,7 +442,7 @@ mental
 mention
 mess
 mild
-mine (hole)
+mine
 mix
 mixture
 mood
@@ -579,7 +578,7 @@ quit
 quotation
 quote
 R	
-race (people)
+race
 racing
 range
 rare
@@ -650,8 +649,7 @@ sensible
 separate
 seriously
 servant
-set (put)
-set (group)
+set
 setting
 sex
 sexual
@@ -698,8 +696,7 @@ standard
 state
 statistic
 statue
-stick (attach)
-stick (piece of wood)
+stick
 still
 store
 stranger
