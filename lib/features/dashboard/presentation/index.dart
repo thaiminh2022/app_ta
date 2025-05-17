@@ -46,7 +46,18 @@ class _DashboardState extends State<Dashboard>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: PageHeader("DailyE Dashboard"),
-        actions: [ProfileMenu()],
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (ctx) => LevelingView()),
+              );
+            },
+            child: Text("To leveling"),
+          ),
+          ProfileMenu(),
+        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -58,15 +69,6 @@ class _DashboardState extends State<Dashboard>
                 StatsCard(),
                 StreakCard(),
                 QuickActionCard(),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => LevelingView()),
-                    );
-                  },
-                  child: Text("To leveling"),
-                ),
               ],
             ),
             Column(

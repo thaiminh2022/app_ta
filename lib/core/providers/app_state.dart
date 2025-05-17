@@ -74,6 +74,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearAllSavedData() {
+    log("Oh no not implemented");
+  }
+
   void _checkAndUpdateStreak() {
     final now = DateTime.now();
     if (_lastStudyDate == null) {
