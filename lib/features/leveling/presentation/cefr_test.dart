@@ -20,9 +20,10 @@ class _CefrTestState extends State<CefrTest> {
   @override
   void initState() {
     super.initState();
-    isLoading = true;
     loadWord();
-    isLoading = false;
+    Future.microtask(() async {
+      await loadWord();
+    });
   }
 
   Future<void> loadWord() async {
@@ -31,7 +32,9 @@ class _CefrTestState extends State<CefrTest> {
       context.read<AppState>(),
     );
     _service.setTestCase(casesRes.unwrap());
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -42,9 +45,8 @@ class _CefrTestState extends State<CefrTest> {
       body: Center(
         child: Column(
           children: [
-            Text('Bài kiểm tra lên cấp ${widget.level.name}'),
             isLoading
-                ? CircularProgressIndicator()
+                ? Expanded(child: Center(child: CircularProgressIndicator()))
                 : Expanded(
                   child: ListView(
                     children: [
