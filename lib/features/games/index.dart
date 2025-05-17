@@ -1,6 +1,7 @@
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/games/word_match/presentation/index.dart';
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
 import 'package:flutter/material.dart';
 
@@ -17,12 +18,8 @@ class GameSpace extends StatelessWidget {
 
   final _datas = <GameData>[
     GameData(Hangman(), 'assets/gamespace_icon/hangman.png', "Hangman"),
-    GameData(WordleView(), 'assets/gamespace_icon/wordle.png', "Wordle"),
-    GameData(
-      Placeholder(),
-      'assets/gamespace_icon/wordmatch.png',
-      "Match word",
-    ),
+  GameData(WordleView(), 'assets/gamespace_icon/wordle.png', "Wordle"),
+  GameData(WordMatch(),'assets/gamespace_icon/wordmatch.png',"Match word"),
   ];
 
   @override
