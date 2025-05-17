@@ -6,7 +6,6 @@ import 'package:app_ta/features/dashboard/presentation/widgets/gamespace_button.
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/level_button.dart';
-import 'package:app_ta/features/leveling/presentation/index.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {

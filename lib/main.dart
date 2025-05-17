@@ -61,6 +61,7 @@ class _MyAppState extends State<MyApp> {
       context.read<AppState>().loadTheme();
       context.read<AppState>().loadStreak();
       context.read<AppState>().loadLevelData();
+      context.read<AppState>().loadSelectionRange();
 
       _initNotifications();
     });
