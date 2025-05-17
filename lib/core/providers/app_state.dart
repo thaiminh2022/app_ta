@@ -123,8 +123,16 @@ class AppState extends ChangeNotifier {
   void addExp(int amount) {
     _levelService.addExp(amount);
 
-    if (_levelService.canLevelUp()) _levelService.levelUp();
     notifyListeners();
+  }
+
+  void levelUp() {
+    _levelService.levelUp();
+    notifyListeners();
+  }
+
+  bool canLevelUp() {
+    return _levelService.canLevelUp();
   }
 
   void resetLevel() {
@@ -153,6 +161,26 @@ class AppState extends ChangeNotifier {
     var info = res.unwrap();
 
     return Result.ok(WordCerfResult(wordInfo: info, cerf: cerf));
+  }
+
+  Future<Result<List<WordCerfResult>, String>> getRandomWordsByCerf(
+    int amount,
+    WordCerf cerf,
+  ) async {
+    var listRes = await _cerfReader.getRandomWordsByCerf(amount, cerf);
+    if (listRes.isError) {
+      return Result.err(listRes.unwrapError());
+    }
+
+    List<WordCerfResult> returnList = [];
+    for (var w in listRes.unwrap()) {
+      var res = await searchWord(w.trim().toLowerCase());
+      if (res.isError) continue;
+
+      var info = res.unwrap();
+      returnList.add(WordCerfResult(wordInfo: info, cerf: cerf));
+    }
+    return Result.ok(returnList);
   }
 
   Future<WordCerf> getWordCerf(String word) async {

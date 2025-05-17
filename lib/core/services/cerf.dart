@@ -47,11 +47,21 @@ class CerfReader {
         }
       }
     }
-    print("Did not find the word: $word");
     return WordCerf.unknown;
   }
 
   Future<Result<String, String>> getRandomWordByCerf(WordCerf cerf) async {
+    var listRes = await getRandomWordsByCerf(1, cerf);
+    if (listRes.isError) {
+      return Result.err(listRes.unwrapError());
+    }
+    return Result.ok(listRes.unwrap().first);
+  }
+
+  Future<Result<List<String>, String>> getRandomWordsByCerf(
+    int amount,
+    WordCerf cerf,
+  ) async {
     if (_cacheCerf.values.first.isEmpty) {
       await _loadCerf();
     }
@@ -60,7 +70,17 @@ class CerfReader {
     }
 
     var wordList = _cacheCerf[cerf]!;
-    var word = wordList.elementAt(Random().nextInt(wordList.length));
-    return Result.ok(word);
+    var returnList = <String>[];
+    var rand = Random();
+
+    for (var i = 0; i < amount; i++) {
+      var word = wordList.elementAt(rand.nextInt(wordList.length));
+      while (returnList.contains(word)) {
+        word = wordList.elementAt(rand.nextInt(wordList.length));
+      }
+      returnList.add(word);
+    }
+
+    return Result.ok(returnList);
   }
 }
