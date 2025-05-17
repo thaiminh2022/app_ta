@@ -318,4 +318,10 @@ class AppState extends ChangeNotifier {
     checkCefrLevelUnlock();
     notifyListeners();
   }
+
+  void addExpForGame(WordCerf cerf) {
+    _levelService.addExpForGame(cerf);
+    checkCefrLevelUnlock();
+    notifyListeners();
+  }
 }
