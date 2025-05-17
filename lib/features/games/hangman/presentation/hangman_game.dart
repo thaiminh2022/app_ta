@@ -5,6 +5,8 @@ import 'package:app_ta/features/games/hangman/models/hangman.dart';
 import 'package:app_ta/features/games/hangman/presentation/widgets/hangman_hint.dart';
 import 'package:app_ta/features/games/hangman/presentation/widgets/the_hangman_visual.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:app_ta/core/providers/app_state.dart';
 
 class HangmanGameArgs {
   final String word;
@@ -117,6 +119,10 @@ class _HangmanGameState extends State<HangmanGame> {
                     });
 
                     if (game.isGameEnded) {
+                      if (mounted && game.isWon) {
+                        Provider.of<AppState>(context, listen: false).addExp(2);
+                        Provider.of<AppState>(context, listen: false).incrementGamesCompleted();
+                      }
                       showDialog(
                         context: context,
                         builder:

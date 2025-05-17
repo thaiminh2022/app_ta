@@ -4,8 +4,24 @@ import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LevelingView extends StatelessWidget {
+class LevelingView extends StatefulWidget {
   const LevelingView({super.key});
+
+  @override
+  State<LevelingView> createState() => _LevelingViewState();
+}
+
+class _LevelingViewState extends State<LevelingView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final appState = context.read<AppState>();
+      await appState.loadGamesCompleted();
+      await appState.loadLearnedWords();
+      appState.recalculateExp();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
