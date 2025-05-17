@@ -112,6 +112,7 @@ class _FlashcardGameState extends State<FlashcardGame> {
   void _nextCard() {
     setState(() {
       _showAnswer = false;
+      _rotation = 0; // Đặt lại góc quay
       if (_flashcards.isNotEmpty) {
         _currentIndex = (_currentIndex + 1) % _flashcards.length;
       }
