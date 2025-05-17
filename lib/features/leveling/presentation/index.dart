@@ -37,7 +37,7 @@ class _LevelingViewState extends State<LevelingView> {
       ),
       body: SafeArea(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 50),
+          margin: EdgeInsets.symmetric(horizontal: 5),
           child: ListView(
             shrinkWrap: true,
             children: [
@@ -82,7 +82,9 @@ class _LevelingViewState extends State<LevelingView> {
               Column(
                 children: [
                   Text("Random word range"),
+
                   SegmentedButton(
+                    showSelectedIcon: false,
                     segments: [
                       for (var val in WordCerf.values)
                         if (val != WordCerf.unknown)
