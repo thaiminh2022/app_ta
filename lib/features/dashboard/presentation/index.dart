@@ -9,7 +9,7 @@ import 'package:app_ta/features/dashboard/presentation/widgets/level_button.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_ta/core/providers/app_state.dart';
-import 'package:app_ta/features/leveling/cefr_test.dart';
+import 'package:app_ta/features/leveling/presentation/cefr_test.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -123,11 +123,9 @@ class _CefrLevelUpBar extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => CefrTest(level: level.name.toUpperCase()),
-                ),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => CefrTest(level: level)));
             },
             child: const Text('Thi lên cấp'),
           ),
