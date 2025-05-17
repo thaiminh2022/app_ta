@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:app_ta/core/models/level_model.dart';
 import 'package:app_ta/core/services/level.dart';
-import 'package:app_ta/core/services/random_word_service.dart';
 import 'package:app_ta/core/services/word_info_cleanup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ta/core/models/result.dart';
@@ -19,11 +18,10 @@ class AppState extends ChangeNotifier {
   final _db = Database();
   final _cerfReader = CerfReader();
   final _wordInfoCleanupService = WordInfoCleanupService();
-  final _randomWordService = RandomWordService();
   var _levelService = LevelService(levelData: LevelModel());
 
   WordCerf get level => _levelService.level;
-  int get exp => _levelService.exp;
+  double get exp => _levelService.exp;
 
   var learnedWords = <String>[];
   var _themeMode = ThemeMode.light; // Default to light theme
@@ -134,34 +132,27 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Result<WordCerfResult, String>> getRandomWordCerf({
-    RandomWordType t = RandomWordType.vocabulary,
-  }) async {
-    var res = await _randomWordService.getRandom(t: t);
+  Future<Result<WordCerfResult, String>> getRandomWordCerf() async {
+    return await getRandomWordByCerf(level);
+  }
+
+  Future<Result<WordCerfResult, String>> getRandomWordByCerf(
+    WordCerf cerf,
+  ) async {
+    var wordRes = await _cerfReader.getRandomWordByCerf(cerf);
+    if (wordRes.isError) {
+      return Result.err(wordRes.unwrapError());
+    }
+    final word = wordRes.unwrap();
+    var res = await searchWord(word);
+
     if (res.isError) {
       return Result.err(res.unwrapError());
-    } else {
-      // try until find a word that have definition
-      late Result<WordInfoUsable, String> searchRes;
-      // max 10 attemps;
-      int attemps;
-      for (attemps = 0; attemps < 10; attemps++) {
-        searchRes = await searchWord(res.unwrap().word.toLowerCase());
-        if (searchRes.isSuccess) break;
-        res = await _randomWordService.getRandom();
-      }
-      log("Total attemps at this word: $attemps");
-
-      if (searchRes.isError) {
-        return Result.err(
-          "cannot search for word definition, please retry or add more attempts in dev pharses",
-        );
-      }
-
-      final val = searchRes.unwrap();
-      var cerf = await getWordCerf(val.word);
-      return Result.ok(WordCerfResult(wordInfo: val, cerf: cerf));
     }
+
+    var info = res.unwrap();
+
+    return Result.ok(WordCerfResult(wordInfo: info, cerf: cerf));
   }
 
   Future<WordCerf> getWordCerf(String word) async {
