@@ -1,5 +1,6 @@
 import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_info.dart';
+import 'package:app_ta/core/models/word_cerf.dart';
 
 class WordInfoCleanupService {
   Result<WordInfoUsable, String> cleanUp(List<WordInfo> infos) {
@@ -53,6 +54,7 @@ class WordInfoCleanupService {
         meanings: meanings,
         synonyms: synonyms,
         antonyms: antonyms,
+        cerf: WordCerf.values.first, // Use an appropriate enum value for cerf
       ),
     );
   }
@@ -64,6 +66,7 @@ class WordInfoUsable {
   Map<String, WordPhonetic> phonetics;
   Set<String> antonyms;
   Set<String> synonyms;
+  WordCerf cerf;
 
   WordInfoUsable({
     required this.word,
@@ -71,6 +74,7 @@ class WordInfoUsable {
     required this.phonetics,
     required this.synonyms,
     required this.antonyms,
+    required this.cerf,
   });
 }
 

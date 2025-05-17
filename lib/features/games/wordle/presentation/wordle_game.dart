@@ -62,7 +62,13 @@ class WordleGameState extends State<WordleGame> {
 
   void showResultDialog() {
     if (gameState.hasWon()) {
-      Provider.of<AppState>(context, listen: false).addExp(2);
+      // Try to get CERF level from wordInfo if possible
+      final cerf = widget.wordInfo.cerf;
+      if (cerf != null) {
+        Provider.of<AppState>(context, listen: false).addExpForGame(cerf);
+      } else {
+        Provider.of<AppState>(context, listen: false).addExp(2); // fallback
+      }
       Provider.of<AppState>(context, listen: false).incrementGamesCompleted();
     }
     showDialog(
