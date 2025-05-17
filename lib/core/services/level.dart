@@ -6,19 +6,46 @@ class LevelService {
   LevelService({required this.levelData});
 
   WordCerf get level => levelData.level;
-  int get exp => levelData.exp;
+  double get exp => levelData.exp;
 
   static const Map<WordCerf, int> expThreashold = {
-    WordCerf.a1: 10,
-    WordCerf.a2: 32,
-    WordCerf.b1: 45,
-    WordCerf.b2: 10,
-    WordCerf.c1: 56,
-    WordCerf.c2: 10,
+    WordCerf.a1: 0,
+    WordCerf.a2: 500,
+    WordCerf.b1: 1000,
+    WordCerf.b2: 2000,
+    WordCerf.c1: 4000,
+    WordCerf.c2: 8000,
   };
 
-  void addExp(int amount) {
-    levelData.exp += amount;
+  static const Map<WordCerf, int> wordToExp = {
+    WordCerf.unknown: 1,
+    WordCerf.a1: 1,
+    WordCerf.a2: 2,
+    WordCerf.b1: 4,
+    WordCerf.b2: 8,
+    WordCerf.c1: 12,
+    WordCerf.c2: 20,
+  };
+
+  double getDailyStreakBonusPercentage(int streek) {
+    if (streek >= 50) return 2;
+    if (streek >= 30) return 1.5;
+    if (streek >= 10) return 1.2;
+    if (streek >= 3) return 1.1;
+
+    return 1;
+  }
+
+  double _calExp(int amount, {int streek = 0}) {
+    return amount * getDailyStreakBonusPercentage(streek);
+  }
+
+  void addExp(int base, {int streek = 0}) {
+    levelData.exp += _calExp(base, streek: streek);
+  }
+
+  void removeExp(int base, {int streek = 0}) {
+    levelData.exp -= _calExp(base, streek: streek);
   }
 
   void levelUp() {

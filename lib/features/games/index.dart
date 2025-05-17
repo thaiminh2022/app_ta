@@ -1,6 +1,7 @@
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
 import 'package:app_ta/features/games/hangman/presentation/index.dart';
+import 'package:app_ta/features/games/word_match/presentation/index.dart';
 import 'package:app_ta/features/games/wordle/presentation/index.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class GameSpace extends StatelessWidget {
     GameData(WordleView(), Icons.abc, "Wordle"),
     GameData(
       // Placeholder
-      Scaffold(appBar: AppBar()),
+      WordMatch(),
       Icons.dataset_linked_sharp,
       "Match word",
     ),

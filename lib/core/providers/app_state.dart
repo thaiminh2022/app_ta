@@ -23,7 +23,7 @@ class AppState extends ChangeNotifier {
   var _levelService = LevelService(levelData: LevelModel());
 
   WordCerf get level => _levelService.level;
-  int get exp => _levelService.exp;
+  double get exp => _levelService.exp;
 
   var learnedWords = <String>[];
   var _themeMode = ThemeMode.light; // Default to light theme
