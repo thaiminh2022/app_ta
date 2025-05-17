@@ -1,5 +1,6 @@
-import 'package:app_ta/features/dashboard/presentation/widgets/about_dialog.dart';
-import 'package:app_ta/features/dashboard/presentation/widgets/settings_dialog.dart';
+import 'package:app_ta/core/widgets/local/about_dialog.dart';
+import 'package:app_ta/core/widgets/local/cache_dialog.dart';
+import 'package:app_ta/core/widgets/local/settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,6 +15,10 @@ class ProfileMenu extends StatelessWidget {
 
     void showAboutDialog() {
       showDialog(context: context, builder: (ctx) => AboutDialogView());
+    }
+
+    void showCacheDialog() {
+      showDialog(context: context, builder: (ctx) => CacheDialogView());
     }
 
     void quitApp() {
@@ -38,6 +43,27 @@ class ProfileMenu extends StatelessWidget {
                 const SizedBox(width: 12), // Tăng khoảng cách giữa icon và text
                 Text(
                   'Settings',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16, // Đảm bảo font size đồng nhất
+                  ),
+                ),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'cache',
+            height: 48, // Chiều cao cố định cho tất cả các mục
+            child: Row(
+              children: [
+                Icon(
+                  Icons.cached,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 24, // Giảm kích thước icon về 24 để đồng nhất
+                ),
+                const SizedBox(width: 12), // Tăng khoảng cách giữa icon và text
+                Text(
+                  'Caches',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 16, // Đảm bảo font size đồng nhất
@@ -99,6 +125,8 @@ class ProfileMenu extends StatelessWidget {
           showAboutDialog();
         } else if (value == 'quit') {
           quitApp();
+        } else if (value == "cache") {
+          showCacheDialog();
         }
       });
     }
