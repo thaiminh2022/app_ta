@@ -5,6 +5,8 @@ import 'package:app_ta/features/games/hangman/models/hangman.dart';
 import 'package:app_ta/features/games/hangman/presentation/widgets/hangman_hint.dart';
 import 'package:app_ta/features/games/hangman/presentation/widgets/the_hangman_visual.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:app_ta/core/providers/app_state.dart';
 
 class HangmanGameArgs {
   final String word;
@@ -117,6 +119,10 @@ class _HangmanGameState extends State<HangmanGame> {
                     });
 
                     if (game.isGameEnded) {
+                      // Add 2 exp for finishing a game
+                      if (mounted) {
+                        Provider.of<AppState>(context, listen: false).addExp(2);
+                      }
                       showDialog(
                         context: context,
                         builder:

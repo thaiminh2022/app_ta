@@ -219,6 +219,7 @@ class AppState extends ChangeNotifier {
     word = word.trim();
     if (!learnedWords.contains(word)) {
       learnedWords.add(word);
+      addExp(1); // +1 exp for each learned word
       _checkAndUpdateStreak(); // Update streak when adding a new word
       notifyListeners();
     }

@@ -160,6 +160,7 @@ class WordMatchScreen extends StatelessWidget {
     if (isCorrect) {
       onScoreUpdate(score + 1);
       context.read<AppState>().addWordToLearned(initialMatch.word);
+      Provider.of<AppState>(context, listen: false).addExp(2); // +2 exp for finishing game
       onRefresh();
     } else {
       showDialog(
