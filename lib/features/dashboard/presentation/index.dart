@@ -5,6 +5,7 @@ import 'package:app_ta/features/dashboard/presentation/streak_card.dart';
 import 'package:app_ta/features/dashboard/presentation/widgets/gamespace_button.dart';
 import 'package:app_ta/features/dashboard/presentation/ai_chat.dart';
 import 'package:app_ta/features/dashboard/presentation/quick_action_card.dart';
+import 'package:app_ta/features/leveling/presentation/index.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -57,6 +58,15 @@ class _DashboardState extends State<Dashboard>
                 StatsCard(),
                 StreakCard(),
                 QuickActionCard(),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (ctx) => LevelingView()),
+                    );
+                  },
+                  child: Text("To leveling"),
+                ),
               ],
             ),
             Column(
