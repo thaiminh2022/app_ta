@@ -47,6 +47,16 @@ class LevelService {
     levelData.exp += _calExp(base, streek: streek);
   }
 
+  void addExpForGame(WordCerf cerf, {int streek = 0}) {
+    final baseExp = wordToExp[cerf] ?? 1;
+    addExp(baseExp.toInt(), streek: streek);
+  }
+
+  void addExpForLearnedWord(WordCerf cerf, {int streek = 0}) {
+    final baseExp = wordToExp[cerf] ?? 1;
+    addExp(baseExp.toInt(), streek: streek);
+  }
+
   void removeExp(int base, {int streek = 0}) {
     levelData.exp -= _calExp(base, streek: streek);
   }

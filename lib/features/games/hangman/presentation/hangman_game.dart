@@ -120,7 +120,11 @@ class _HangmanGameState extends State<HangmanGame> {
 
                     if (game.isGameEnded) {
                       if (mounted && game.isWon) {
-                        Provider.of<AppState>(context, listen: false).addExp(2);
+                        if (widget.cerf != null) {
+                          Provider.of<AppState>(context, listen: false).addExpForGame(widget.cerf!);
+                        } else {
+                          Provider.of<AppState>(context, listen: false).addExp(2); // fallback
+                        }
                         Provider.of<AppState>(context, listen: false).incrementGamesCompleted();
                       }
                       showDialog(
