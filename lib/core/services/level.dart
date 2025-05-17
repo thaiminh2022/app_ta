@@ -7,6 +7,9 @@ class LevelService {
 
   WordCerf get level => levelData.level;
   double get exp => levelData.exp;
+  set exp(double value) {
+    levelData.exp = value;
+  }
 
   static const Map<WordCerf, double> expThreashold = {
     WordCerf.a1: 0,

@@ -7,6 +7,8 @@ import 'package:app_ta/features/games/wordle/presentation/widgets/hint_btn.dart'
 import 'package:app_ta/features/games/wordle/services/game_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:app_ta/core/providers/app_state.dart';
 
 class WordleGameArgs {
   WordInfoUsable wordInfo;
@@ -59,6 +61,10 @@ class WordleGameState extends State<WordleGame> {
   }
 
   void showResultDialog() {
+    if (gameState.hasWon()) {
+      Provider.of<AppState>(context, listen: false).addExp(2);
+      Provider.of<AppState>(context, listen: false).incrementGamesCompleted();
+    }
     showDialog(
       context: context,
       barrierDismissible: false,

@@ -16,6 +16,13 @@ class _LevelingViewState extends State<LevelingView> {
   @override
   void initState() {
     super.initState();
+
+    Future.microtask(() async {
+      final appState = context.read<AppState>();
+      await appState.loadGamesCompleted();
+      await appState.loadLearnedWords();
+      appState.recalculateExp();
+    });
   }
 
   @override
