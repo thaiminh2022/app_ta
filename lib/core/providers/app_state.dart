@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:math';
 
 import 'package:app_ta/core/models/level_model.dart';
 import 'package:app_ta/core/services/level.dart';
@@ -22,6 +22,7 @@ class AppState extends ChangeNotifier {
 
   WordCerf get level => _levelService.level;
   double get exp => _levelService.exp;
+  Set<WordCerf> levelSelectionRange = {};
 
   var learnedWords = <String>[];
   var _themeMode = ThemeMode.light; // Default to light theme
@@ -84,7 +85,7 @@ class AppState extends ChangeNotifier {
   }
 
   void clearAllSavedData() {
-    log("Oh no not implemented");
+    print("Oh no not implemented");
   }
 
   void _checkAndUpdateStreak() {
@@ -129,6 +130,27 @@ class AppState extends ChangeNotifier {
     await prefs.setString("level_data", jsonEncode(json));
   }
 
+  Future<void> saveLevelSelectionRange() async {
+    var prefs = await SharedPreferences.getInstance();
+    var json = jsonEncode(levelSelectionRange.map((v) => v.index).toList());
+    await prefs.setString("level_selectionData", json);
+  }
+
+  Future<void> loadSelectionRange() async {
+    var prefs = await SharedPreferences.getInstance();
+    var s = prefs.getString("level_selectionData");
+
+    if (s == null || s.isEmpty) {
+      levelSelectionRange.add(level);
+      saveLevelSelectionRange();
+      return;
+    }
+    List<int> range = (jsonDecode(s) as List).cast<int>();
+    levelSelectionRange =
+        range.map((v) => WordCerf.values.elementAt(v)).toSet();
+    notifyListeners();
+  }
+
   void addExp(int amount) {
     _levelService.addExp(amount);
     checkCefrLevelUnlock();
@@ -150,7 +172,10 @@ class AppState extends ChangeNotifier {
   }
 
   Future<Result<WordCerfResult, String>> getRandomWordCerf() async {
-    return await getRandomWordByCerf(level);
+    final thisLevel = levelSelectionRange.elementAt(
+      Random().nextInt(levelSelectionRange.length),
+    );
+    return await getRandomWordByCerf(thisLevel);
   }
 
   Future<Result<WordCerfResult, String>> getRandomWordByCerf(
@@ -170,6 +195,11 @@ class AppState extends ChangeNotifier {
     var info = res.unwrap();
 
     return Result.ok(WordCerfResult(wordInfo: info, cerf: cerf));
+  }
+
+  double getExpPercentage() {
+    if (level == WordCerf.c2) return 1.0;
+    return exp / LevelService.expThreashold[WordCerf.values[level.index + 1]]!;
   }
 
   Future<Result<List<WordCerfResult>, String>> getRandomWordsByCerf(

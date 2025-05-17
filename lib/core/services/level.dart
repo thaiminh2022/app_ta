@@ -11,16 +11,16 @@ class LevelService {
     levelData.exp = value;
   }
 
-  static const Map<WordCerf, int> expThreashold = {
+  static const Map<WordCerf, double> expThreashold = {
     WordCerf.a1: 0,
-    WordCerf.a2: 500,
-    WordCerf.b1: 1000,
+    WordCerf.a2: 100,
+    WordCerf.b1: 500,
     WordCerf.b2: 2000,
     WordCerf.c1: 4000,
-    WordCerf.c2: 8000,
+    WordCerf.c2: 5000,
   };
 
-  static const Map<WordCerf, int> wordToExp = {
+  static const Map<WordCerf, double> wordToExp = {
     WordCerf.unknown: 1,
     WordCerf.a1: 1,
     WordCerf.a2: 2,
@@ -66,7 +66,7 @@ class LevelService {
     if (!expThreashold.containsKey(levelData.level)) {
       return false;
     }
-    int threashold = expThreashold[levelData.level]!;
+    final threashold = expThreashold[levelData.level]!;
     return levelData.exp >= threashold;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:app_ta/core/models/word_cerf.dart';
 import 'package:app_ta/core/providers/app_state.dart';
 import 'package:app_ta/core/widgets/page_header.dart';
 import 'package:app_ta/core/widgets/profile_menu.dart';
@@ -15,6 +16,7 @@ class _LevelingViewState extends State<LevelingView> {
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() async {
       final appState = context.read<AppState>();
       await appState.loadGamesCompleted();
@@ -34,34 +36,75 @@ class _LevelingViewState extends State<LevelingView> {
         actions: [ProfileMenu()],
       ),
       body: SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Text("Level:"),
-            Text(appState.level.name.toString()),
-            Text("exp:"),
-            Text(appState.exp.toString()),
-            Row(
-              children: [
-                FilledButton(
-                  onPressed: () async {
-                    appState.addExp(10);
-                    await appState.saveLevelData();
-                  },
-
-                  child: Text("add exp"),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 50),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    "CEFR LEVEL: ${appState.level.name.toUpperCase()}",
+                  ),
                 ),
-                FilledButton(
-                  onPressed: () async {
-                    appState.resetLevel();
-                    await appState.saveLevelData();
-                  },
+              ),
 
-                  child: Text("reset"),
-                ),
-              ],
-            ),
-          ],
+              Row(
+                children: [
+                  Text("EXP: "),
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value: appState.getExpPercentage(),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  FilledButton(
+                    onPressed: () async {
+                      appState.addExp(10);
+                      await appState.saveLevelData();
+                    },
+
+                    child: Text("add exp"),
+                  ),
+                  FilledButton(
+                    onPressed: () async {
+                      appState.resetLevel();
+                      await appState.saveLevelData();
+                    },
+                    child: Text("reset"),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text("Random word range"),
+                  SegmentedButton(
+                    segments: [
+                      for (var val in WordCerf.values)
+                        if (val != WordCerf.unknown)
+                          ButtonSegment(
+                            value: val,
+                            label: Text(val.name.toUpperCase()),
+                          ),
+                    ],
+                    selected: appState.levelSelectionRange,
+                    onSelectionChanged: (p0) async {
+                      var set = p0.cast<WordCerf>();
+                      setState(() {
+                        appState.levelSelectionRange = set;
+                      });
+                      await appState.saveLevelSelectionRange();
+                    },
+                    multiSelectionEnabled: true,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
