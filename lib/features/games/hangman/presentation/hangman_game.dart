@@ -119,9 +119,9 @@ class _HangmanGameState extends State<HangmanGame> {
                     });
 
                     if (game.isGameEnded) {
-                      // Add 2 exp for finishing a game
-                      if (mounted) {
+                      if (mounted && game.isWon) {
                         Provider.of<AppState>(context, listen: false).addExp(2);
+                        Provider.of<AppState>(context, listen: false).incrementGamesCompleted();
                       }
                       showDialog(
                         context: context,

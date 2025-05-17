@@ -38,6 +38,15 @@ class AppState extends ChangeNotifier {
 
   CerfReader get cerfReader => _cerfReader;
 
+  // CEFR level up exp milestones
+  static const List<int> cefrExpMilestones = [100, 500, 2000, 4000, 5000];
+  static const List<WordCerf> cefrLevels = [
+    WordCerf.a2, WordCerf.b1, WordCerf.b2, WordCerf.c1, WordCerf.c2
+  ];
+
+  // Track which levels are unlocked for test
+  final Set<WordCerf> unlockedCefrTests = {};
+
   Future<void> loadTheme() async {
     var prefs = await SharedPreferences.getInstance();
     var res = prefs.getString("theme_mode");
@@ -122,7 +131,7 @@ class AppState extends ChangeNotifier {
 
   void addExp(int amount) {
     _levelService.addExp(amount);
-
+    checkCefrLevelUnlock();
     notifyListeners();
   }
 
@@ -237,5 +246,46 @@ class AppState extends ChangeNotifier {
 
   Future<void> saveLearnedWords() async {
     await _db.writeLearned(learnedWords);
+  }
+
+  // Call this after exp changes
+  void checkCefrLevelUnlock() {
+    for (int i = 0; i < cefrExpMilestones.length; i++) {
+      if (exp >= cefrExpMilestones[i]) {
+        unlockedCefrTests.add(cefrLevels[i]);
+      }
+    }
+    notifyListeners();
+  }
+
+  bool isCefrTestUnlocked(WordCerf level) => unlockedCefrTests.contains(level);
+
+  int _gamesCompleted = 0;
+  int get gamesCompleted => _gamesCompleted;
+
+  Future<void> loadGamesCompleted() async {
+    var prefs = await SharedPreferences.getInstance();
+    _gamesCompleted = prefs.getInt("games_completed") ?? 0;
+  }
+
+  Future<void> saveGamesCompleted() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setInt("games_completed", _gamesCompleted);
+  }
+
+  void incrementGamesCompleted() {
+    _gamesCompleted++;
+    saveGamesCompleted();
+    notifyListeners();
+  }
+
+  // Tính lại exp dựa trên số từ đã học và số game đã hoàn thành
+  void recalculateExp() {
+    // Giả sử: mỗi từ đã học = 1 exp, mỗi game hoàn thành = 2 exp
+    final int expFromWords = learnedWords.length;
+    final int expFromGames = _gamesCompleted * 2;
+    _levelService.exp = (expFromWords + expFromGames).toDouble();
+    checkCefrLevelUnlock();
+    notifyListeners();
   }
 }

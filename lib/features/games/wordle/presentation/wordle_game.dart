@@ -61,8 +61,10 @@ class WordleGameState extends State<WordleGame> {
   }
 
   void showResultDialog() {
-    // Add 2 exp for finishing a game
-    Provider.of<AppState>(context, listen: false).addExp(2);
+    if (gameState.hasWon()) {
+      Provider.of<AppState>(context, listen: false).addExp(2);
+      Provider.of<AppState>(context, listen: false).incrementGamesCompleted();
+    }
     showDialog(
       context: context,
       barrierDismissible: false,
