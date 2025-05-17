@@ -106,7 +106,7 @@ class DictionarySearch extends StatelessWidget {
                             context,
                             WordInfoView.routeName,
                             arguments: WordInfoViewArgs(
-                              data.wordInfo.word,
+                              data.wordInfo.word.toLowerCase(),
                               cerf: data.cerf,
                             ),
                           );
