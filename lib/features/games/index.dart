@@ -6,19 +6,23 @@ import 'package:flutter/material.dart';
 
 class GameData {
   final Widget view;
-  final IconData icon;
+  final String imagePath;
   final String name;
 
-  const GameData(this.view, this.icon, this.name);
+  const GameData(this.view, this.imagePath, this.name);
 }
 
 class GameSpace extends StatelessWidget {
   GameSpace({super.key});
 
   final _datas = <GameData>[
-    GameData(Hangman(), Icons.man, "Hangman"),
-    GameData(WordleView(), Icons.abc, "Wordle"),
-    GameData(Placeholder(), Icons.dataset_linked_sharp, "Match word"),
+    GameData(Hangman(), 'assets/gamespace_icon/hangman.png', "Hangman"),
+    GameData(WordleView(), 'assets/gamespace_icon/wordle.png', "Wordle"),
+    GameData(
+      Placeholder(),
+      'assets/gamespace_icon/wordmatch.png',
+      "Match word",
+    ),
   ];
 
   @override
@@ -39,7 +43,6 @@ class GameSpace extends StatelessWidget {
               crossAxisSpacing: 10,
             ),
             itemCount: _datas.length,
-
             itemBuilder: (context, index) {
               final data = _datas[index];
               return Card(
@@ -52,7 +55,9 @@ class GameSpace extends StatelessWidget {
                   },
                   child: Column(
                     children: [
-                      Expanded(child: Icon(data.icon, size: 100)),
+                      Expanded(
+                        child: Image.asset(data.imagePath, fit: BoxFit.contain),
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(data.name),

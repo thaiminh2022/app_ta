@@ -25,7 +25,12 @@ class WordleView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.abc, size: 150),
+            Image.asset(
+              'assets/gamespace_icon/wordle.png',
+              width: 150,
+              height: 150,
+              fit: BoxFit.contain,
+            ),
             FilledButton(
               onPressed: () async {
                 var appState = context.read<AppState>();
