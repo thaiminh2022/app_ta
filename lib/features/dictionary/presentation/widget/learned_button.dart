@@ -18,22 +18,33 @@ class LearnedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
     var learnedWords = appState.learnedWords;
-    return IconButton(
-      onPressed: () {
-        if (!learnedWords.contains(word)) {
-          appState.addWordToLearned(word);
-          onAdded?.call(word);
-        } else {
-          appState.removeWordFromLearned(word);
-          onDelete?.call(word);
-        }
-      },
-      icon: Icon(
-        learnedWords.contains(word)
-            ? Icons.favorite_rounded
-            : Icons.favorite_border,
-        color: learnedWords.contains(word) ? Colors.pink : null,
-      ),
+    return Column(
+      children: [
+        IconButton(
+          onPressed: () {
+            if (!learnedWords.contains(word)) {
+              appState.addWordToLearned(word);
+              onAdded?.call(word);
+            } else {
+              appState.removeWordFromLearned(word);
+              onDelete?.call(word);
+            }
+          },
+          icon: Icon(
+            learnedWords.contains(word)
+                ? Icons.favorite_rounded
+                : Icons.favorite_border,
+            color: learnedWords.contains(word) ? Colors.pink : null,
+          ),
+        ),
+        Text(
+          learnedWords.contains(word) ? "learned" : "learn",
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
     );
   }
 }

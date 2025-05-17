@@ -1,76 +1,66 @@
+import 'dart:math';
+
 import 'package:app_ta/core/models/result.dart';
 import 'package:app_ta/core/models/word_cerf.dart';
-import 'package:app_ta/core/models/word_pos.dart';
-import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
 
 class CerfReader {
-  final List<WordCerfModel> _cacheWordCerfModel = [];
-  List<WordPosModel> _cacheWordPosModel = [];
+  final Map<WordCerf, Set<String>> _cacheCerf = {
+    WordCerf.a1: {},
+    WordCerf.a2: {},
+    WordCerf.b1: {},
+    WordCerf.b2: {},
+    WordCerf.c1: {},
+    WordCerf.c2: {},
+  };
 
-  List<WordCerfModel> get cacheWordCerfModel => _cacheWordCerfModel;
+  Future<void> _loadCerf() async {
+    final a1 = await rootBundle.loadString("assets/word_cerf/a1.txt");
+    final a2 = await rootBundle.loadString("assets/word_cerf/a2.txt");
 
-  Future<void> cacheWordCerf() async {
-    if (_cacheWordCerfModel.isEmpty) {
-      var csvContent = await rootBundle.loadString("assets/words.csv");
-      var rows = const CsvToListConverter().convert(csvContent);
+    final b1 = await rootBundle.loadString("assets/word_cerf/b1.txt");
+    final b2 = await rootBundle.loadString("assets/word_cerf/b2.txt");
 
-      // index  0 is header;
-      for (var i = 1; i < rows.length; i++) {
-        _cacheWordCerfModel.add(WordCerfModel.fromCsv(rows[i]));
-      }
-    }
-  }
+    final c1 = await rootBundle.loadString("assets/word_cerf/c1.txt");
+    final c2 = await rootBundle.loadString("assets/word_cerf/c2.txt");
 
-  Future<Result<int, String>> _getWordID(String word) async {
-    await cacheWordCerf();
-    var idx = _cacheWordCerfModel.indexWhere((e) => e.word == word);
-
-    if (idx < 0) {
-      return Result.err("Cannot find word");
-    }
-
-    // Id starts at 1
-    return Result.ok(idx + 1);
+    _cacheCerf[WordCerf.a1]?.addAll(a1.split("\n"));
+    _cacheCerf[WordCerf.a2]?.addAll(a2.split("\n"));
+    _cacheCerf[WordCerf.b1]?.addAll(b1.split("\n"));
+    _cacheCerf[WordCerf.b2]?.addAll(b2.split("\n"));
+    _cacheCerf[WordCerf.c1]?.addAll(c1.split("\n"));
+    _cacheCerf[WordCerf.c2]?.addAll(c2.split("\n"));
   }
 
   Future<WordCerf> getWordCerf(String word) async {
-    word = word.trim();
-    var idRes = await _getWordID(word);
-    if (idRes.isError) {
-      return WordCerf.unknown;
+    if (_cacheCerf.values.first.isEmpty) {
+      await _loadCerf();
     }
-    var id = idRes.unwrap();
 
-    var cerfs = _cacheWordPosModel;
-    if (_cacheWordPosModel.isEmpty) {
-      var csvContent = await rootBundle.loadString("assets/word_pos.csv");
-      var rows = const CsvToListConverter().convert(csvContent);
-      for (var i = 1; i < rows.length; i++) {
-        cerfs.add(WordPosModel.fromCsv(rows[i]));
+    for (var p in _cacheCerf.entries) {
+      var key = p.key;
+      var value = p.value;
+
+      for (var val in value) {
+        if (val.trim() == word.trim()) {
+          return key;
+        }
       }
-      _cacheWordPosModel = cerfs;
     }
-    var idx = cerfs.indexWhere((e) => e.wordId == id);
-    if (idx < 0) {
-      return WordCerf.unknown;
+    print("Did not find the word: $word");
+    return WordCerf.unknown;
+  }
+
+  Future<Result<String, String>> getRandomWordByCerf(WordCerf cerf) async {
+    if (_cacheCerf.values.first.isEmpty) {
+      await _loadCerf();
+    }
+    if (cerf == WordCerf.unknown) {
+      return Result.err("NO cerf for this word");
     }
 
-    switch (cerfs[idx].level.round()) {
-      case 1:
-        return WordCerf.a1;
-      case 2:
-        return WordCerf.a2;
-      case 3:
-        return WordCerf.b1;
-      case 4:
-        return WordCerf.b2;
-      case 5:
-        return WordCerf.c1;
-      case 6:
-        return WordCerf.c2;
-      default:
-        return WordCerf.unknown;
-    }
+    var wordList = _cacheCerf[cerf]!;
+    var word = wordList.elementAt(Random().nextInt(wordList.length));
+    return Result.ok(word);
   }
 }
