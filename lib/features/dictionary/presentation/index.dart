@@ -6,6 +6,9 @@ import 'package:app_ta/features/dictionary/presentation/learned_words_view.dart'
 import 'package:app_ta/features/dictionary/presentation/word_info_view.dart';
 import 'package:app_ta/features/dictionary/services/search_history_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:app_ta/features/dictionary/services/random_word_by_cerf_service.dart';
+import 'package:app_ta/core/providers/app_state.dart';
 
 class DictionarySearch extends StatelessWidget {
   DictionarySearch({super.key});
@@ -81,6 +84,29 @@ class DictionarySearch extends StatelessWidget {
                             );
                           },
                           child: Text("Learned words"),
+                        ),
+                        FilledButton(
+                          onPressed: () async {
+                            // Random word by CERF level
+                            final appState = context.read<AppState>();
+                            final res = await DictionaryRandomWordService.getRandomWordByUserCerf(appState);
+                            if (res.isError) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(res.unwrapError())),
+                                );
+                              }
+                              return;
+                            }
+                            if (context.mounted) {
+                              Navigator.pushNamed(
+                                context,
+                                WordInfoView.routeName,
+                                arguments: WordInfoViewArgs(res.unwrap().word),
+                              );
+                            }
+                          },
+                          child: Text("Random word by your CERF level"),
                         ),
                       ],
                     ),

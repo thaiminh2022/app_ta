@@ -38,6 +38,8 @@ class AppState extends ChangeNotifier {
   // Getter for streak
   int get streakDays => _streakDays;
 
+  CerfReader get cerfReader => _cerfReader;
+
   Future<void> loadTheme() async {
     var prefs = await SharedPreferences.getInstance();
     var res = prefs.getString("theme_mode");
